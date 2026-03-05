@@ -14,10 +14,37 @@ type InjectionResult struct {
 	Files   []string
 }
 
-var permissionsOverlayJSON = []byte("{\n  \"permissions\": {\n    \"defaultMode\": \"bypassPermissions\",\n    \"deny\": [\n      \"rm -rf /\",\n      \"sudo rm -rf /\",\n      \".env\"\n    ]\n  }\n}\n")
+// claudeCodeOverlayJSON uses Claude Code's permissions.defaultMode setting.
+// Valid modes: "acceptEdits", "bypassPermissions", "default", "dontAsk", "plan".
+var claudeCodeOverlayJSON = []byte("{\n  \"permissions\": {\n    \"defaultMode\": \"bypassPermissions\",\n    \"deny\": [\n      \"rm -rf /\",\n      \"sudo rm -rf /\",\n      \".env\"\n    ]\n  }\n}\n")
 
-// openCodePermissionsOverlayJSON uses the OpenCode "permission" key with bash/read granularity.
-var openCodePermissionsOverlayJSON = []byte("{\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git commit *\": \"ask\",\n      \"git push *\": \"ask\",\n      \"git push\": \"ask\",\n      \"git push --force *\": \"ask\",\n      \"git rebase *\": \"ask\",\n      \"git reset --hard *\": \"ask\"\n    },\n    \"read\": {\n      \"*\": \"allow\",\n      \"*.env\": \"deny\",\n      \"*.env.*\": \"deny\",\n      \"**/.env\": \"deny\",\n      \"**/.env.*\": \"deny\",\n      \"**/secrets/**\": \"deny\",\n      \"**/credentials.json\": \"deny\"\n    }\n  }\n}\n")
+// openCodeOverlayJSON uses the OpenCode "permission" key with bash/read granularity.
+var openCodeOverlayJSON = []byte("{\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git commit *\": \"ask\",\n      \"git push *\": \"ask\",\n      \"git push\": \"ask\",\n      \"git push --force *\": \"ask\",\n      \"git rebase *\": \"ask\",\n      \"git reset --hard *\": \"ask\"\n    },\n    \"read\": {\n      \"*\": \"allow\",\n      \"*.env\": \"deny\",\n      \"*.env.*\": \"deny\",\n      \"**/.env\": \"deny\",\n      \"**/.env.*\": \"deny\",\n      \"**/secrets/**\": \"deny\",\n      \"**/credentials.json\": \"deny\"\n    }\n  }\n}\n")
+
+// geminiCLIOverlayJSON uses Gemini CLI's general.defaultApprovalMode setting.
+// Valid modes: "default", "auto_edit", "plan", "yolo".
+var geminiCLIOverlayJSON = []byte("{\n  \"general\": {\n    \"defaultApprovalMode\": \"yolo\"\n  }\n}\n")
+
+// vscodeCopilotOverlayJSON enables auto-approval for VS Code Copilot agent mode tools.
+var vscodeCopilotOverlayJSON = []byte("{\n  \"chat.tools.autoApprove\": true\n}\n")
+
+// overlayForAgent returns the correct permissions overlay for the given agent,
+// or nil if the agent does not support settings-based permission configuration.
+func overlayForAgent(agentID model.AgentID) []byte {
+	switch agentID {
+	case model.AgentClaudeCode:
+		return claudeCodeOverlayJSON
+	case model.AgentOpenCode:
+		return openCodeOverlayJSON
+	case model.AgentGeminiCLI:
+		return geminiCLIOverlayJSON
+	case model.AgentVSCodeCopilot:
+		return vscodeCopilotOverlayJSON
+	default:
+		// Agents like Cursor manage permissions via UI/CLI, not settings.json.
+		return nil
+	}
+}
 
 func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 	settingsPath := adapter.SettingsPath(homeDir)
@@ -25,9 +52,9 @@ func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 		return InjectionResult{}, nil
 	}
 
-	overlay := permissionsOverlayJSON
-	if adapter.Agent() == model.AgentOpenCode {
-		overlay = openCodePermissionsOverlayJSON
+	overlay := overlayForAgent(adapter.Agent())
+	if overlay == nil {
+		return InjectionResult{}, nil
 	}
 
 	writeResult, err := mergeJSONFile(settingsPath, overlay)

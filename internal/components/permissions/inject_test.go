@@ -9,11 +9,17 @@ import (
 
 	"github.com/gentleman-programming/gentle-ai/internal/agents"
 	"github.com/gentleman-programming/gentle-ai/internal/agents/claude"
+	"github.com/gentleman-programming/gentle-ai/internal/agents/cursor"
+	"github.com/gentleman-programming/gentle-ai/internal/agents/gemini"
 	"github.com/gentleman-programming/gentle-ai/internal/agents/opencode"
+	"github.com/gentleman-programming/gentle-ai/internal/agents/vscode"
 )
 
 func claudeAdapter() agents.Adapter   { return claude.NewAdapter() }
 func opencodeAdapter() agents.Adapter { return opencode.NewAdapter() }
+func geminiAdapter() agents.Adapter   { return gemini.NewAdapter() }
+func cursorAdapter() agents.Adapter   { return cursor.NewAdapter() }
+func vscodeAdapter() agents.Adapter   { return vscode.NewAdapter() }
 
 func TestInjectOpenCodeIsIdempotent(t *testing.T) {
 	home := t.TempDir()
@@ -136,4 +142,100 @@ func TestInjectAddsEnvToDenyList(t *testing.T) {
 	}
 
 	t.Fatalf("deny list missing explicit .env rule: %#v", denyList)
+}
+
+func TestInjectGeminiCLIUsesApprovalMode(t *testing.T) {
+	home := t.TempDir()
+
+	result, err := Inject(home, geminiAdapter())
+	if err != nil {
+		t.Fatalf("Inject() error = %v", err)
+	}
+	if !result.Changed {
+		t.Fatal("Inject() changed = false, expected true")
+	}
+
+	settingsPath := filepath.Join(home, ".gemini", "settings.json")
+	content, err := os.ReadFile(settingsPath)
+	if err != nil {
+		t.Fatalf("read settings file %q: %v", settingsPath, err)
+	}
+
+	var settings map[string]any
+	if err := json.Unmarshal(content, &settings); err != nil {
+		t.Fatalf("unmarshal settings json: %v", err)
+	}
+
+	general, ok := settings["general"].(map[string]any)
+	if !ok {
+		t.Fatalf("general section missing or invalid: %#v", settings["general"])
+	}
+
+	mode, ok := general["defaultApprovalMode"].(string)
+	if !ok {
+		t.Fatalf("defaultApprovalMode missing or not a string: %#v", general["defaultApprovalMode"])
+	}
+
+	validModes := map[string]bool{
+		"default":   true,
+		"auto_edit": true,
+		"plan":      true,
+		"yolo":      true,
+	}
+	if !validModes[mode] {
+		t.Fatalf("defaultApprovalMode %q is not a valid Gemini CLI mode", mode)
+	}
+
+	// Must not contain Claude Code-specific keys.
+	if _, has := settings["permissions"]; has {
+		t.Fatal("Gemini settings should not contain Claude Code 'permissions' key")
+	}
+}
+
+func TestInjectVSCodeCopilotUsesAutoApprove(t *testing.T) {
+	home := t.TempDir()
+
+	result, err := Inject(home, vscodeAdapter())
+	if err != nil {
+		t.Fatalf("Inject() error = %v", err)
+	}
+	if !result.Changed {
+		t.Fatal("Inject() changed = false, expected true")
+	}
+
+	settingsPath := vscodeAdapter().SettingsPath(home)
+	content, err := os.ReadFile(settingsPath)
+	if err != nil {
+		t.Fatalf("read settings file %q: %v", settingsPath, err)
+	}
+
+	var settings map[string]any
+	if err := json.Unmarshal(content, &settings); err != nil {
+		t.Fatalf("unmarshal settings json: %v", err)
+	}
+
+	autoApprove, ok := settings["chat.tools.autoApprove"]
+	if !ok {
+		t.Fatal("chat.tools.autoApprove missing from VS Code settings")
+	}
+	if autoApprove != true {
+		t.Fatalf("chat.tools.autoApprove = %v, want true", autoApprove)
+	}
+
+	// Must not contain Claude Code-specific keys.
+	if _, has := settings["permissions"]; has {
+		t.Fatal("VS Code settings should not contain Claude Code 'permissions' key")
+	}
+}
+
+func TestInjectCursorIsNoOp(t *testing.T) {
+	home := t.TempDir()
+
+	result, err := Inject(home, cursorAdapter())
+	if err != nil {
+		t.Fatalf("Inject() error = %v", err)
+	}
+	if result.Changed {
+		t.Fatal("Inject() changed = true for Cursor, expected no-op")
+	}
 }
