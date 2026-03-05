@@ -59,6 +59,48 @@ func TestInjectOpenCodeIsIdempotent(t *testing.T) {
 	}
 }
 
+func TestInjectDefaultModeIsValidForClaudeCode(t *testing.T) {
+	home := t.TempDir()
+
+	if _, err := Inject(home, claudeAdapter()); err != nil {
+		t.Fatalf("Inject() error = %v", err)
+	}
+
+	settingsPath := filepath.Join(home, ".claude", "settings.json")
+	content, err := os.ReadFile(settingsPath)
+	if err != nil {
+		t.Fatalf("read settings file %q: %v", settingsPath, err)
+	}
+
+	var settings map[string]any
+	if err := json.Unmarshal(content, &settings); err != nil {
+		t.Fatalf("unmarshal settings json: %v", err)
+	}
+
+	permissionsNode, ok := settings["permissions"].(map[string]any)
+	if !ok {
+		t.Fatalf("permissions node missing or invalid: %#v", settings["permissions"])
+	}
+
+	mode, ok := permissionsNode["defaultMode"].(string)
+	if !ok {
+		t.Fatalf("defaultMode missing or not a string: %#v", permissionsNode["defaultMode"])
+	}
+
+	// Valid Claude Code permission modes per https://code.claude.com/docs/en/iam#permission-modes
+	validModes := map[string]bool{
+		"acceptEdits":       true,
+		"bypassPermissions": true,
+		"default":           true,
+		"dontAsk":           true,
+		"plan":              true,
+	}
+
+	if !validModes[mode] {
+		t.Fatalf("defaultMode %q is not a valid Claude Code permission mode", mode)
+	}
+}
+
 func TestInjectAddsEnvToDenyList(t *testing.T) {
 	home := t.TempDir()
 

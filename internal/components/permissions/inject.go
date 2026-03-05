@@ -14,7 +14,7 @@ type InjectionResult struct {
 	Files   []string
 }
 
-var permissionsOverlayJSON = []byte("{\n  \"permissions\": {\n    \"defaultMode\": \"ask\",\n    \"deny\": [\n      \"rm -rf /\",\n      \"sudo rm -rf /\",\n      \".env\"\n    ]\n  }\n}\n")
+var permissionsOverlayJSON = []byte("{\n  \"permissions\": {\n    \"defaultMode\": \"default\",\n    \"deny\": [\n      \"rm -rf /\",\n      \"sudo rm -rf /\",\n      \".env\"\n    ]\n  }\n}\n")
 
 // openCodePermissionsOverlayJSON uses the OpenCode "permission" key with bash/read granularity.
 var openCodePermissionsOverlayJSON = []byte("{\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git commit *\": \"ask\",\n      \"git push *\": \"ask\",\n      \"git push\": \"ask\",\n      \"git push --force *\": \"ask\",\n      \"git rebase *\": \"ask\",\n      \"git reset --hard *\": \"ask\"\n    },\n    \"read\": {\n      \"*\": \"allow\",\n      \"*.env\": \"deny\",\n      \"*.env.*\": \"deny\",\n      \"**/.env\": \"deny\",\n      \"**/.env.*\": \"deny\",\n      \"**/secrets/**\": \"deny\",\n      \"**/credentials.json\": \"deny\"\n    }\n  }\n}\n")
