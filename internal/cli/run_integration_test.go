@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/gentleman-programming/gentle-ai/internal/system"
 )
@@ -881,3 +882,60 @@ func TestRunInstallEngramBrewSkipsGoCheck(t *testing.T) {
 		t.Fatalf("expected brew install engram, got commands: %v", commands)
 	}
 }
+
+func TestEnsureGoAvailableAfterInstallWindowsRefreshesPath(t *testing.T) {
+	restoreLookPath := cmdLookPath
+	restoreStat := osStat
+	restoreSetenv := osSetenv
+	oldPath := os.Getenv("PATH")
+	oldProgramFiles := os.Getenv("ProgramFiles")
+	t.Cleanup(func() {
+		cmdLookPath = restoreLookPath
+		osStat = restoreStat
+		osSetenv = restoreSetenv
+		_ = os.Setenv("PATH", oldPath)
+		_ = os.Setenv("ProgramFiles", oldProgramFiles)
+	})
+
+	programFiles := `C:\Program Files`
+	if err := os.Setenv("ProgramFiles", programFiles); err != nil {
+		t.Fatalf("Setenv(ProgramFiles) error = %v", err)
+	}
+	if err := os.Setenv("PATH", `C:\Windows\System32`); err != nil {
+		t.Fatalf("Setenv(PATH) error = %v", err)
+	}
+
+	cmdLookPath = func(name string) (string, error) {
+		if name == "go" {
+			return "", exec.ErrNotFound
+		}
+		return name, nil
+	}
+	osStat = func(name string) (os.FileInfo, error) {
+		want := filepath.Join(programFiles, "Go", "bin", "go.exe")
+		if name == want {
+			return fakeFileInfo{name: "go.exe"}, nil
+		}
+		return nil, os.ErrNotExist
+	}
+	osSetenv = os.Setenv
+
+	if err := ensureGoAvailableAfterInstall(system.PlatformProfile{OS: "windows", PackageManager: "winget"}); err != nil {
+		t.Fatalf("ensureGoAvailableAfterInstall() error = %v", err)
+	}
+
+	updatedPath := os.Getenv("PATH")
+	expectedPrefix := filepath.Join(programFiles, "Go", "bin") + string(os.PathListSeparator)
+	if !strings.HasPrefix(updatedPath, expectedPrefix) {
+		t.Fatalf("PATH = %q, want prefix %q", updatedPath, expectedPrefix)
+	}
+}
+
+type fakeFileInfo struct{ name string }
+
+func (f fakeFileInfo) Name() string     { return f.name }
+func (fakeFileInfo) Size() int64        { return 0 }
+func (fakeFileInfo) Mode() os.FileMode  { return 0 }
+func (fakeFileInfo) ModTime() time.Time { return time.Time{} }
+func (fakeFileInfo) IsDir() bool        { return false }
+func (fakeFileInfo) Sys() any           { return nil }

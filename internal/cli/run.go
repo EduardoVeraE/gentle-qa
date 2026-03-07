@@ -39,6 +39,8 @@ type InstallResult struct {
 
 var (
 	osUserHomeDir       = os.UserHomeDir
+	osSetenv            = os.Setenv
+	osStat              = os.Stat
 	runCommand          = executeCommand
 	cmdLookPath         = exec.LookPath
 	streamCommandOutput = true
@@ -322,6 +324,11 @@ func (s componentApplyStep) Run() error {
 					if err := runCommandSequence(goCommands); err != nil {
 						return fmt.Errorf("install go (required for engram): %w", err)
 					}
+					if s.profile.OS == "windows" {
+						if err := ensureGoAvailableAfterInstall(s.profile); err != nil {
+							return err
+						}
+					}
 				}
 			}
 			commands, err := engram.InstallCommand(s.profile)
@@ -401,6 +408,43 @@ func (s componentApplyStep) Run() error {
 		return nil
 	default:
 		return fmt.Errorf("component %q is not supported in install runtime", s.component)
+	}
+}
+
+func ensureGoAvailableAfterInstall(profile system.PlatformProfile) error {
+	if _, err := cmdLookPath("go"); err == nil {
+		return nil
+	}
+
+	if profile.OS != "windows" {
+		return fmt.Errorf("go was installed but is still not available in PATH")
+	}
+
+	for _, candidate := range windowsGoCandidates() {
+		if candidate == "" {
+			continue
+		}
+		if _, err := osStat(candidate); err == nil {
+			binDir := filepath.Dir(candidate)
+			currentPath := os.Getenv("PATH")
+			if currentPath == "" {
+				return osSetenv("PATH", binDir)
+			}
+			return osSetenv("PATH", binDir+string(os.PathListSeparator)+currentPath)
+		}
+	}
+
+	return fmt.Errorf("go was installed but is still not available in PATH; restart the terminal and retry")
+}
+
+func windowsGoCandidates() []string {
+	programFiles := os.Getenv("ProgramFiles")
+	programFilesX86 := os.Getenv("ProgramFiles(x86)")
+
+	return []string{
+		filepath.Join(programFiles, "Go", "bin", "go.exe"),
+		filepath.Join(programFilesX86, "Go", "bin", "go.exe"),
+		`C:\Program Files\Go\bin\go.exe`,
 	}
 }
 

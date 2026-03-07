@@ -76,6 +76,15 @@ func TestResolveDependencyInstall(t *testing.T) {
 	}
 }
 
+func TestBashScriptPathWindowsUsesForwardSlashes(t *testing.T) {
+	profile := system.PlatformProfile{OS: "windows", PackageManager: "winget"}
+	got := bashScriptPath(profile, `C:\Users\jorge\AppData\Local\Temp\gentleman-guardian-angel\install.sh`)
+	want := "C:/Users/jorge/AppData/Local/Temp/gentleman-guardian-angel/install.sh"
+	if got != want {
+		t.Fatalf("bashScriptPath() = %q, want %q", got, want)
+	}
+}
+
 func TestResolveAgentInstall(t *testing.T) {
 	r := NewResolver()
 

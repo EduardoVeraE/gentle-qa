@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gentleman-programming/gentle-ai/internal/model"
 	"github.com/gentleman-programming/gentle-ai/internal/system"
@@ -128,7 +129,7 @@ func resolveGGAInstall(profile system.PlatformProfile) (CommandSequence, error) 
 		cloneDst := filepath.Join(os.TempDir(), "gentleman-guardian-angel")
 		return CommandSequence{
 			{"git", "clone", "https://github.com/Gentleman-Programming/gentleman-guardian-angel.git", cloneDst},
-			{"bash", filepath.Join(cloneDst, "install.sh")},
+			{"bash", bashScriptPath(profile, filepath.Join(cloneDst, "install.sh"))},
 		}, nil
 	default:
 		return nil, fmt.Errorf(
@@ -136,6 +137,13 @@ func resolveGGAInstall(profile system.PlatformProfile) (CommandSequence, error) 
 			profile.OS, profile.LinuxDistro, profile.PackageManager,
 		)
 	}
+}
+
+func bashScriptPath(profile system.PlatformProfile, path string) string {
+	if profile.OS == "windows" {
+		return strings.ReplaceAll(path, `\`, "/")
+	}
+	return path
 }
 
 // resolveEngramInstall returns the correct install command sequence for Engram per platform.
