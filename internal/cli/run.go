@@ -339,7 +339,17 @@ func (s componentApplyStep) Run() error {
 				return err
 			}
 		}
+		setupMode := engram.ParseSetupMode(os.Getenv(engram.SetupModeEnvVar))
+		setupStrict := engram.ParseSetupStrict(os.Getenv(engram.SetupStrictEnvVar))
 		for _, adapter := range adapters {
+			if engram.ShouldAttemptSetup(setupMode, adapter.Agent()) {
+				slug, _ := engram.SetupAgentSlug(adapter.Agent())
+				if err := runCommand("engram", "setup", slug); err != nil {
+					if setupStrict {
+						return fmt.Errorf("engram setup for %q: %w", adapter.Agent(), err)
+					}
+				}
+			}
 			if _, err := engram.Inject(s.homeDir, adapter); err != nil {
 				return fmt.Errorf("inject engram for %q: %w", adapter.Agent(), err)
 			}
