@@ -10,6 +10,7 @@ import (
 	"github.com/gentleman-programming/gentle-ai/internal/backup"
 	"github.com/gentleman-programming/gentle-ai/internal/catalog"
 	"github.com/gentleman-programming/gentle-ai/internal/model"
+	"github.com/gentleman-programming/gentle-ai/internal/opencode"
 	"github.com/gentleman-programming/gentle-ai/internal/pipeline"
 	"github.com/gentleman-programming/gentle-ai/internal/planner"
 	"github.com/gentleman-programming/gentle-ai/internal/system"
@@ -72,9 +73,11 @@ const (
 	ScreenAgents
 	ScreenPersona
 	ScreenPreset
+	ScreenSDDMode
 	ScreenDependencyTree
 	ScreenReview
 	ScreenInstalling
+	ScreenModelPicker
 	ScreenComplete
 	ScreenBackups
 )
@@ -95,6 +98,7 @@ type Model struct {
 	Progress       ProgressState
 	Execution      pipeline.ExecutionResult
 	Backups        []backup.Manifest
+	ModelPicker    screens.ModelPickerState
 	Err            error
 
 	// ExecuteFn is called to run the real pipeline. When nil, the installing
@@ -268,6 +272,10 @@ func (m Model) View() string {
 		return screens.RenderPersona(m.Selection.Persona, m.Cursor)
 	case ScreenPreset:
 		return screens.RenderPreset(m.Selection.Preset, m.Cursor)
+	case ScreenSDDMode:
+		return screens.RenderSDDMode(m.Selection.SDDMode, m.Cursor)
+	case ScreenModelPicker:
+		return screens.RenderModelPicker(m.Selection.ModelAssignments, m.ModelPicker, m.Cursor)
 	case ScreenDependencyTree:
 		return screens.RenderDependencyTree(m.DependencyPlan, m.Selection, m.Cursor)
 	case ScreenReview:
@@ -368,11 +376,41 @@ func (m Model) confirmSelection() (tea.Model, tea.Cmd) {
 		if m.Cursor < len(options) {
 			m.Selection.Preset = options[m.Cursor]
 			m.Selection.Components = componentsForPreset(options[m.Cursor])
+			if m.shouldShowSDDModeScreen() {
+				m.setScreen(ScreenSDDMode)
+				return m, nil
+			}
 			m.buildDependencyPlan()
 			m.setScreen(ScreenDependencyTree)
 			return m, nil
 		}
 		m.setScreen(ScreenPersona)
+	case ScreenSDDMode:
+		options := screens.SDDModeOptions()
+		if m.Cursor < len(options) {
+			m.Selection.SDDMode = options[m.Cursor]
+			if m.Selection.SDDMode == model.SDDModeMulti {
+				m.ModelPicker = screens.NewModelPickerState(opencode.DefaultCachePath())
+				m.setScreen(ScreenModelPicker)
+				return m, nil
+			}
+			m.Selection.ModelAssignments = nil
+			m.buildDependencyPlan()
+			m.setScreen(ScreenDependencyTree)
+			return m, nil
+		}
+		m.setScreen(ScreenPreset)
+	case ScreenModelPicker:
+		rows := screens.ModelPickerRows()
+		if m.Cursor < len(rows) {
+			m.Selection.ModelAssignments = screens.CycleModelAssignment(
+				m.Selection.ModelAssignments, m.ModelPicker, m.Cursor,
+			)
+			return m, nil
+		}
+		// Back option — proceed to dependency tree.
+		m.buildDependencyPlan()
+		m.setScreen(ScreenDependencyTree)
 	case ScreenDependencyTree:
 		if m.Selection.Preset == model.PresetCustom {
 			allComps := screens.AllComponents()
@@ -506,6 +544,13 @@ func buildProgressLabels(resolved planner.ResolvedPlan) []string {
 }
 
 func (m Model) goBack() Model {
+	// If going back from DependencyTree and the SDDMode screen was shown,
+	// navigate to SDDMode instead of Preset.
+	if m.Screen == ScreenDependencyTree && m.shouldShowSDDModeScreen() {
+		m.setScreen(ScreenSDDMode)
+		return m
+	}
+
 	previous, ok := PreviousScreen(m.Screen)
 	if !ok {
 		return m
@@ -533,6 +578,10 @@ func (m Model) optionCount() int {
 		return len(screens.PersonaOptions()) + 1
 	case ScreenPreset:
 		return len(screens.PresetOptions()) + 1
+	case ScreenSDDMode:
+		return len(screens.SDDModeOptions()) + 1
+	case ScreenModelPicker:
+		return len(screens.ModelPickerRows()) + 1 // rows + Back
 	case ScreenDependencyTree:
 		if m.Selection.Preset == model.PresetCustom {
 			return len(screens.AllComponents()) + len(screens.DependencyTreeOptions())
@@ -675,6 +724,11 @@ func extractAvailableUpdates(results []update.UpdateResult) []screens.UpdateInfo
 		}
 	}
 	return updates
+}
+
+func (m Model) shouldShowSDDModeScreen() bool {
+	return m.Selection.HasAgent(model.AgentOpenCode) &&
+		hasSelectedComponent(m.Selection.Components, model.ComponentSDD)
 }
 
 func componentsForPreset(preset model.PresetID) []model.ComponentID {

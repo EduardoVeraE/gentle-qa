@@ -103,3 +103,10 @@ const (
 	PresetMinimal       PresetID = "minimal"
 	PresetCustom        PresetID = "custom"
 )
+
+type SDDModeID string
+
+const (
+	SDDModeSingle SDDModeID = "single"
+	SDDModeMulti  SDDModeID = "multi"
+)

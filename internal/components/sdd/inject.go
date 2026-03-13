@@ -19,11 +19,17 @@ type InjectionResult struct {
 	Files   []string
 }
 
-// openCodeSDDAgentOverlayJSON ensures OpenCode has the sdd-orchestrator agent
-// required by /sdd-* command frontmatter.
-var openCodeSDDAgentOverlayJSON = []byte("{\n  \"agent\": {\n    \"sdd-orchestrator\": {\n      \"mode\": \"all\",\n      \"description\": \"Gentleman personality + SDD delegate-only orchestrator\",\n      \"prompt\": \"{file:./AGENTS.md}\",\n      \"tools\": {\n        \"read\": true,\n        \"write\": true,\n        \"edit\": true,\n        \"bash\": true\n      }\n    }\n  }\n}\n")
+// overlayAssetPath returns the embedded asset path for the SDD agent overlay
+// based on the selected SDD mode. Empty or SDDModeSingle uses the single
+// orchestrator overlay; SDDModeMulti uses the multi-agent overlay.
+func overlayAssetPath(sddMode model.SDDModeID) string {
+	if sddMode == model.SDDModeMulti {
+		return "opencode/sdd-overlay-multi.json"
+	}
+	return "opencode/sdd-overlay-single.json"
+}
 
-func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
+func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, modelAssignments ...map[string]model.ModelAssignment) (InjectionResult, error) {
 	if !adapter.SupportsSystemPrompt() {
 		return InjectionResult{}, nil
 	}
@@ -87,7 +93,25 @@ func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 	if adapter.Agent() == model.AgentOpenCode {
 		settingsPath := adapter.SettingsPath(homeDir)
 		if settingsPath != "" {
-			agentResult, err := mergeJSONFile(settingsPath, openCodeSDDAgentOverlayJSON)
+			overlayContent, err := assets.Read(overlayAssetPath(sddMode))
+			if err != nil {
+				return InjectionResult{}, fmt.Errorf("read SDD overlay asset: %w", err)
+			}
+
+			// Inject model assignments into the overlay before merging.
+			overlayBytes := []byte(overlayContent)
+			var assignments map[string]model.ModelAssignment
+			if len(modelAssignments) > 0 {
+				assignments = modelAssignments[0]
+			}
+			if sddMode == model.SDDModeMulti && len(assignments) > 0 {
+				overlayBytes, err = injectModelAssignments(overlayBytes, assignments)
+				if err != nil {
+					return InjectionResult{}, fmt.Errorf("inject model assignments: %w", err)
+				}
+			}
+
+			agentResult, err := mergeJSONFile(settingsPath, overlayBytes)
 			if err != nil {
 				return InjectionResult{}, err
 			}
@@ -161,8 +185,12 @@ func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 			if err != nil {
 				return InjectionResult{}, fmt.Errorf("post-check: cannot read %q: %w", settingsPath, err)
 			}
-			if !strings.Contains(string(settingsData), `"sdd-orchestrator"`) {
+			settingsText := string(settingsData)
+			if !strings.Contains(settingsText, `"sdd-orchestrator"`) {
 				return InjectionResult{}, fmt.Errorf("post-check: %q missing sdd-orchestrator agent definition — OpenCode /sdd-* commands will fail", settingsPath)
+			}
+			if sddMode == model.SDDModeMulti && !strings.Contains(settingsText, `"sdd-apply"`) {
+				return InjectionResult{}, fmt.Errorf("post-check: %q missing sdd-apply sub-agent — multi-mode overlay was not injected correctly", settingsPath)
 			}
 		}
 	}
@@ -340,6 +368,45 @@ func injectMarkdownSections(homeDir string, adapter agents.Adapter) (InjectionRe
 	}
 
 	return InjectionResult{Changed: writeResult.Changed, Files: []string{promptPath}}, nil
+}
+
+// injectModelAssignments injects "model" fields into sub-agent definitions
+// within the overlay JSON before it is merged into the settings file.
+func injectModelAssignments(overlayBytes []byte, assignments map[string]model.ModelAssignment) ([]byte, error) {
+	var overlay map[string]any
+	if err := json.Unmarshal(overlayBytes, &overlay); err != nil {
+		return nil, fmt.Errorf("unmarshal overlay for model injection: %w", err)
+	}
+
+	agentsRaw, ok := overlay["agent"]
+	if !ok {
+		return overlayBytes, nil
+	}
+	agents, ok := agentsRaw.(map[string]any)
+	if !ok {
+		return overlayBytes, nil
+	}
+
+	for phase, assignment := range assignments {
+		if assignment.ProviderID == "" || assignment.ModelID == "" {
+			continue
+		}
+		agentDef, exists := agents[phase]
+		if !exists {
+			continue
+		}
+		agentMap, ok := agentDef.(map[string]any)
+		if !ok {
+			continue
+		}
+		agentMap["model"] = assignment.FullID()
+	}
+
+	result, err := json.MarshalIndent(overlay, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("marshal overlay after model injection: %w", err)
+	}
+	return append(result, '\n'), nil
 }
 
 func readFileOrEmpty(path string) (string, error) {

@@ -272,6 +272,35 @@ test_dry_run_component_theme() {
     assert_output_contains "$output" "theme" "Shows theme component"
 }
 
+# --- Category 1f2: SDD mode flag ---
+
+test_dry_run_sdd_mode_multi() {
+    log_test "Dry-run with --sdd-mode multi"
+
+    output=$($BINARY install --agent opencode --sdd-mode multi --dry-run 2>&1) || true
+
+    assert_output_contains "$output" "opencode" "Shows opencode agent"
+    assert_output_contains "$output" "sdd-mode: multi\|SDDMode: multi\|sdd_mode.*multi\|multi" "Shows multi mode"
+}
+
+test_dry_run_sdd_mode_single() {
+    log_test "Dry-run with --sdd-mode single"
+
+    output=$($BINARY install --agent opencode --sdd-mode single --dry-run 2>&1) || true
+
+    assert_output_contains "$output" "opencode" "Shows opencode agent"
+}
+
+test_dry_run_sdd_mode_invalid_rejected() {
+    log_test "Invalid --sdd-mode is rejected"
+
+    if $BINARY install --agent opencode --sdd-mode turbo --dry-run 2>&1; then
+        log_fail "Invalid sdd-mode should have been rejected"
+    else
+        log_pass "Invalid sdd-mode correctly rejected"
+    fi
+}
+
 # --- Category 1g: Invalid input rejection ---
 
 test_invalid_persona_rejected() {
@@ -1375,6 +1404,62 @@ test_integrity_skills_plus_sdd_coexist() {
     fi
 }
 
+# --- Category 9: SDD multi-mode tests ---
+
+test_oc_sdd_multi_mode_injection() {
+    log_test "OpenCode: SDD multi-mode injection (10 agents in opencode.json)"
+    cleanup_test_env
+
+    if $BINARY install --agent opencode --component sdd --persona neutral --sdd-mode multi 2>&1; then
+        local settings="$HOME/.config/opencode/opencode.json"
+        assert_file_exists "$settings" "opencode.json exists"
+        assert_valid_json "$settings" "opencode.json is valid JSON"
+        assert_file_contains "$settings" '"sdd-orchestrator"' "Has sdd-orchestrator agent"
+        assert_file_contains "$settings" '"sdd-apply"' "Has sdd-apply sub-agent"
+        assert_file_contains "$settings" '"sdd-init"' "Has sdd-init sub-agent"
+        assert_file_contains "$settings" '"sdd-verify"' "Has sdd-verify sub-agent"
+        assert_file_contains "$settings" '"sdd-explore"' "Has sdd-explore sub-agent"
+        assert_file_contains "$settings" '"sdd-propose"' "Has sdd-propose sub-agent"
+        assert_file_contains "$settings" '"sdd-spec"' "Has sdd-spec sub-agent"
+        assert_file_contains "$settings" '"sdd-design"' "Has sdd-design sub-agent"
+        assert_file_contains "$settings" '"sdd-tasks"' "Has sdd-tasks sub-agent"
+        assert_file_contains "$settings" '"sdd-archive"' "Has sdd-archive sub-agent"
+        assert_file_contains "$settings" '"subagent"' "Sub-agents have mode subagent"
+    else
+        log_fail "OpenCode SDD multi-mode install command failed"
+    fi
+}
+
+test_oc_sdd_single_mode_no_subagents() {
+    log_test "OpenCode: SDD single mode produces only sdd-orchestrator"
+    cleanup_test_env
+
+    if $BINARY install --agent opencode --component sdd --persona neutral --sdd-mode single 2>&1; then
+        local settings="$HOME/.config/opencode/opencode.json"
+        assert_file_exists "$settings" "opencode.json exists"
+        assert_valid_json "$settings" "opencode.json is valid JSON"
+        assert_file_contains "$settings" '"sdd-orchestrator"' "Has sdd-orchestrator agent"
+        assert_file_not_contains "$settings" '"sdd-apply"' "Single mode: no sdd-apply sub-agent"
+        assert_file_not_contains "$settings" '"subagent"' "Single mode: no subagent mode entries"
+    else
+        log_fail "OpenCode SDD single-mode install command failed"
+    fi
+}
+
+test_oc_sdd_default_mode_same_as_single() {
+    log_test "OpenCode: SDD default (no --sdd-mode flag) matches single mode"
+    cleanup_test_env
+
+    if $BINARY install --agent opencode --component sdd --persona neutral 2>&1; then
+        local settings="$HOME/.config/opencode/opencode.json"
+        assert_file_exists "$settings" "opencode.json exists"
+        assert_file_contains "$settings" '"sdd-orchestrator"' "Has sdd-orchestrator"
+        assert_file_not_contains "$settings" '"sdd-apply"' "Default mode: no sdd-apply sub-agent"
+    else
+        log_fail "OpenCode SDD default mode install command failed"
+    fi
+}
+
 # ===========================================================================
 # TIER 3 — Backup / restore tests (require RUN_BACKUP_TESTS=1)
 # ===========================================================================
@@ -1541,6 +1626,11 @@ test_dry_run_component_permissions
 test_dry_run_component_gga
 test_dry_run_component_theme
 
+# Category 1f2: SDD mode flag
+test_dry_run_sdd_mode_multi
+test_dry_run_sdd_mode_single
+test_dry_run_sdd_mode_invalid_rejected
+
 # Category 1g: Invalid inputs
 test_invalid_persona_rejected
 test_invalid_component_rejected
@@ -1617,6 +1707,11 @@ if [ "${RUN_FULL_E2E:-0}" = "1" ]; then
     test_integrity_full_preset_all_skills_nonempty
     test_integrity_sdd_orchestrator_agent_structure
     test_integrity_skills_plus_sdd_coexist
+
+    # Category 9: SDD multi-mode
+    test_oc_sdd_multi_mode_injection
+    test_oc_sdd_single_mode_no_subagents
+    test_oc_sdd_default_mode_same_as_single
 else
     log_skip "Tier 2 tests (set RUN_FULL_E2E=1 to enable)"
 fi
