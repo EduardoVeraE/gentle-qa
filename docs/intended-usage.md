@@ -4,13 +4,13 @@
 
 ---
 
-This page explains how gentle-ai is meant to be used. Not the flags, not the architecture -- just the mental model. If you read one page besides the README, make it this one.
+This page explains how gentle-qa is meant to be used. Not the flags, not the architecture -- just the mental model. If you read one page besides the README, make it this one.
 
 ---
 
 ## After Installing -- You're Done
 
-Once you run `gentle-ai` and select your agent(s), components, and preset, everything is configured. There is nothing else to do. No commands to memorize, no workflows to learn, no config files to edit.
+Once you run `gentle-qa` and select your agent(s), components, and preset, everything is configured. There is nothing else to do. No commands to memorize, no workflows to learn, no config files to edit.
 
 Open your AI agent and start working. That's it.
 
@@ -62,7 +62,7 @@ For **all other agents** (Claude Code, Cursor, Gemini CLI, VS Code Copilot), SDD
 If you want multi-mode in OpenCode:
 
 1. Connect your AI providers in OpenCode first
-2. Create a profile via gentle-ai TUI ("OpenCode SDD Profiles") or CLI (`--profile` flag)
+2. Create a profile via gentle-qa TUI ("OpenCode SDD Profiles") or CLI (`--profile` flag)
 3. The profile generates a custom orchestrator + sub-agents, each assigned to your chosen model
 4. In OpenCode, press **Tab** to switch between your default orchestrator and custom profiles
 
@@ -98,7 +98,7 @@ You don't need to configure any of this. The installer sets it up, and the orche
 
 ## Skills -- Two Layers
 
-gentle-ai installs **SDD skills** and **foundation skills** (workflow, testing patterns) directly into your agent's skills directory. These are embedded in the binary and always up to date.
+gentle-qa installs **SDD skills** and **foundation skills** (workflow, testing patterns) directly into your agent's skills directory. These are embedded in the binary and always up to date.
 
 For **coding skills** (React 19, Angular, TypeScript, Tailwind, Zod, Playwright, etc.), the community maintains a separate repository: [Gentleman-Programming/Gentleman-Skills](https://github.com/Gentleman-Programming/Gentleman-Skills). You install those manually by cloning the repo and copying the skills you want:
 
@@ -129,7 +129,7 @@ There's also an automated side: `sdd-init` runs the same registry logic internal
 
 Gentle AI is an ecosystem **configurator**. It sets up your AI agent with memory, skills, workflows, and a persona -- then gets out of the way.
 
-The less you think about gentle-ai after installing, the better it's working.
+The less you think about gentle-qa after installing, the better it's working.
 
 ---
 

@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/agents"
-	"github.com/gentleman-programming/gentle-ai/internal/assets"
-	"github.com/gentleman-programming/gentle-ai/internal/components/filemerge"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents"
+	"github.com/EduardoVeraE/Gentle-QA/internal/assets"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/filemerge"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
 )
 
 type InjectionResult struct {
@@ -31,7 +31,7 @@ type InjectOptions struct {
 	WorkspaceDir string
 
 	// StrictTDD enables Strict TDD mode. When true, a
-	// <!-- gentle-ai:strict-tdd-mode --> marker section is injected into
+	// <!-- gentle-qa:strict-tdd-mode --> marker section is injected into
 	// the agent's system prompt so agents know Strict TDD is active.
 	StrictTDD bool
 
@@ -119,7 +119,7 @@ const maxAncestorDepth = 20
 //  3. Weak marker (package.json only) — record as candidate but keep walking
 //     upward, since a monorepo marker may exist higher up.
 //
-// Walking upward means users can run gentle-ai from any subdirectory of their
+// Walking upward means users can run gentle-qa from any subdirectory of their
 // project (e.g. repo/packages/app) and still detect the correct workspace root.
 // In a JS/TS monorepo, every package has package.json, so we must not stop at
 // the first one — we keep walking to find the highest ancestor with package.json
@@ -459,7 +459,7 @@ func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, opt
 
 	// 3b. Write native workflow files (Windsurf Hybrid-First, and any future
 	// agent that implements the workflowInjector optional interface).
-	// findProjectRoot walks upward from WorkspaceDir so gentle-ai can be
+	// findProjectRoot walks upward from WorkspaceDir so gentle-qa can be
 	// invoked from any subdirectory (e.g. repo/internal/foo) and still inject
 	// workflows at the real project root. Skips silently if no root is found
 	// (e.g. running from home dir without a project).
@@ -946,7 +946,7 @@ func injectFileAppend(homeDir string, adapter agents.Adapter) (InjectionResult, 
 }
 
 func hasLegacyBareOrchestrator(content string) bool {
-	markedIdx := strings.Index(content, "<!-- gentle-ai:sdd-orchestrator -->")
+	markedIdx := strings.Index(content, "<!-- gentle-qa:sdd-orchestrator -->")
 	if markedIdx >= 0 {
 		prefix := content[:markedIdx]
 		if strings.Contains(prefix, "# Agent Teams Lite — Orchestrator Instructions") {
@@ -984,10 +984,10 @@ func hasLegacyBareOrchestrator(content string) bool {
 //
 // Strategy:
 //   - start at the first known orchestrator heading
-//   - end at the next managed marker ("<!-- gentle-ai:") if present, else EOF
+//   - end at the next managed marker ("<!-- gentle-qa:") if present, else EOF
 //   - preserve content before/after and normalize surrounding blank lines
 func stripBareOrchestratorForFilePrompt(content string) string {
-	if markedIdx := strings.Index(content, "<!-- gentle-ai:sdd-orchestrator -->"); markedIdx >= 0 {
+	if markedIdx := strings.Index(content, "<!-- gentle-qa:sdd-orchestrator -->"); markedIdx >= 0 {
 		prefix := content[:markedIdx]
 		if start := strings.Index(prefix, "# Agent Teams Lite — Orchestrator Instructions"); start >= 0 {
 			before := strings.TrimRight(content[:start], "\n")
@@ -1018,7 +1018,7 @@ func stripBareOrchestratorForFilePrompt(content string) string {
 	}
 
 	end := len(content)
-	if rel := strings.Index(content[start:], "<!-- gentle-ai:"); rel >= 0 {
+	if rel := strings.Index(content[start:], "<!-- gentle-qa:"); rel >= 0 {
 		end = start + rel
 	}
 
@@ -1142,7 +1142,7 @@ func injectMarkdownSections(homeDir string, adapter agents.Adapter, assignments 
 	// If bare (un-marked) orchestrator content exists but the HTML markers are
 	// not present, strip the bare block first. This migrates legacy files to the
 	// canonical marker-based state without duplicating the section.
-	if hasSDDOrchestrator(existing) && !strings.Contains(existing, "<!-- gentle-ai:sdd-orchestrator -->") {
+	if hasSDDOrchestrator(existing) && !strings.Contains(existing, "<!-- gentle-qa:sdd-orchestrator -->") {
 		existing = stripBareOrchestratorSection(existing)
 	}
 
@@ -1183,8 +1183,8 @@ var claudeModelAssignmentReasons = map[string]string{
 }
 
 func injectClaudeModelAssignments(content string, assignments map[string]model.ClaudeModelAlias) (string, error) {
-	const openMarker = "<!-- gentle-ai:sdd-model-assignments -->"
-	const closeMarker = "<!-- /gentle-ai:sdd-model-assignments -->"
+	const openMarker = "<!-- gentle-qa:sdd-model-assignments -->"
+	const closeMarker = "<!-- /gentle-qa:sdd-model-assignments -->"
 
 	start := strings.Index(content, openMarker)
 	end := strings.Index(content, closeMarker)

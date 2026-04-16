@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	componentuninstall "github.com/gentleman-programming/gentle-ai/internal/components/uninstall"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
+	componentuninstall "github.com/EduardoVeraE/Gentle-QA/internal/components/uninstall"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
 )
 
 func TestRenderUninstallResultIncludesManualCleanup(t *testing.T) {

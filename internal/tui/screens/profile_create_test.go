@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/tui/screens"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/tui/screens"
 )
 
 // ─── RenderProfileCreate step 0 (name input) ─────────────────────────────────

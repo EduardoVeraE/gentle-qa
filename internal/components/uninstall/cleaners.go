@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/components/filemerge"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/filemerge"
 )
 
 type jsonPath []string
@@ -36,7 +36,7 @@ func removeMarkdownSections(content string, sectionIDs ...string) (string, bool)
 
 func removeManagedPersonaPreamble(content string) (string, bool) {
 	normalized := strings.ReplaceAll(content, "\r\n", "\n")
-	markerIdx := strings.Index(normalized, "<!-- gentle-ai:")
+	markerIdx := strings.Index(normalized, "<!-- gentle-qa:")
 
 	prefix := normalized
 	suffix := ""

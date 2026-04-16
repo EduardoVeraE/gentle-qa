@@ -19,7 +19,7 @@
 Just run it — the Bubbletea TUI guides you through agent selection, components, skills, presets, and managed uninstall flows:
 
 ```bash
-gentle-ai
+gentle-qa
 ```
 
 The uninstall flow is also available from the TUI menu. It lets you:
@@ -28,7 +28,7 @@ The uninstall flow is also available from the TUI menu. It lets you:
 - select which managed components to remove (for example `sdd`, `persona`, or `context7`)
 - confirm the exact uninstall scope before applying changes
 
-Before any managed file is modified, `gentle-ai` creates a backup snapshot so the configuration can be restored later if needed.
+Before any managed file is modified, `gentle-qa` creates a backup snapshot so the configuration can be restored later if needed.
 
 ---
 
@@ -40,93 +40,93 @@ First-time setup — detects your tools, configures agents, injects all componen
 
 ```bash
 # Full ecosystem for multiple agents
-gentle-ai install \
+gentle-qa install \
   --agent claude-code,opencode,gemini-cli \
   --preset full-gentleman
 
 # Minimal setup for Cursor
-gentle-ai install \
+gentle-qa install \
   --agent cursor \
   --preset minimal
 
 # Pick specific components and skills
-gentle-ai install \
+gentle-qa install \
   --agent claude-code \
   --component engram,sdd,skills,context7,persona,permissions \
   --skill go-testing,skill-creator,branch-pr,issue-creation \
   --persona gentleman
 
 # Dry-run first (preview plan without applying changes)
-gentle-ai install --dry-run \
+gentle-qa install --dry-run \
   --agent claude-code,opencode \
   --preset full-gentleman
 ```
 
 ### sync
 
-Refresh managed assets to the current version. Use after `brew upgrade gentle-ai` or when you want your local configs aligned with the latest release. Does NOT reinstall binaries (engram, GGA) — only updates prompt content, skills, MCP configs, and SDD orchestrators.
+Refresh managed assets to the current version. Use after `brew upgrade gentle-qa` or when you want your local configs aligned with the latest release. Does NOT reinstall binaries (engram, GGA) — only updates prompt content, skills, MCP configs, and SDD orchestrators.
 
 ```bash
 # Sync all installed agents
-gentle-ai sync
+gentle-qa sync
 
 # Sync specific agents only
-gentle-ai sync --agent cursor --agent windsurf
+gentle-qa sync --agent cursor --agent windsurf
 
 # Sync a specific component
-gentle-ai sync --component sdd
-gentle-ai sync --component skills
-gentle-ai sync --component engram
+gentle-qa sync --component sdd
+gentle-qa sync --component skills
+gentle-qa sync --component engram
 ```
 
 Sync is safe and idempotent — running it twice produces no changes the second time.
 
 ### uninstall
 
-Remove only the `gentle-ai` managed configuration from one or more agents. This does not uninstall external packages or binaries — it removes managed prompt sections, MCP entries, skills/config fragments, and other managed files, then updates `state.json` accordingly.
+Remove only the `gentle-qa` managed configuration from one or more agents. This does not uninstall external packages or binaries — it removes managed prompt sections, MCP entries, skills/config fragments, and other managed files, then updates `state.json` accordingly.
 
-Before any change is applied, `gentle-ai` creates a backup snapshot of the affected files.
+Before any change is applied, `gentle-qa` creates a backup snapshot of the affected files.
 
 ```bash
 # Partial uninstall for specific agents
-gentle-ai uninstall \
+gentle-qa uninstall \
   --agent claude-code \
   --agent opencode
 
 # Partial uninstall for specific components only
-gentle-ai uninstall \
+gentle-qa uninstall \
   --agent claude-code \
   --component sdd,persona,context7
 
 # Complete uninstall of managed config from all supported agents
-gentle-ai uninstall --all
+gentle-qa uninstall --all
 
 # Skip confirmation prompt
-gentle-ai uninstall --agent cursor --component skills --yes
+gentle-qa uninstall --agent cursor --component skills --yes
 ```
 
-If no `--component` flag is provided for a partial uninstall, `gentle-ai` removes all managed uninstallable components for the selected agent set.
+If no `--component` flag is provided for a partial uninstall, `gentle-qa` removes all managed uninstallable components for the selected agent set.
 
 ### update / upgrade
 
-Check for and install new versions of `gentle-ai` itself:
+Check for and install new versions of `gentle-qa` itself:
 
 ```bash
 # Check if a newer version is available
-gentle-ai update
+gentle-qa update
 
 # Upgrade to the latest release (downloads new binary, replaces current)
-gentle-ai upgrade
+gentle-qa upgrade
 ```
 
-After upgrading, run `gentle-ai sync` to refresh all managed assets to the new version's content.
+After upgrading, run `gentle-qa sync` to refresh all managed assets to the new version's content.
 
 ### version
 
 ```bash
-gentle-ai version
-gentle-ai --version
-gentle-ai -v
+gentle-qa version
+gentle-qa --version
+gentle-qa -v
 ```
 
 ---
@@ -157,13 +157,13 @@ gentle-ai -v
 
 ```bash
 # Create a "cheap" profile using a free model for all phases
-gentle-ai sync --profile cheap:openrouter/qwen/qwen3-30b-a3b:free
+gentle-qa sync --profile cheap:openrouter/qwen/qwen3-30b-a3b:free
 
 # Override the design phase to use a stronger model
-gentle-ai sync --profile-phase cheap:sdd-design:anthropic/claude-sonnet-4-20250514
+gentle-qa sync --profile-phase cheap:sdd-design:anthropic/claude-sonnet-4-20250514
 
 # Create multiple profiles in one command
-gentle-ai sync \
+gentle-qa sync \
   --profile cheap:openrouter/qwen/qwen3-30b-a3b:free \
   --profile premium:anthropic/claude-sonnet-4-20250514
 ```
@@ -185,25 +185,25 @@ See [OpenCode SDD Profiles](opencode-profiles.md) for the full guide.
 
 ```bash
 # First time: install everything
-brew install gentleman-programming/tap/gentle-ai
-gentle-ai install --agent claude-code,cursor --preset full-gentleman
+brew install gentleman-programming/tap/gentle-qa
+gentle-qa install --agent claude-code,cursor --preset full-gentleman
 
 # After a new release: upgrade + sync
-brew upgrade gentle-ai
-gentle-ai sync
+brew upgrade gentle-qa
+gentle-qa sync
 
 # Remove only managed SDD + persona config from one agent
-gentle-ai uninstall --agent claude-code --component sdd,persona
+gentle-qa uninstall --agent claude-code --component sdd,persona
 
 # Adding a new agent later
-gentle-ai install --agent windsurf --preset full-gentleman
+gentle-qa install --agent windsurf --preset full-gentleman
 ```
 
 ---
 
 ## Dependency Management
 
-`gentle-ai` auto-detects prerequisites before installation and provides platform-specific guidance:
+`gentle-qa` auto-detects prerequisites before installation and provides platform-specific guidance:
 
 - **Detected tools**: git, curl, node, npm, brew, go
 - **Version checks**: validates minimum versions where applicable

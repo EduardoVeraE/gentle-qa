@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gentleman-programming/gentle-ai/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
 )
 
 // cannedSKILL is a valid SKILL.md response that the MockEngine returns.

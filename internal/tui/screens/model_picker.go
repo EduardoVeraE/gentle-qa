@@ -5,9 +5,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/opencode"
-	"github.com/gentleman-programming/gentle-ai/internal/tui/styles"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/opencode"
+	"github.com/EduardoVeraE/Gentle-QA/internal/tui/styles"
 )
 
 // ModelPickerMode represents the current sub-mode of the model picker screen.
@@ -266,7 +266,7 @@ func renderPhaseList(
 	if len(state.AvailableIDs) == 0 {
 		b.WriteString(styles.WarningStyle.Render("OpenCode has not been run yet — model cache not found."))
 		b.WriteString("\n")
-		b.WriteString(styles.SubtextStyle.Render("Run 'opencode' once, then re-run 'gentle-ai sync' to assign models."))
+		b.WriteString(styles.SubtextStyle.Render("Run 'opencode' once, then re-run 'gentle-qa sync' to assign models."))
 		b.WriteString("\n")
 		b.WriteString(styles.SubtextStyle.Render("Using default model assignments for now."))
 		b.WriteString("\n\n")

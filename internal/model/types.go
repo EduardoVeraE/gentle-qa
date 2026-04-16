@@ -75,6 +75,11 @@ const (
 	SkillBranchPR      SkillID = "branch-pr"
 	SkillIssueCreation SkillID = "issue-creation"
 	SkillSkillRegistry SkillID = "skill-registry"
+	// QE / SDET skills
+	SkillPlaywrightBDD SkillID = "playwright-bdd"
+	SkillPlaywrightCLI SkillID = "playwright-cli"
+	SkillK6LoadTest    SkillID = "k6-load-test"
+	SkillKarateDSL     SkillID = "karate-dsl"
 )
 
 type PersonaID string
@@ -82,6 +87,7 @@ type PersonaID string
 const (
 	PersonaGentleman PersonaID = "gentleman"
 	PersonaNeutral   PersonaID = "neutral"
+	PersonaSDET      PersonaID = "sdet"
 	PersonaCustom    PersonaID = "custom"
 )
 
@@ -89,7 +95,7 @@ const (
 type SystemPromptStrategy int
 
 const (
-	// StrategyMarkdownSections uses <!-- gentle-ai:ID --> markers to inject sections
+	// StrategyMarkdownSections uses <!-- gentle-qa:ID --> markers to inject sections
 	// into an existing file without clobbering user content (Claude Code CLAUDE.md).
 	StrategyMarkdownSections SystemPromptStrategy = iota
 	// StrategyFileReplace replaces the entire system prompt file (OpenCode AGENTS.md).
@@ -121,6 +127,11 @@ const (
 	PresetEcosystemOnly PresetID = "ecosystem-only"
 	PresetMinimal       PresetID = "minimal"
 	PresetCustom        PresetID = "custom"
+	// QE / SDET presets
+	PresetQEFront PresetID = "qe-front"  // E2E frontend: Playwright + BDD + CLI
+	PresetQEPerf  PresetID = "qe-perf"   // Performance: k6
+	PresetQEAPI   PresetID = "qe-api"    // API/contract testing: Karate DSL
+	PresetQESDET  PresetID = "qe-sdet"   // Full SDET stack: all QE skills + PersonaSDET
 )
 
 type SDDModeID string

@@ -9,14 +9,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gentleman-programming/gentle-ai/internal/agents"
-	"github.com/gentleman-programming/gentle-ai/internal/assets"
-	"github.com/gentleman-programming/gentle-ai/internal/backup"
-	"github.com/gentleman-programming/gentle-ai/internal/components/filemerge"
-	"github.com/gentleman-programming/gentle-ai/internal/components/gga"
-	"github.com/gentleman-programming/gentle-ai/internal/components/sdd"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/state"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents"
+	"github.com/EduardoVeraE/Gentle-QA/internal/assets"
+	"github.com/EduardoVeraE/Gentle-QA/internal/backup"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/filemerge"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/gga"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/sdd"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/state"
 )
 
 type Manager interface {
@@ -127,7 +127,7 @@ func NewService(homeDir, workspaceDir, appVersion string) (*Service, error) {
 		return nil, fmt.Errorf("create adapter registry: %w", err)
 	}
 
-	backupRoot := filepath.Join(homeDir, ".gentle-ai", "backups")
+	backupRoot := filepath.Join(homeDir, ".gentle-qa", "backups")
 	if err := os.MkdirAll(backupRoot, 0o755); err != nil {
 		return nil, fmt.Errorf("create backup root %q: %w", backupRoot, err)
 	}
@@ -268,7 +268,7 @@ func (s *Service) CompleteUninstall() (Result, error) {
 		return result, err
 	}
 
-	result.ManualActions = append(result.ManualActions, "To completely remove gentle-ai from your system, delete the executable (e.g., rm -f $(which gentle-ai))")
+	result.ManualActions = append(result.ManualActions, "To completely remove gentle-qa from your system, delete the executable (e.g., rm -f $(which gentle-qa))")
 	return result, nil
 }
 

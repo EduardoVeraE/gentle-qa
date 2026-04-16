@@ -103,4 +103,4 @@ Add Qwen Code (by Alibaba/Alibaba Cloud) as a fully supported AI coding agent in
 - [ ] `go test ./internal/cli/...` — install validation and default agent test pass
 - [ ] `go test ./internal/agents/...` — registry test includes Qwen Code
 - [ ] Qwen Code appears in TUI agent selection screen
-- [ ] `gentle-ai install --agent qwen-code --dry-run` shows correct plan
+- [ ] `gentle-qa install --agent qwen-code --dry-run` shows correct plan

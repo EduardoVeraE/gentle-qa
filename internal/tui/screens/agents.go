@@ -3,9 +3,9 @@ package screens
 import (
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/catalog"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/tui/styles"
+	"github.com/EduardoVeraE/Gentle-QA/internal/catalog"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/tui/styles"
 )
 
 func AgentOptions() []model.AgentID {

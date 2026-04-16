@@ -113,7 +113,7 @@ proposal -> specs --> tasks -> apply -> verify -> archive
 ### Result Contract
 Each phase returns: `status`, `executive_summary`, `artifacts`, `next_recommended`, `risks`, `skill_resolution`.
 
-<!-- gentle-ai:sdd-model-assignments -->
+<!-- gentle-qa:sdd-model-assignments -->
 ## Model Assignments
 
 Read this table at session start (or before first delegation), cache it for the session, and pass the mapped alias in every Agent tool call via the `model` parameter. If a phase is missing, use the `default` row. If you lack access to the assigned model, substitute `sonnet` and continue.
@@ -131,7 +131,7 @@ Read this table at session start (or before first delegation), cache it for the 
 | sdd-archive | haiku | Copy and close |
 | default | sonnet | Non-SDD general delegation |
 
-<!-- /gentle-ai:sdd-model-assignments -->
+<!-- /gentle-qa:sdd-model-assignments -->
 
 ### Sub-Agent Launch Pattern
 

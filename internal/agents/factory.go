@@ -3,18 +3,18 @@ package agents
 import (
 	"fmt"
 
-	"github.com/gentleman-programming/gentle-ai/internal/agents/antigravity"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/claude"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/codex"
-	cursoradapter "github.com/gentleman-programming/gentle-ai/internal/agents/cursor"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/gemini"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/kilocode"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/kiro"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/opencode"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/qwen"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/vscode"
-	"github.com/gentleman-programming/gentle-ai/internal/agents/windsurf"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/antigravity"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/claude"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/codex"
+	cursoradapter "github.com/EduardoVeraE/Gentle-QA/internal/agents/cursor"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/gemini"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/kilocode"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/kiro"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/opencode"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/qwen"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/vscode"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents/windsurf"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
 )
 
 func NewAdapter(agent model.AgentID) (Adapter, error) {

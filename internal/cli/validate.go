@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/catalog"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/system"
+	"github.com/EduardoVeraE/Gentle-QA/internal/catalog"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/system"
 )
 
 type InstallInput struct {
@@ -62,7 +62,7 @@ func normalizePersona(value string) (model.PersonaID, error) {
 	}
 
 	switch model.PersonaID(value) {
-	case model.PersonaGentleman, model.PersonaNeutral, model.PersonaCustom:
+	case model.PersonaGentleman, model.PersonaNeutral, model.PersonaSDET, model.PersonaCustom:
 		return model.PersonaID(value), nil
 	default:
 		return "", fmt.Errorf("unsupported persona %q", value)
@@ -75,7 +75,8 @@ func normalizePreset(value string) (model.PresetID, error) {
 	}
 
 	switch model.PresetID(value) {
-	case model.PresetFullGentleman, model.PresetEcosystemOnly, model.PresetMinimal, model.PresetCustom:
+	case model.PresetFullGentleman, model.PresetEcosystemOnly, model.PresetMinimal, model.PresetCustom,
+		model.PresetQEFront, model.PresetQEPerf, model.PresetQEAPI, model.PresetQESDET:
 		return model.PresetID(value), nil
 	default:
 		return "", fmt.Errorf("unsupported preset %q", value)
@@ -147,6 +148,24 @@ func componentsForPreset(preset model.PresetID) []model.ComponentID {
 		return []model.ComponentID{model.ComponentEngram, model.ComponentSDD, model.ComponentSkills, model.ComponentContext7, model.ComponentGGA}
 	case model.PresetCustom:
 		return nil
+	case model.PresetQEFront, model.PresetQEPerf, model.PresetQEAPI:
+		return []model.ComponentID{
+			model.ComponentEngram,
+			model.ComponentSDD,
+			model.ComponentSkills,
+			model.ComponentContext7,
+			model.ComponentGGA,
+		}
+	case model.PresetQESDET:
+		return []model.ComponentID{
+			model.ComponentEngram,
+			model.ComponentSDD,
+			model.ComponentSkills,
+			model.ComponentContext7,
+			model.ComponentPersona,
+			model.ComponentPermission,
+			model.ComponentGGA,
+		}
 	default:
 		return []model.ComponentID{
 			model.ComponentEngram,

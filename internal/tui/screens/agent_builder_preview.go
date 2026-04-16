@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/agentbuilder"
-	"github.com/gentleman-programming/gentle-ai/internal/tui/styles"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agentbuilder"
+	"github.com/EduardoVeraE/Gentle-QA/internal/tui/styles"
 )
 
 // ABPreviewActions returns the action options shown on the preview screen.

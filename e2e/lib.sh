@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lib.sh — shared test helpers for gentle-ai E2E tests
+# lib.sh — shared test helpers for gentle-qa E2E tests
 # Sourced by e2e_test.sh; never executed directly.
 set -euo pipefail
 
@@ -31,29 +31,29 @@ log_info()  { printf "${BLUE}[INFO]${NC}  %s\n" "$1"; }
 # ---------------------------------------------------------------------------
 # Binary resolution
 # ---------------------------------------------------------------------------
-# The binary should be built and placed at /usr/local/bin/gentle-ai inside
-# the Docker container. If not found, fall back to $HOME/gentle-ai or the
+# The binary should be built and placed at /usr/local/bin/gentle-qa inside
+# the Docker container. If not found, fall back to $HOME/gentle-qa or the
 # current directory.
 # Resolution priority (highest → lowest):
-#   1. ./gentle-ai in the current repo directory (freshly built local binary)
-#   2. ~/gentle-ai (explicit copy in home)
-#   3. gentle-ai on PATH (system-installed, e.g. Homebrew)
-# This ensures `go build ./cmd/gentle-ai && bash e2e/e2e_test.sh` always
+#   1. ./gentle-qa in the current repo directory (freshly built local binary)
+#   2. ~/gentle-qa (explicit copy in home)
+#   3. gentle-qa on PATH (system-installed, e.g. Homebrew)
+# This ensures `go build ./cmd/gentle-qa && bash e2e/e2e_test.sh` always
 # tests the locally built binary rather than the installed release version.
 resolve_binary() {
-    # Prefer the locally built binary (./gentle-ai) produced by `go build ./cmd/gentle-ai`.
+    # Prefer the locally built binary (./gentle-qa) produced by `go build ./cmd/gentle-qa`.
     # We check both the current directory and the script's parent directory so
     # the resolver works whether the test is invoked from the repo root or from e2e/.
     local repo_root
     repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-    if [ -x "$repo_root/gentle-ai" ]; then
-        echo "$repo_root/gentle-ai"
-    elif [ -x "./gentle-ai" ]; then
-        echo "./gentle-ai"
-    elif [ -x "$HOME/gentle-ai" ]; then
-        echo "$HOME/gentle-ai"
-    elif command -v gentle-ai >/dev/null 2>&1; then
-        echo "gentle-ai"
+    if [ -x "$repo_root/gentle-qa" ]; then
+        echo "$repo_root/gentle-qa"
+    elif [ -x "./gentle-qa" ]; then
+        echo "./gentle-qa"
+    elif [ -x "$HOME/gentle-qa" ]; then
+        echo "$HOME/gentle-qa"
+    elif command -v gentle-qa >/dev/null 2>&1; then
+        echo "gentle-qa"
     else
         echo ""
     fi
@@ -72,7 +72,7 @@ cleanup_test_env() {
     rm -rf "$HOME/.claude" 2>/dev/null || true
     rm -rf "$HOME/.codex" 2>/dev/null || true
     rm -rf "$HOME/.gemini" 2>/dev/null || true
-    rm -rf "$HOME/.gentle-ai" 2>/dev/null || true
+    rm -rf "$HOME/.gentle-qa" 2>/dev/null || true
     rm -rf "$HOME/.codeium" 2>/dev/null || true
     rm -rf "$HOME/.cursor" 2>/dev/null || true
     mkdir -p "$HOME/.config"
@@ -317,7 +317,7 @@ assert_md5_match() {
 }
 
 # assert_no_duplicate_section FILE SECTION_ID LABEL
-# Checks that the gentle-ai section marker appears exactly once (no duplicates).
+# Checks that the gentle-qa section marker appears exactly once (no duplicates).
 assert_no_duplicate_section() {
     local file="$1"
     local section_id="$2"
@@ -326,7 +326,7 @@ assert_no_duplicate_section() {
         log_fail "Cannot check sections — file not found: $file"
         return 1
     fi
-    local marker="<!-- gentle-ai:${section_id} -->"
+    local marker="<!-- gentle-qa:${section_id} -->"
     local count
     count=$(grep -c "$marker" "$file" 2>/dev/null || echo "0")
     if [ "$count" -eq 1 ]; then

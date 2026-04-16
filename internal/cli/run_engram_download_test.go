@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gentleman-programming/gentle-ai/internal/components/engram"
-	"github.com/gentleman-programming/gentle-ai/internal/system"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/engram"
+	"github.com/EduardoVeraE/Gentle-QA/internal/system"
 )
 
 // TestRunInstallLinuxEngramUsesDownloadNotGoInstall verifies that after the fix,

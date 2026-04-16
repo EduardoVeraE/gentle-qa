@@ -9,10 +9,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/agents"
-	"github.com/gentleman-programming/gentle-ai/internal/assets"
-	"github.com/gentleman-programming/gentle-ai/internal/components/filemerge"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents"
+	"github.com/EduardoVeraE/Gentle-QA/internal/assets"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/filemerge"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
 )
 
 type InjectionResult struct {
@@ -144,10 +144,10 @@ func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 	switch adapter.MCPStrategy() {
 	case model.StrategySeparateMCPFiles:
 		// Engram v1.10.3+ writes an absolute path for the command field when
-		// `engram setup <agent>` is invoked. gentle-ai's Inject() runs after
+		// `engram setup <agent>` is invoked. gentle-qa's Inject() runs after
 		// engram setup, so we must preserve any absolute command path already
 		// present instead of silently overwriting it with the relative "engram".
-		// See: https://github.com/Gentleman-Programming/gentle-ai/issues (engram absolute path regression)
+		// See: https://github.com/EduardoVeraE/Gentle-QA/issues (engram absolute path regression)
 		mcpPath := adapter.MCPConfigPath(homeDir, "engram")
 		cmd := stableEngramCommandForMergedConfig(mcpPath, adapter.Agent())
 		content := buildSeparateMCPContent(mcpPath, engramServerJSONWithCmd(cmd))
@@ -425,7 +425,7 @@ func isStandardAgent(id model.AgentID) bool {
 // Code).
 //
 // Engram v1.10.3+ writes an absolute command path when `engram setup` is run.
-// gentle-ai runs Inject() after setup, so we must not overwrite that absolute
+// gentle-qa runs Inject() after setup, so we must not overwrite that absolute
 // path with the relative "engram" string from defaultEngramServerJSON.
 //
 // Logic:

@@ -198,7 +198,7 @@ proposal -> specs --> tasks -> apply -> verify -> archive
 ### Result Contract
 Each phase returns: `status`, `executive_summary`, `artifacts`, `next_recommended`, `risks`, `skill_resolution`.
 
-<!-- gentle-ai:sdd-model-assignments -->
+<!-- gentle-qa:sdd-model-assignments -->
 ## Model Assignments
 
 Read this table at session start. Kiro IDE is powered by Claude — use the table as a reasoning-depth guide: phases assigned to `opus` require deeper architectural thinking, while `haiku` phases are mechanical.
@@ -216,7 +216,7 @@ Read this table at session start. Kiro IDE is powered by Claude — use the tabl
 | sdd-archive | haiku | Copy and close |
 | default | sonnet | Non-SDD general delegation |
 
-<!-- /gentle-ai:sdd-model-assignments -->
+<!-- /gentle-qa:sdd-model-assignments -->
 
 ## Kiro Steering Files
 
@@ -225,7 +225,7 @@ Kiro's `.kiro/steering/*.md` files provide persistent workspace context that app
 - Reference tech stack and project structure
 - Keep custom instructions that apply across all sessions
 
-Gentle AI writes to the global steering file (`~/.kiro/steering/gentle-ai.md`) — treat it as your active working context alongside your project steering files.
+Gentle AI writes to the global steering file (`~/.kiro/steering/gentle-qa.md`) — treat it as your active working context alongside your project steering files.
 
 ### Skill Resolver Protocol
 
