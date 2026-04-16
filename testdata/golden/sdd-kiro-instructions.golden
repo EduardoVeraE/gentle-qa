@@ -2,7 +2,7 @@
 inclusion: always
 ---
 
-<!-- gentle-ai:sdd-orchestrator -->
+<!-- gentle-qa:sdd-orchestrator -->
 # Agent Teams Lite — Orchestrator Instructions (Kiro IDE)
 
 Bind this to the dedicated `sdd-orchestrator` steering file only. Do NOT apply it to phase skill files such as `sdd-apply` or `sdd-verify`.
@@ -203,7 +203,7 @@ proposal -> specs --> tasks -> apply -> verify -> archive
 ### Result Contract
 Each phase returns: `status`, `executive_summary`, `artifacts`, `next_recommended`, `risks`, `skill_resolution`.
 
-<!-- gentle-ai:sdd-model-assignments -->
+<!-- gentle-qa:sdd-model-assignments -->
 ## Model Assignments
 
 Read this table at session start. Kiro IDE is powered by Claude — use the table as a reasoning-depth guide: phases assigned to `opus` require deeper architectural thinking, while `haiku` phases are mechanical.
@@ -221,7 +221,7 @@ Read this table at session start. Kiro IDE is powered by Claude — use the tabl
 | sdd-archive | haiku | Copy and close |
 | default | sonnet | Non-SDD general delegation |
 
-<!-- /gentle-ai:sdd-model-assignments -->
+<!-- /gentle-qa:sdd-model-assignments -->
 
 ## Kiro Steering Files
 
@@ -230,7 +230,7 @@ Kiro's `.kiro/steering/*.md` files provide persistent workspace context that app
 - Reference tech stack and project structure
 - Keep custom instructions that apply across all sessions
 
-Gentle AI writes to the global steering file (`~/.kiro/steering/gentle-ai.md`) — treat it as your active working context alongside your project steering files.
+Gentle AI writes to the global steering file (`~/.kiro/steering/gentle-qa.md`) — treat it as your active working context alongside your project steering files.
 
 ### Skill Resolver Protocol
 
@@ -312,4 +312,4 @@ DAG state is tracked in Engram under `sdd/{change-name}/state`. Update it after 
 - `engram` → `mem_search(...)` → `mem_get_observation(...)`
 - `openspec` → read `openspec/changes/*/state.yaml`
 - `none` → state not persisted — explain to user
-<!-- /gentle-ai:sdd-orchestrator -->
+<!-- /gentle-qa:sdd-orchestrator -->

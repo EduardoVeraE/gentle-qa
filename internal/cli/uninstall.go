@@ -10,9 +10,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gentleman-programming/gentle-ai/internal/catalog"
-	componentuninstall "github.com/gentleman-programming/gentle-ai/internal/components/uninstall"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/catalog"
+	componentuninstall "github.com/EduardoVeraE/Gentle-QA/internal/components/uninstall"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
 )
 
 type UninstallFlags struct {
@@ -135,9 +135,9 @@ func runUninstallWithInput(args []string, stdout io.Writer, stdin io.Reader) (co
 
 func promptUninstallConfirm(flags UninstallFlags, stdout io.Writer, stdin io.Reader) (bool, error) {
 	if flags.All {
-		_, _ = fmt.Fprintln(stdout, "This will remove gentle-ai managed configuration from all supported agents.")
+		_, _ = fmt.Fprintln(stdout, "This will remove gentle-qa managed configuration from all supported agents.")
 	} else {
-		_, _ = fmt.Fprintf(stdout, "This will remove gentle-ai managed configuration from: %s\n", strings.Join(agentLabelsFromStrings(flags.Agents), ", "))
+		_, _ = fmt.Fprintf(stdout, "This will remove gentle-qa managed configuration from: %s\n", strings.Join(agentLabelsFromStrings(flags.Agents), ", "))
 	}
 	if len(flags.Components) > 0 {
 		_, _ = fmt.Fprintf(stdout, "Components: %s\n", strings.Join(flags.Components, ", "))

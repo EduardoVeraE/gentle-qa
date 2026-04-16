@@ -11,22 +11,22 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gentleman-programming/gentle-ai/internal/agents"
-	"github.com/gentleman-programming/gentle-ai/internal/backup"
-	"github.com/gentleman-programming/gentle-ai/internal/components/engram"
-	"github.com/gentleman-programming/gentle-ai/internal/components/gga"
-	"github.com/gentleman-programming/gentle-ai/internal/components/mcp"
-	"github.com/gentleman-programming/gentle-ai/internal/components/permissions"
-	"github.com/gentleman-programming/gentle-ai/internal/components/persona"
-	"github.com/gentleman-programming/gentle-ai/internal/components/sdd"
-	"github.com/gentleman-programming/gentle-ai/internal/components/skills"
-	"github.com/gentleman-programming/gentle-ai/internal/components/theme"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/pipeline"
-	"github.com/gentleman-programming/gentle-ai/internal/planner"
-	"github.com/gentleman-programming/gentle-ai/internal/state"
-	"github.com/gentleman-programming/gentle-ai/internal/system"
-	"github.com/gentleman-programming/gentle-ai/internal/verify"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agents"
+	"github.com/EduardoVeraE/Gentle-QA/internal/backup"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/engram"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/gga"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/mcp"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/permissions"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/persona"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/sdd"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/skills"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/theme"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/pipeline"
+	"github.com/EduardoVeraE/Gentle-QA/internal/planner"
+	"github.com/EduardoVeraE/Gentle-QA/internal/state"
+	"github.com/EduardoVeraE/Gentle-QA/internal/system"
+	"github.com/EduardoVeraE/Gentle-QA/internal/verify"
 )
 
 type InstallResult struct {
@@ -56,9 +56,9 @@ var (
 	// Package-level var for testability — tests can replace this to avoid real HTTP calls.
 	engramDownloadFn = engram.DownloadLatestBinary
 
-	// AppVersion is the gentle-ai version that will be written into backup manifests.
+	// AppVersion is the gentle-qa version that will be written into backup manifests.
 	// It is set by app.go before any CLI operation so that every backup created during
-	// an install or sync records which version of gentle-ai made it.
+	// an install or sync records which version of gentle-qa made it.
 	// Default "dev" matches the ldflags default in app.Version.
 	AppVersion = "dev"
 )
@@ -249,7 +249,7 @@ type runtimeState struct {
 }
 
 func newInstallRuntime(homeDir string, selection model.Selection, resolved planner.ResolvedPlan, profile system.PlatformProfile) (*installRuntime, error) {
-	backupRoot := filepath.Join(homeDir, ".gentle-ai", "backups")
+	backupRoot := filepath.Join(homeDir, ".gentle-qa", "backups")
 	if err := os.MkdirAll(backupRoot, 0o755); err != nil {
 		return nil, fmt.Errorf("create backup root directory %q: %w", backupRoot, err)
 	}
@@ -323,7 +323,7 @@ type prepareBackupStep struct {
 	source      backup.BackupSource
 	description string
 
-	// appVersion is the gentle-ai version that created this backup.
+	// appVersion is the gentle-qa version that created this backup.
 	// When set, it is written into the manifest as CreatedByVersion.
 	appVersion string
 }
@@ -654,7 +654,7 @@ func windowsGoCandidates() []string {
 // BuildRealStagePlan creates a StagePlan with real backup, agent install, and component apply steps.
 // It is used by both the CLI and TUI paths.
 func BuildRealStagePlan(homeDir string, selection model.Selection, resolved planner.ResolvedPlan, profile system.PlatformProfile) (pipeline.StagePlan, error) {
-	backupRoot := filepath.Join(homeDir, ".gentle-ai", "backups")
+	backupRoot := filepath.Join(homeDir, ".gentle-qa", "backups")
 	if err := os.MkdirAll(backupRoot, 0o755); err != nil {
 		return pipeline.StagePlan{}, fmt.Errorf("create backup root directory %q: %w", backupRoot, err)
 	}

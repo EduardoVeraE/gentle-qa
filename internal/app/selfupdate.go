@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gentleman-programming/gentle-ai/internal/system"
-	"github.com/gentleman-programming/gentle-ai/internal/update"
-	"github.com/gentleman-programming/gentle-ai/internal/update/upgrade"
+	"github.com/EduardoVeraE/Gentle-QA/internal/system"
+	"github.com/EduardoVeraE/Gentle-QA/internal/update"
+	"github.com/EduardoVeraE/Gentle-QA/internal/update/upgrade"
 )
 
 // lookPathFn is a package-level var for testability.
@@ -35,7 +35,7 @@ var reExec = func(argv0 string, argv []string, envv []string) error {
 // goOS returns the current operating system name. Package-level var for testing.
 var goOS = func() string { return runtime.GOOS }
 
-// selfUpdate checks for and applies a gentle-ai update before normal dispatch.
+// selfUpdate checks for and applies a gentle-qa update before normal dispatch.
 // Returns nil on success or skip; errors are non-fatal (caller logs and continues).
 //
 // Guard evaluation order (per spec):
@@ -63,13 +63,13 @@ func selfUpdate(ctx context.Context, version string, profile system.PlatformProf
 	ctx, cancel := context.WithTimeout(ctx, selfUpdateTimeout)
 	defer cancel()
 
-	// Check for updates (only gentle-ai).
-	results := updateCheckFiltered(ctx, version, profile, []string{"gentle-ai"})
+	// Check for updates (only gentle-qa).
+	results := updateCheckFiltered(ctx, version, profile, []string{"gentle-qa"})
 
-	// Find the gentle-ai result.
+	// Find the gentle-qa result.
 	var target *update.UpdateResult
 	for i := range results {
-		if results[i].Tool.Name == "gentle-ai" {
+		if results[i].Tool.Name == "gentle-qa" {
 			target = &results[i]
 			break
 		}
@@ -92,7 +92,7 @@ func selfUpdate(ctx context.Context, version string, profile system.PlatformProf
 	// Check if upgrade succeeded.
 	var succeeded bool
 	for _, r := range report.Results {
-		if r.ToolName == "gentle-ai" && r.Status == upgrade.UpgradeSucceeded {
+		if r.ToolName == "gentle-qa" && r.Status == upgrade.UpgradeSucceeded {
 			succeeded = true
 			break
 		}
@@ -111,13 +111,13 @@ func selfUpdate(ctx context.Context, version string, profile system.PlatformProf
 
 	// Unix: re-exec with the updated binary.
 	//
-	// Use exec.LookPath("gentle-ai") rather than os.Executable() because
+	// Use exec.LookPath("gentle-qa") rather than os.Executable() because
 	// on Homebrew, os.Executable() resolves to the versioned Cellar path
-	// (e.g. /opt/homebrew/Cellar/gentle-ai/1.8.5/bin/gentle-ai) which
+	// (e.g. /opt/homebrew/Cellar/gentle-qa/1.8.5/bin/gentle-qa) which
 	// still points to the OLD binary after upgrade. The PATH symlink
-	// (/opt/homebrew/bin/gentle-ai) is updated by Homebrew to the new
+	// (/opt/homebrew/bin/gentle-qa) is updated by Homebrew to the new
 	// version, so LookPath gives us the correct binary.
-	executable, err := lookPathFn("gentle-ai")
+	executable, err := lookPathFn("gentle-qa")
 	if err != nil {
 		// Fallback to os.Executable() if LookPath fails.
 		executable, err = os.Executable()

@@ -31,7 +31,7 @@ All agents receive the **full SDD orchestrator** injected into their system prom
 
 ### Cursor Native Subagents
 
-Cursor uses its built-in `.cursor/agents/` system. `gentle-ai` writes 10 agent files to `~/.cursor/agents/sdd-{phase}.md` — one per SDD phase. Cursor's Agent auto-delegates to the correct subagent based on the `description` field in each file's YAML frontmatter.
+Cursor uses its built-in `.cursor/agents/` system. `gentle-qa` writes 10 agent files to `~/.cursor/agents/sdd-{phase}.md` — one per SDD phase. Cursor's Agent auto-delegates to the correct subagent based on the `description` field in each file's YAML frontmatter.
 
 - `sdd-explore` and `sdd-verify` run with `readonly: true`
 - Each subagent gets its own context window (fresh context, no pollution)
@@ -52,11 +52,11 @@ Antigravity is an agent-first platform with built-in sub-agents (Browser, Termin
 
 ### Kiro Native Subagents
 
-Kiro uses native custom agents in `~/.kiro/agents/`. `gentle-ai` writes 10 phase agents (`sdd-init` through `sdd-onboard`) and resolves the `model:` field during injection from Claude alias assignments (`opus|sonnet|haiku`) to Kiro-native model IDs.
+Kiro uses native custom agents in `~/.kiro/agents/`. `gentle-qa` writes 10 phase agents (`sdd-init` through `sdd-onboard`) and resolves the `model:` field during injection from Claude alias assignments (`opus|sonnet|haiku`) to Kiro-native model IDs.
 
 - Frontmatter includes `includeMcpJson: true` for all phase agents
 - Phase-specific tools are preserved (`sdd-explore` and `sdd-verify` use read/shell/context7 as required)
-- Orchestrator remains in steering (`~/.kiro/steering/gentle-ai.md`) and delegates execution to native subagents
+- Orchestrator remains in steering (`~/.kiro/steering/gentle-qa.md`) and delegates execution to native subagents
 
 ---
 
@@ -93,15 +93,15 @@ Kiro uses native custom agents in `~/.kiro/agents/`. `gentle-ai` writes 10 phase
 - Custom sub-agents defined as markdown files in `~/.gemini/agents/`
 
 ### Cursor
-- Native subagents via `~/.cursor/agents/sdd-{phase}.md` (10 files installed by gentle-ai)
+- Native subagents via `~/.cursor/agents/sdd-{phase}.md` (10 files installed by gentle-qa)
 - Skills at `~/.cursor/skills/`
-- System prompt in `~/.cursor/rules/gentle-ai.mdc`
+- System prompt in `~/.cursor/rules/gentle-qa.mdc`
 - MCP config in `~/.cursor/mcp.json`
 
 ### VS Code Copilot
 - Uses the `runSubagent` tool with support for parallel execution
 - Skills at `~/.copilot/skills/`
-- System prompt at `Code/User/prompts/gentle-ai.instructions.md`
+- System prompt at `Code/User/prompts/gentle-qa.instructions.md`
 - MCP config at `Code/User/mcp.json`
 
 ### Codex
@@ -124,8 +124,8 @@ Kiro uses native custom agents in `~/.kiro/agents/`. `gentle-ai` writes 10 phase
 - Settings managed via the IDE's Agent settings UI, not via `settings.json`
 
 ### Kiro IDE
-- **Detection**: gentle-ai detects Kiro from its config root (`~/.kiro`) during install/TUI discovery — `~/.kiro` must exist (created on first Kiro launch). `kiro` on `PATH` is also checked for sync/upgrade flows but is not required for install auto-detection
-- **Steering file** (all platforms): `~/.kiro/steering/gentle-ai.md` with frontmatter `inclusion: always`
+- **Detection**: gentle-qa detects Kiro from its config root (`~/.kiro`) during install/TUI discovery — `~/.kiro` must exist (created on first Kiro launch). `kiro` on `PATH` is also checked for sync/upgrade flows but is not required for install auto-detection
+- **Steering file** (all platforms): `~/.kiro/steering/gentle-qa.md` with frontmatter `inclusion: always`
 - Native subagents at `~/.kiro/agents/sdd-{phase}.md` (10 files)
 - Skills (all platforms) at `~/.kiro/skills/`
 - **MCP config at a separate root** — always `~/.kiro/settings/mcp.json` (macOS/Linux) or `%USERPROFILE%\.kiro\settings\mcp.json` (Windows), regardless of GlobalConfigDir

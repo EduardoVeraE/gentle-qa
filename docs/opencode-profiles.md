@@ -12,7 +12,7 @@ Each profile generates its own `sdd-orchestrator` (plus all 10 sub-agents) in `o
 
 ## Quick Start (TUI)
 
-1. Launch the installer: `gentle-ai` (or `go run ./cmd/gentle-ai`).
+1. Launch the installer: `gentle-qa` (or `go run ./cmd/gentle-qa`).
 2. Select **"OpenCode SDD Profiles"** from the welcome screen.
 3. Select **"Create new profile"** (or press `n`).
 4. Enter a profile name in slug format (lowercase, hyphens ok). Example: `cheap`.
@@ -27,13 +27,13 @@ Open OpenCode and press **Tab** -- your new orchestrator appears alongside the d
 Create a profile during sync with `--profile name:provider/model`:
 
 ```bash
-gentle-ai sync --profile cheap:anthropic/claude-haiku-3.5-20241022
+gentle-qa sync --profile cheap:anthropic/claude-haiku-3.5-20241022
 ```
 
 Multiple profiles in one command:
 
 ```bash
-gentle-ai sync \
+gentle-qa sync \
   --profile cheap:anthropic/claude-haiku-3.5-20241022 \
   --profile premium:anthropic/claude-opus-4-20250514
 ```
@@ -41,7 +41,7 @@ gentle-ai sync \
 Override a specific phase with `--profile-phase name:phase:provider/model`:
 
 ```bash
-gentle-ai sync \
+gentle-qa sync \
   --profile cheap:anthropic/claude-haiku-3.5-20241022 \
   --profile-phase cheap:sdd-apply:anthropic/claude-sonnet-4-20250514
 ```

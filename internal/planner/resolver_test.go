@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gentleman-programming/gentle-ai/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
 )
 
 func TestResolverAddsMissingDependenciesInOrder(t *testing.T) {

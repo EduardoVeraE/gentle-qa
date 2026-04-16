@@ -10,19 +10,19 @@ import (
 
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/gentleman-programming/gentle-ai/internal/agentbuilder"
-	"github.com/gentleman-programming/gentle-ai/internal/backup"
-	"github.com/gentleman-programming/gentle-ai/internal/catalog"
-	"github.com/gentleman-programming/gentle-ai/internal/components/sdd"
-	componentuninstall "github.com/gentleman-programming/gentle-ai/internal/components/uninstall"
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/opencode"
-	"github.com/gentleman-programming/gentle-ai/internal/pipeline"
-	"github.com/gentleman-programming/gentle-ai/internal/planner"
-	"github.com/gentleman-programming/gentle-ai/internal/system"
-	"github.com/gentleman-programming/gentle-ai/internal/tui/screens"
-	"github.com/gentleman-programming/gentle-ai/internal/update"
-	"github.com/gentleman-programming/gentle-ai/internal/update/upgrade"
+	"github.com/EduardoVeraE/Gentle-QA/internal/agentbuilder"
+	"github.com/EduardoVeraE/Gentle-QA/internal/backup"
+	"github.com/EduardoVeraE/Gentle-QA/internal/catalog"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/sdd"
+	componentuninstall "github.com/EduardoVeraE/Gentle-QA/internal/components/uninstall"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/opencode"
+	"github.com/EduardoVeraE/Gentle-QA/internal/pipeline"
+	"github.com/EduardoVeraE/Gentle-QA/internal/planner"
+	"github.com/EduardoVeraE/Gentle-QA/internal/system"
+	"github.com/EduardoVeraE/Gentle-QA/internal/tui/screens"
+	"github.com/EduardoVeraE/Gentle-QA/internal/update"
+	"github.com/EduardoVeraE/Gentle-QA/internal/update/upgrade"
 )
 
 // osStatModelCache is a package-level variable so tests can override it to
@@ -2041,7 +2041,7 @@ func (m Model) startUninstall() tea.Cmd {
 			}
 			if isHomebrewManagedBinary(execPath) {
 				result.ManualActions = append(result.ManualActions,
-					"Homebrew-managed install detected. Run 'brew uninstall gentle-ai' to remove the executable cleanly.")
+					"Homebrew-managed install detected. Run 'brew uninstall gentle-qa' to remove the executable cleanly.")
 			} else if removeErr := osRemoveFn(execPath); removeErr != nil {
 				return UninstallDoneMsg{Result: result, Err: fmt.Errorf("uninstall succeeded but failed to remove binary at %q: %w", execPath, removeErr)}
 			}
@@ -3374,7 +3374,7 @@ func (m Model) startInstallation() (tea.Model, tea.Cmd) {
 		}
 
 		// Persist entry to registry.
-		registryPath := filepath.Join(homeDir(), ".config", "gentle-ai", "custom-agents.json")
+		registryPath := filepath.Join(homeDir(), ".config", "gentle-qa", "custom-agents.json")
 		_ = os.MkdirAll(filepath.Dir(registryPath), 0755)
 		if reg, loadErr := agentbuilder.LoadRegistry(registryPath); loadErr == nil {
 			// Collect IDs of agents that were successfully installed.

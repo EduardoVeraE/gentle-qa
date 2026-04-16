@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/gentleman-programming/gentle-ai/internal/model"
-	"github.com/gentleman-programming/gentle-ai/internal/system"
+	"github.com/EduardoVeraE/Gentle-QA/internal/model"
+	"github.com/EduardoVeraE/Gentle-QA/internal/system"
 )
 
 type Adapter struct {
@@ -82,7 +82,7 @@ func (a *Adapter) InstallCommand(_ system.PlatformProfile) ([][]string, error) {
 //   - Settings:  macOS: ~/Library/Application Support/Kiro/User/
 //               Linux: ~/.config/kiro/user/ (respects XDG_CONFIG_HOME)
 //               Windows: %APPDATA%/kiro/User/
-// Steering content is written to ~/.kiro/steering/gentle-ai.md via StrategySteeringFile.
+// Steering content is written to ~/.kiro/steering/gentle-qa.md via StrategySteeringFile.
 
 func (a *Adapter) GlobalConfigDir(homeDir string) string {
 	return a.kiroConfigDir(homeDir)
@@ -93,7 +93,7 @@ func (a *Adapter) SystemPromptDir(homeDir string) string {
 }
 
 func (a *Adapter) SystemPromptFile(homeDir string) string {
-	return filepath.Join(a.SystemPromptDir(homeDir), "gentle-ai.md")
+	return filepath.Join(a.SystemPromptDir(homeDir), "gentle-qa.md")
 }
 
 func (a *Adapter) SkillsDir(homeDir string) string {

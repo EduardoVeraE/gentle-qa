@@ -1,6 +1,6 @@
 package catalog
 
-import "github.com/gentleman-programming/gentle-ai/internal/model"
+import "github.com/EduardoVeraE/Gentle-QA/internal/model"
 
 type Skill struct {
 	ID       model.SkillID
@@ -29,6 +29,11 @@ var mvpSkills = []Skill{
 	{ID: model.SkillBranchPR, Name: "branch-pr", Category: "workflow", Priority: "p0"},
 	{ID: model.SkillIssueCreation, Name: "issue-creation", Category: "workflow", Priority: "p0"},
 	{ID: model.SkillSkillRegistry, Name: "skill-registry", Category: "workflow", Priority: "p0"},
+	// QE / SDET skills
+	{ID: model.SkillPlaywrightBDD, Name: "playwright-bdd", Category: "qe-e2e", Priority: "p0"},
+	{ID: model.SkillPlaywrightCLI, Name: "playwright-cli", Category: "qe-e2e", Priority: "p0"},
+	{ID: model.SkillK6LoadTest, Name: "k6-load-test", Category: "qe-performance", Priority: "p0"},
+	{ID: model.SkillKarateDSL, Name: "karate-dsl", Category: "qe-api", Priority: "p0"},
 }
 
 func MVPSkills() []Skill {

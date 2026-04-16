@@ -3,7 +3,7 @@ package sdd
 import (
 	"path/filepath"
 
-	"github.com/gentleman-programming/gentle-ai/internal/components/filemerge"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/filemerge"
 )
 
 // SharedPromptDir returns the directory where shared SDD prompt files are stored.

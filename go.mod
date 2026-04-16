@@ -1,4 +1,4 @@
-module github.com/gentleman-programming/gentle-ai
+module github.com/EduardoVeraE/Gentle-QA
 
 go 1.24.2
 

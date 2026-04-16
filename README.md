@@ -7,7 +7,7 @@
 <p><strong>One command. Any agent. Any OS. The Gentleman AI ecosystem -- configured and ready.</strong></p>
 
 <p>
-<a href="https://github.com/Gentleman-Programming/gentle-ai/releases"><img src="https://img.shields.io/github/v/release/Gentleman-Programming/gentle-ai" alt="Release"></a>
+<a href="https://github.com/EduardoVeraE/Gentle-QA/releases"><img src="https://img.shields.io/github/v/release/EduardoVeraE/Gentle-QA" alt="Release"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
 <img src="https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go&logoColor=white" alt="Go 1.24+">
 <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform">
@@ -48,17 +48,17 @@ This is NOT an AI agent installer. Most agents are easy to install. This is an *
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/EduardoVeraE/Gentle-QA/main/scripts/install.sh | bash
 ```
 
 ### Windows
 
 ```powershell
 scoop bucket add gentleman https://github.com/Gentleman-Programming/scoop-bucket
-scoop install gentle-ai
+scoop install gentle-qa
 ```
 
-Or via PowerShell script: `irm https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.ps1 | iex`
+Or via PowerShell script: `irm https://raw.githubusercontent.com/EduardoVeraE/Gentle-QA/main/scripts/install.ps1 | iex`
 
 ### After install: project-level setup
 
@@ -80,11 +80,11 @@ These are **not required** for basic usage. The SDD orchestrator runs `/sdd-init
 ```bash
 # macOS / Linux
 brew tap Gentleman-Programming/homebrew-tap
-brew install gentle-ai
+brew install gentle-qa
 
 # Windows
 scoop bucket add gentleman https://github.com/Gentleman-Programming/scoop-bucket
-scoop install gentle-ai
+scoop install gentle-qa
 ```
 
 <details>
@@ -93,25 +93,25 @@ scoop install gentle-ai
 #### Go install (any platform with Go 1.24+)
 
 ```bash
-go install github.com/gentleman-programming/gentle-ai/cmd/gentle-ai@latest
+go install github.com/EduardoVeraE/Gentle-QA/cmd/gentle-qa@latest
 ```
 
 #### Windows (PowerShell script)
 
 ```powershell
-irm https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/EduardoVeraE/Gentle-QA/main/scripts/install.ps1 | iex
 ```
 
 **Migrating from PowerShell installer to Scoop?** Remove the old binary first:
 
 ```powershell
-Remove-Item "$env:LOCALAPPDATA\gentle-ai" -Recurse -Force
+Remove-Item "$env:LOCALAPPDATA\gentle-qa" -Recurse -Force
 # Then install via Scoop as shown above
 ```
 
 #### From releases
 
-Download the binary for your platform from [GitHub Releases](https://github.com/Gentleman-Programming/gentle-ai/releases).
+Download the binary for your platform from [GitHub Releases](https://github.com/EduardoVeraE/Gentle-QA/releases).
 
 </details>
 
@@ -133,10 +133,10 @@ Assign different AI models to different SDD phases -- a powerful model for desig
 
 ```bash
 # Via CLI
-gentle-ai sync --profile cheap:openrouter/qwen/qwen3-30b-a3b:free
-gentle-ai sync --profile-phase cheap:sdd-design:anthropic/claude-sonnet-4-20250514
+gentle-qa sync --profile cheap:openrouter/qwen/qwen3-30b-a3b:free
+gentle-qa sync --profile-phase cheap:sdd-design:anthropic/claude-sonnet-4-20250514
 
-# Or via TUI: gentle-ai → "OpenCode SDD Profiles" → Create
+# Or via TUI: gentle-qa → "OpenCode SDD Profiles" → Create
 ```
 
 After creating a profile, open OpenCode and press **Tab** to switch between `sdd-orchestrator` (default) and your custom profiles.
@@ -162,7 +162,7 @@ engram tui                    # Visual memory browser
 
 | Topic | Description |
 |-------|-------------|
-| [Intended Usage](docs/intended-usage.md) | How gentle-ai is meant to be used — the mental model |
+| [Intended Usage](docs/intended-usage.md) | How gentle-qa is meant to be used — the mental model |
 | [OpenCode SDD Profiles](docs/opencode-profiles.md) | Create and manage per-phase model profiles for OpenCode |
 | [Engram Commands](docs/engram.md) | CLI commands, MCP tools, project management, team sharing |
 | [Agents](docs/agents.md) | Supported agents, feature matrix, config paths, and per-agent notes |
@@ -179,8 +179,8 @@ engram tui                    # Visual memory browser
 
 This project exists because of the community. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for the full list.
 
-<a href="https://github.com/Gentleman-Programming/gentle-ai/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Gentleman-Programming/gentle-ai" />
+<a href="https://github.com/EduardoVeraE/Gentle-QA/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=EduardoVeraE/Gentle-QA" />
 </a>
 
 ---
@@ -190,7 +190,7 @@ This project exists because of the community. See [CONTRIBUTORS.md](CONTRIBUTORS
 - **Just installed?** Read [Intended Usage](docs/intended-usage.md) -- the one page that explains the mental model.
 - **Using OpenCode?** Set up [SDD Profiles](docs/opencode-profiles.md) to assign different models per phase.
 - **Want to share memory across machines?** Learn `engram sync` in the [Engram reference](docs/engram.md).
-- **Ready to contribute?** Check [CONTRIBUTING.md](CONTRIBUTING.md) and the [open issues](https://github.com/Gentleman-Programming/gentle-ai/issues?q=is%3Aissue+is%3Aopen+label%3A%22status%3Aapproved%22).
+- **Ready to contribute?** Check [CONTRIBUTING.md](CONTRIBUTING.md) and the [open issues](https://github.com/EduardoVeraE/Gentle-QA/issues?q=is%3Aissue+is%3Aopen+label%3A%22status%3Aapproved%22).
 
 ---
 
