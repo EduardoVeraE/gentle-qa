@@ -1,10 +1,10 @@
 <div align="center">
 
-<img width="3276" height="1280" alt="image" src="https://github.com/user-attachments/assets/3a3e4ae1-b9f4-4ce9-8fd0-3833812beb99" />
+<img width="1200" height="400" alt="Gentle-QA Banner" src="docs/banner.svg" />
 
-<h1>AI Gentle Stack</h1>
+<h1>Gentle-QA</h1>
 
-<p><strong>One command. Any agent. Any OS. The Gentleman AI ecosystem -- configured and ready.</strong></p>
+<p><strong>One command. Any test. Any framework. Your QA agents — configured and ready.</strong></p>
 
 <p>
 <a href="https://github.com/EduardoVeraE/Gentle-QA/releases"><img src="https://img.shields.io/github/v/release/EduardoVeraE/Gentle-QA" alt="Release"></a>
@@ -19,11 +19,11 @@
 
 ## What It Does
 
-This is NOT an AI agent installer. Most agents are easy to install. This is an **ecosystem configurator** -- it takes whatever AI coding agent(s) you use and supercharges them with the Gentleman stack: persistent memory, Spec-Driven Development workflow, curated coding skills, MCP servers, an AI provider switcher, a teaching-oriented persona with security-first permissions, and per-phase model assignment so each SDD step can run on a different model.
+This is NOT just an AI agent installer. This is a **QA ecosystem configurator** — it takes whatever AI coding agent(s) you use and supercharges them with a complete quality engineering stack: persistent memory, Spec-Driven Development workflow, curated QA skills (Playwright, Karate DSL, k6, BDD), an SDET-oriented persona, MCP servers, and per-phase model assignment so each SDD step runs on the right model.
 
-**Before**: "I installed Claude Code / OpenCode / Cursor, but it's just a chatbot that writes code."
+**Before**: "I have Claude Code / OpenCode / Cursor, but it's just a chatbot that writes code."
 
-**After**: Your agent now has memory, skills, workflow, MCP tools, and a persona that actually teaches you.
+**After**: Your agent has memory, testing skills, SDD workflow, and an SDET persona that helps you ship quality software — not just code.
 
 ### 9 Supported Agents
 
@@ -38,8 +38,6 @@ This is NOT an AI agent installer. Most agents are easy to install. This is an *
 | **Windsurf** | Solo-agent | Plan Mode, Code Mode, native workflows |
 | **Antigravity** | Solo-agent + Mission Control | Built-in Browser/Terminal sub-agents |
 | **Kiro IDE** | Full (native subagents) | Native `~/.kiro/agents/` + steering orchestration |
-
-> **Note**: This project supersedes [Agent Teams Lite](https://github.com/Gentleman-Programming/agent-teams-lite) (now archived). Everything ATL provided is included here with better installation, automatic updates, and persistent memory.
 
 ---
 
@@ -117,6 +115,21 @@ Download the binary for your platform from [GitHub Releases](https://github.com/
 
 ---
 
+## QA Skills Included
+
+Gentle-QA ships with curated skills for the most common QA frameworks. Your AI agent gets context-aware assistance for all of them out of the box.
+
+| Skill | What it covers |
+|-------|---------------|
+| **Playwright (BDD)** | Cucumber/Gherkin integration, Page Objects, fixture composition |
+| **Playwright (CLI)** | Test runner flags, trace viewer, screenshot/video debugging |
+| **Karate DSL** | API testing, mocking, GraphQL, performance scenarios |
+| **k6 Load Testing** | Virtual users, thresholds, scenarios, cloud execution |
+
+> The **SDET persona** orients your agent toward quality-first thinking: test pyramid strategy, shift-left practices, risk-based coverage, and CI/CD gate design.
+
+---
+
 ## Backups
 
 Every install, sync, and upgrade automatically snapshots your config files. Backups are **compressed** (tar.gz), **deduplicated** (identical configs are not re-backed up), and **auto-pruned** (keeps the 5 most recent). Pin important backups via the TUI (`p` key) to protect them from pruning.
@@ -129,7 +142,7 @@ See [Backup & Rollback Guide](docs/rollback.md) for details.
 
 ### OpenCode SDD Profiles
 
-Assign different AI models to different SDD phases -- a powerful model for design, a fast one for implementation, a cheap one for exploration. Create multiple profiles and switch between them with Tab in OpenCode.
+Assign different AI models to different SDD phases — a powerful model for test design, a fast one for implementation, a cheap one for exploration. Create multiple profiles and switch between them with Tab in OpenCode.
 
 ```bash
 # Via CLI
@@ -145,12 +158,12 @@ After creating a profile, open OpenCode and press **Tab** to switch between `sdd
 
 ### Engram (Persistent Memory)
 
-Your AI agent automatically remembers decisions, bugs, and context across sessions. You don't need to do anything -- but when you do:
+Your AI agent automatically remembers test strategy decisions, bug patterns, and project context across sessions. You don't need to do anything — but when you do:
 
 ```bash
 engram projects list          # See all projects with memory counts
 engram projects consolidate   # Fix name drift ("my-app" vs "My-App")
-engram search "auth bug"      # Find a past decision from the terminal
+engram search "flaky test"    # Find a past fix from the terminal
 engram tui                    # Visual memory browser
 ```
 
@@ -187,7 +200,7 @@ This project exists because of the community. See [CONTRIBUTORS.md](CONTRIBUTORS
 
 ## Next Steps
 
-- **Just installed?** Read [Intended Usage](docs/intended-usage.md) -- the one page that explains the mental model.
+- **Just installed?** Read [Intended Usage](docs/intended-usage.md) — the one page that explains the mental model.
 - **Using OpenCode?** Set up [SDD Profiles](docs/opencode-profiles.md) to assign different models per phase.
 - **Want to share memory across machines?** Learn `engram sync` in the [Engram reference](docs/engram.md).
 - **Ready to contribute?** Check [CONTRIBUTING.md](CONTRIBUTING.md) and the [open issues](https://github.com/EduardoVeraE/Gentle-QA/issues?q=is%3Aissue+is%3Aopen+label%3A%22status%3Aapproved%22).
