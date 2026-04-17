@@ -43,7 +43,7 @@ changelog:
 
 brews:
   - repository:
-      owner: Gentleman-Programming
+      owner: EduardoVeraE
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     directory: Formula
@@ -55,7 +55,7 @@ brews:
 
 scoops:
   - repository:
-      owner: Gentleman-Programming
+      owner: EduardoVeraE
       name: scoop-bucket
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     name: gentle-qa
