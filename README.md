@@ -52,7 +52,7 @@ curl -fsSL https://raw.githubusercontent.com/EduardoVeraE/Gentle-QA/main/scripts
 ### Windows
 
 ```powershell
-scoop bucket add gentleman https://github.com/Gentleman-Programming/scoop-bucket
+scoop bucket add gentle-qa https://github.com/EduardoVeraE/scoop-bucket
 scoop install gentle-qa
 ```
 
@@ -77,11 +77,11 @@ These are **not required** for basic usage. The SDD orchestrator runs `/sdd-init
 
 ```bash
 # macOS / Linux
-brew tap Gentleman-Programming/homebrew-tap
+brew tap EduardoVeraE/tap
 brew install gentle-qa
 
 # Windows
-scoop bucket add gentleman https://github.com/Gentleman-Programming/scoop-bucket
+scoop bucket add gentle-qa https://github.com/EduardoVeraE/scoop-bucket
 scoop install gentle-qa
 ```
 
