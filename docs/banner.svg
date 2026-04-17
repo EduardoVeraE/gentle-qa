@@ -1,0 +1,219 @@
+<svg width="1200" height="400" viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#191724"/>
+      <stop offset="100%" stop-color="#13111c"/>
+    </linearGradient>
+    <radialGradient id="exhaust" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" stop-color="#f6c177" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#eb6f92" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#191724" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="exhaustInner" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" stop-color="#f6c177" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#eb6f92" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="planetGrad" cx="30%" cy="25%" r="75%">
+      <stop offset="0%" stop-color="#31748f"/>
+      <stop offset="55%" stop-color="#1e4d5e"/>
+      <stop offset="100%" stop-color="#0e2530"/>
+    </radialGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="starGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="indicatorGlow" x="-150%" y="-150%" width="400%" height="400%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="400" fill="url(#bg)"/>
+
+  <!-- Stars -->
+  <g>
+    <circle cx="42" cy="18" r="1.2" fill="#e0def4" opacity="0.85"/>
+    <circle cx="98" cy="45" r="0.8" fill="#c4a7e7" opacity="0.65"/>
+    <circle cx="155" cy="22" r="1.5" fill="#e0def4" opacity="0.75"/>
+    <circle cx="203" cy="67" r="0.9" fill="#c4a7e7" opacity="0.6"/>
+    <circle cx="260" cy="35" r="1.1" fill="#e0def4" opacity="0.85"/>
+    <circle cx="310" cy="15" r="0.7" fill="#c4a7e7" opacity="0.7"/>
+    <circle cx="380" cy="55" r="1.3" fill="#e0def4" opacity="0.75"/>
+    <circle cx="440" cy="28" r="0.9" fill="#9ccfd8" opacity="0.6"/>
+    <circle cx="510" cy="42" r="1.0" fill="#e0def4" opacity="0.7"/>
+    <circle cx="560" cy="12" r="1.4" fill="#c4a7e7" opacity="0.75"/>
+    <circle cx="620" cy="65" r="0.8" fill="#e0def4" opacity="0.65"/>
+    <circle cx="680" cy="25" r="1.2" fill="#c4a7e7" opacity="0.6"/>
+    <circle cx="745" cy="48" r="0.9" fill="#9ccfd8" opacity="0.65"/>
+    <circle cx="800" cy="18" r="1.5" fill="#e0def4" opacity="0.85"/>
+    <circle cx="855" cy="38" r="0.7" fill="#c4a7e7" opacity="0.6"/>
+    <circle cx="920" cy="62" r="1.1" fill="#e0def4" opacity="0.75"/>
+    <circle cx="975" cy="20" r="1.3" fill="#c4a7e7" opacity="0.7"/>
+    <circle cx="1030" cy="55" r="0.8" fill="#e0def4" opacity="0.75"/>
+    <circle cx="1085" cy="28" r="1.0" fill="#9ccfd8" opacity="0.65"/>
+    <circle cx="1148" cy="58" r="1.4" fill="#e0def4" opacity="0.6"/>
+    <circle cx="1182" cy="22" r="0.9" fill="#c4a7e7" opacity="0.75"/>
+    <circle cx="30" cy="130" r="0.9" fill="#c4a7e7" opacity="0.55"/>
+    <circle cx="88" cy="155" r="1.2" fill="#e0def4" opacity="0.65"/>
+    <circle cx="170" cy="140" r="0.7" fill="#c4a7e7" opacity="0.5"/>
+    <circle cx="240" cy="175" r="1.0" fill="#e0def4" opacity="0.7"/>
+    <circle cx="350" cy="120" r="1.3" fill="#9ccfd8" opacity="0.55"/>
+    <circle cx="460" cy="162" r="0.8" fill="#e0def4" opacity="0.65"/>
+    <circle cx="545" cy="135" r="1.1" fill="#c4a7e7" opacity="0.5"/>
+    <circle cx="60" cy="280" r="0.8" fill="#c4a7e7" opacity="0.5"/>
+    <circle cx="140" cy="310" r="1.0" fill="#e0def4" opacity="0.65"/>
+    <circle cx="225" cy="265" r="1.2" fill="#c4a7e7" opacity="0.5"/>
+    <circle cx="330" cy="298" r="0.7" fill="#e0def4" opacity="0.55"/>
+    <circle cx="420" cy="345" r="0.9" fill="#9ccfd8" opacity="0.5"/>
+    <circle cx="490" cy="278" r="1.1" fill="#e0def4" opacity="0.65"/>
+    <!-- Bright twinkling stars -->
+    <circle cx="575" cy="88" r="2.2" fill="#e0def4" filter="url(#starGlow)" opacity="0.9"/>
+    <circle cx="1055" cy="95" r="2.0" fill="#c4a7e7" filter="url(#starGlow)" opacity="0.8"/>
+    <circle cx="72" cy="210" r="1.8" fill="#9ccfd8" filter="url(#starGlow)" opacity="0.75"/>
+    <circle cx="1160" cy="185" r="1.6" fill="#e0def4" filter="url(#starGlow)" opacity="0.8"/>
+    <circle cx="485" cy="320" r="1.4" fill="#c4a7e7" filter="url(#starGlow)" opacity="0.6"/>
+  </g>
+
+  <!-- Planet (lower-right, partially visible) -->
+  <circle cx="1095" cy="435" r="235" fill="url(#planetGrad)" opacity="0.88"/>
+  <!-- Atmosphere glow -->
+  <circle cx="1095" cy="435" r="242" fill="none" stroke="#9ccfd8" stroke-width="2.5" opacity="0.18"/>
+  <!-- Surface detail -->
+  <circle cx="1015" cy="365" r="30" fill="#1f1d2e" opacity="0.22"/>
+  <circle cx="1062" cy="342" r="17" fill="#1f1d2e" opacity="0.18"/>
+  <circle cx="1125" cy="358" r="24" fill="#1f1d2e" opacity="0.18"/>
+  <circle cx="992" cy="398" r="13" fill="#1f1d2e" opacity="0.15"/>
+  <!-- Planet ring -->
+  <ellipse cx="1095" cy="395" rx="268" ry="24" fill="none" stroke="#9ccfd8" stroke-width="1.5" opacity="0.22"/>
+
+  <!-- Rocket (pointing upper-right: rotate 40deg CW) -->
+  <!-- translate to (885, 175) then rotate 40deg CW → nose goes upper-right, exhaust lower-left -->
+  <g transform="translate(885, 178) rotate(40)">
+    <!-- Exhaust flame outer -->
+    <ellipse cx="0" cy="108" rx="22" ry="62" fill="url(#exhaust)"/>
+    <!-- Exhaust flame inner (brighter core) -->
+    <ellipse cx="0" cy="100" rx="10" ry="32" fill="url(#exhaustInner)" opacity="0.8"/>
+    <!-- Flame flicker 1 -->
+    <ellipse cx="-7" cy="98" rx="7" ry="26" fill="#f6c177" opacity="0.3"/>
+    <!-- Flame flicker 2 -->
+    <ellipse cx="6" cy="102" rx="6" ry="22" fill="#f6c177" opacity="0.25"/>
+    <!-- Rocket body -->
+    <rect x="-21" y="-72" width="42" height="130" rx="8" fill="#c4a7e7"/>
+    <!-- Body accent stripe -->
+    <rect x="-21" y="16" width="42" height="13" rx="0" fill="#ebbcba" opacity="0.45"/>
+    <!-- Nose cone -->
+    <polygon points="-21,-72 21,-72 0,-130" fill="#ebbcba"/>
+    <!-- Nose cone base blend -->
+    <ellipse cx="0" cy="-72" rx="21" ry="6.5" fill="#d5aae0"/>
+    <!-- Porthole / window -->
+    <circle cx="0" cy="-30" r="15" fill="#1f1d2e"/>
+    <circle cx="0" cy="-30" r="12" fill="#31748f"/>
+    <circle cx="0" cy="-30" r="12" fill="#31748f" opacity="0.6"/>
+    <ellipse cx="-4" cy="-36" rx="4.5" ry="3" fill="#e0def4" opacity="0.38" transform="rotate(-20,-4,-36)"/>
+    <!-- Left fin -->
+    <polygon points="-21,38 -52,85 -21,85" fill="#9ccfd8"/>
+    <!-- Right fin -->
+    <polygon points="21,38 52,85 21,85" fill="#9ccfd8"/>
+    <!-- Engine nozzle -->
+    <rect x="-14" y="57" width="28" height="11" rx="3" fill="#908caa"/>
+    <ellipse cx="0" cy="68" rx="14" ry="5" fill="#6e6a86"/>
+  </g>
+
+  <!-- Astronaut (floating at 690, 198) -->
+  <g transform="translate(690, 198)">
+    <!-- Legs -->
+    <ellipse cx="-12" cy="60" rx="12" ry="20" fill="#e0def4" transform="rotate(14,-12,60)"/>
+    <ellipse cx="13" cy="64" rx="12" ry="20" fill="#e0def4" transform="rotate(-9,13,64)"/>
+    <!-- Boots -->
+    <ellipse cx="-14" cy="79" rx="15" ry="7" fill="#c4a7e7"/>
+    <ellipse cx="15" cy="82" rx="15" ry="7" fill="#c4a7e7"/>
+    <!-- Suit body -->
+    <rect x="-30" y="-2" width="60" height="58" rx="15" fill="#e0def4"/>
+    <!-- Chest panel -->
+    <rect x="-8" y="8" width="16" height="20" rx="4" fill="#c4a7e7" opacity="0.45"/>
+    <!-- Life support backpack -->
+    <rect x="20" y="4" width="19" height="32" rx="4" fill="#908caa"/>
+    <rect x="22" y="8" width="6" height="4" rx="1" fill="#9ccfd8"/>
+    <rect x="22" y="15" width="6" height="3" rx="1" fill="#f6c177"/>
+    <rect x="22" y="21" width="6" height="3" rx="1" fill="#eb6f92"/>
+    <!-- Left arm (relaxed, slightly raised) -->
+    <ellipse cx="-44" cy="-2" rx="14" ry="10" fill="#e0def4" transform="rotate(-28,-44,-2)"/>
+    <!-- Right arm (pointing toward rocket) -->
+    <ellipse cx="44" cy="10" rx="14" ry="10" fill="#e0def4" transform="rotate(-15,44,10)"/>
+    <!-- Gloves -->
+    <circle cx="-54" cy="-14" r="10" fill="#c4a7e7"/>
+    <circle cx="55" cy="4" r="10" fill="#c4a7e7"/>
+    <!-- Helmet collar -->
+    <ellipse cx="0" cy="-5" rx="26" ry="9" fill="#908caa"/>
+    <!-- Helmet -->
+    <circle cx="0" cy="-33" r="32" fill="#e0def4"/>
+    <!-- Visor (slightly turned right, toward rocket) -->
+    <ellipse cx="5" cy="-33" rx="24" ry="22" fill="#1f1d2e"/>
+    <ellipse cx="5" cy="-33" rx="24" ry="22" fill="#31748f" opacity="0.65"/>
+    <!-- Visor specular highlight -->
+    <ellipse cx="-5" cy="-43" rx="9" ry="5" fill="#e0def4" opacity="0.32" transform="rotate(-15,-5,-43)"/>
+    <!-- Helmet indicator light -->
+    <circle cx="27" cy="-19" r="4.5" fill="#f6c177" opacity="0.95" filter="url(#indicatorGlow)"/>
+    <!-- Helmet antenna -->
+    <line x1="20" y1="-60" x2="20" y2="-66" stroke="#908caa" stroke-width="2.2"/>
+    <circle cx="20" cy="-67" r="2.8" fill="#eb6f92"/>
+  </g>
+
+  <!-- Floating QA test code snippets (subtle atmosphere) -->
+  <text x="632" y="338" font-family="'Courier New', monospace" font-size="11" fill="#9ccfd8" opacity="0.32">✓ 247 specs passing</text>
+  <text x="612" y="84" font-family="'Courier New', monospace" font-size="10" fill="#9ccfd8" opacity="0.26">expect(result).toBeAccessible()</text>
+  <text x="772" y="372" font-family="'Courier New', monospace" font-size="10" fill="#c4a7e7" opacity="0.28">{ status: "pass" }</text>
+
+  <!-- Subtle vertical separator -->
+  <line x1="548" y1="48" x2="548" y2="352" stroke="#6e6a86" stroke-width="0.5" stroke-dasharray="4,7" opacity="0.22"/>
+
+  <!-- ===== LEFT TEXT SECTION ===== -->
+
+  <!-- Main title -->
+  <g filter="url(#glow)">
+    <text x="60" y="158" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="80" font-weight="bold">
+      <tspan fill="#c4a7e7">Gentle</tspan><tspan fill="#9ccfd8">-QA</tspan>
+    </text>
+  </g>
+
+  <!-- Subtitle -->
+  <text x="62" y="195" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="18" fill="#908caa">One command. Any test. Any framework.</text>
+
+  <!-- Tech pill tags -->
+  <!-- Playwright -->
+  <rect x="62" y="218" width="100" height="27" rx="13.5" fill="#1f1d2e" stroke="#9ccfd8" stroke-width="1.2"/>
+  <text x="112" y="236" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9ccfd8">Playwright</text>
+  <!-- k6 -->
+  <rect x="173" y="218" width="45" height="27" rx="13.5" fill="#1f1d2e" stroke="#f6c177" stroke-width="1.2"/>
+  <text x="195" y="236" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#f6c177">k6</text>
+  <!-- Karate -->
+  <rect x="229" y="218" width="72" height="27" rx="13.5" fill="#1f1d2e" stroke="#c4a7e7" stroke-width="1.2"/>
+  <text x="265" y="236" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#c4a7e7">Karate</text>
+  <!-- SDD -->
+  <rect x="312" y="218" width="50" height="27" rx="13.5" fill="#1f1d2e" stroke="#ebbcba" stroke-width="1.2"/>
+  <text x="337" y="236" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#ebbcba">SDD</text>
+  <!-- SDET -->
+  <rect x="373" y="218" width="58" height="27" rx="13.5" fill="#1f1d2e" stroke="#9ccfd8" stroke-width="1.2"/>
+  <text x="402" y="236" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9ccfd8">SDET</text>
+
+  <!-- Description lines -->
+  <text x="62" y="285" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" fill="#6e6a86">Supercharge your QA agents with persistent memory,</text>
+  <text x="62" y="306" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" fill="#6e6a86">Spec-Driven Development, and curated testing skills.</text>
+
+  <!-- GitHub reference -->
+  <text x="62" y="362" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#6e6a86" opacity="0.55">github.com/EduardoVeraE/Gentle-QA</text>
+</svg>
