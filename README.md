@@ -1,6 +1,6 @@
 <div align="center">
 
-<img width="1200" height="400" alt="Gentle-QA Banner" src="docs/banner.svg" />
+<img alt="Gentle-QA Banner" src="docs/banner.png" />
 
 <h1>Gentle-QA</h1>
 
