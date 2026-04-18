@@ -225,7 +225,7 @@ Kiro's `.kiro/steering/*.md` files provide persistent workspace context that app
 - Reference tech stack and project structure
 - Keep custom instructions that apply across all sessions
 
-Gentle AI writes to the global steering file (`~/.kiro/steering/gentle-qa.md`) — treat it as your active working context alongside your project steering files.
+Gentle-QA writes to the global steering file (`~/.kiro/steering/gentle-qa.md`) — treat it as your active working context alongside your project steering files.
 
 ### Skill Resolver Protocol
 

@@ -1,7 +1,7 @@
 ---
 name: gentle-qa-issue-creation
 description: >
-  Issue creation workflow for Gentle AI following the issue-first enforcement system.
+  Issue creation workflow for Gentle-QA following the issue-first enforcement system.
   Trigger: When creating a GitHub issue, reporting a bug, or requesting a feature.
 license: Apache-2.0
 metadata:
@@ -9,7 +9,7 @@ metadata:
   version: "1.0"
 ---
 
-# Gentle AI — Issue Creation Skill
+# Gentle-QA — Issue Creation Skill
 
 ## When to Use
 
@@ -61,7 +61,7 @@ Load this skill whenever you need to:
 | Steps to Reproduce | Numbered steps to reproduce the behavior |
 | Expected Behavior | What should happen |
 | Actual Behavior | What actually happens |
-| Gentle AI Version | Output of `gga version` |
+| Gentle-QA Version | Output of `gga version` |
 | Operating System | macOS / Linux distro / Windows / WSL |
 | AI Agent / Client | Claude Code / OpenCode / Gemini CLI / Cursor / Windsurf / Other |
 | Affected Area | See area list below |

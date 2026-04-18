@@ -39,6 +39,12 @@ type InjectOptions struct {
 	// OpenCode settings file. The default profile (Name="" or Name="default")
 	// is skipped — it is handled by the existing flow.
 	Profiles []model.Profile
+
+	// PreserveOpenCodeOrchestratorPrompt keeps the existing
+	// opencode.json agent.sdd-orchestrator.prompt value during sync.
+	// Used by external-single-active profile strategy integrations where
+	// external tools extend orchestrator policy/prompt at runtime.
+	PreserveOpenCodeOrchestratorPrompt bool
 }
 
 // workflowInjector is an optional adapter capability: if an adapter
@@ -108,6 +114,13 @@ var strongProjectMarkers = []string{
 // will traverse before giving up. This prevents infinite loops on deeply-nested
 // trees and ensures we stop well before reaching the filesystem root.
 const maxAncestorDepth = 20
+
+// bootstrapper is an optional adapter capability: if an adapter implements
+// this interface, any injector that writes Jinja modules will first ensure
+// the base template (entry point) exists.
+type bootstrapper interface {
+	BootstrapTemplate(homeDir string) error
+}
 
 // findProjectRoot walks upward from dir, looking for the best project root.
 //
@@ -224,34 +237,68 @@ func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, opt
 			}
 			changed = changed || result.Changed
 			files = append(files, result.Files...)
+
+		case model.StrategyJinjaModules:
+			// Ensure the base template exists for Jinja-based agents.
+			if bs, ok := adapter.(bootstrapper); ok {
+				if err := bs.BootstrapTemplate(homeDir); err != nil {
+					return InjectionResult{}, fmt.Errorf("bootstrap template: %w", err)
+				}
+			}
+
+			// Write the SDD orchestrator as a standalone Jinja include module.
+			// The static KIMI.md template references it via {% include "sdd-orchestrator.md" %}.
+			configDir := adapter.GlobalConfigDir(homeDir)
+			content := assets.MustRead(sddOrchestratorAsset(adapter.Agent()))
+			modulePath := filepath.Join(configDir, "sdd-orchestrator.md")
+			writeResult, err := filemerge.WriteFileAtomic(modulePath, []byte(content), 0o644)
+			if err != nil {
+				return InjectionResult{}, err
+			}
+			changed = changed || writeResult.Changed
+			files = append(files, modulePath)
 		}
 	}
 
 	// 1b. If StrictTDD is enabled, inject the strict-tdd-mode marker section
 	// into the system prompt file so agents know Strict TDD is active.
 	if opts.StrictTDD && adapter.Agent() != model.AgentOpenCode && adapter.Agent() != model.AgentKilocode {
-		promptPath := adapter.SystemPromptFile(homeDir)
-		strictTDDContent := "Strict TDD Mode: enabled"
-		existing, readErr := readFileOrEmpty(promptPath)
-		if readErr != nil {
-			return InjectionResult{}, readErr
-		}
-		updated := filemerge.InjectMarkdownSection(existing, "strict-tdd-mode", strictTDDContent)
-		writeResult, writeErr := filemerge.WriteFileAtomic(promptPath, []byte(updated), 0o644)
-		if writeErr != nil {
-			return InjectionResult{}, writeErr
-		}
-		changed = changed || writeResult.Changed
-		// Only append path once (it may already be in files from step 1).
-		alreadyInFiles := false
-		for _, f := range files {
-			if f == promptPath {
-				alreadyInFiles = true
-				break
+		if adapter.SystemPromptStrategy() == model.StrategyJinjaModules {
+			// Write the strict-tdd-mode marker as a standalone Jinja include module.
+			// The static KIMI.md template references it via {% include "strict-tdd-mode.md" %}.
+			configDir := adapter.GlobalConfigDir(homeDir)
+			content := "Strict TDD Mode: enabled"
+			modulePath := filepath.Join(configDir, "strict-tdd-mode.md")
+			writeResult, err := filemerge.WriteFileAtomic(modulePath, []byte(content), 0o644)
+			if err != nil {
+				return InjectionResult{}, err
 			}
-		}
-		if !alreadyInFiles {
-			files = append(files, promptPath)
+			changed = changed || writeResult.Changed
+			files = append(files, modulePath)
+		} else {
+			promptPath := adapter.SystemPromptFile(homeDir)
+			strictTDDContent := "Strict TDD Mode: enabled"
+			existing, readErr := readFileOrEmpty(promptPath)
+			if readErr != nil {
+				return InjectionResult{}, readErr
+			}
+			updated := filemerge.InjectMarkdownSection(existing, "strict-tdd-mode", strictTDDContent)
+			writeResult, writeErr := filemerge.WriteFileAtomic(promptPath, []byte(updated), 0o644)
+			if writeErr != nil {
+				return InjectionResult{}, writeErr
+			}
+			changed = changed || writeResult.Changed
+			// Only append path once (it may already be in files from step 1).
+			alreadyInFiles := false
+			for _, f := range files {
+				if f == promptPath {
+					alreadyInFiles = true
+					break
+				}
+			}
+			if !alreadyInFiles {
+				files = append(files, promptPath)
+			}
 		}
 	}
 
@@ -315,7 +362,7 @@ func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, opt
 				changed = changed || promptsChanged
 			}
 
-			overlayBytes, err = inlineOpenCodeSDDPrompts(overlayBytes, homeDir)
+			overlayBytes, err = inlineOpenCodeSDDPrompts(overlayBytes, homeDir, settingsPath, opts.PreserveOpenCodeOrchestratorPrompt)
 			if err != nil {
 				return InjectionResult{}, fmt.Errorf("inline OpenCode SDD prompts: %w", err)
 			}
@@ -509,10 +556,11 @@ func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, opt
 		}
 
 		for _, entry := range entries {
-			if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".md") {
+			if entry.IsDir() {
 				continue
 			}
-			contentStr := string(assets.MustRead(embeddedDir + "/" + entry.Name()))
+			// Copy all files (not just .md) to support Kimi's YAML-based agents
+			contentStr := assets.MustRead(embeddedDir + "/" + entry.Name())
 
 			// Resolve {{KIRO_MODEL}} placeholder for adapters that support it (e.g. Kiro).
 			// Non-Kiro adapters (Cursor, etc.) don't implement kiroModelResolver and are unaffected.
@@ -535,7 +583,6 @@ func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, opt
 				}
 				contentStr = strings.ReplaceAll(contentStr, "{{KIRO_MODEL}}", kmr.KiroModelID(alias))
 			}
-
 			outPath := filepath.Join(agentsDir, entry.Name())
 			writeResult, err := filemerge.WriteFileAtomic(outPath, []byte(contentStr), 0o644)
 			if err != nil {
@@ -547,11 +594,18 @@ func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, opt
 			}
 		}
 
-		// Post-check: verify critical agent files exist
+		// Post-check: verify critical agent files exist (either .md or .yaml)
 		for _, phase := range []string{"sdd-apply", "sdd-verify"} {
-			checkPath := filepath.Join(agentsDir, phase+".md")
-			if info, err := os.Stat(checkPath); err != nil || info.Size() < 50 {
-				return InjectionResult{}, fmt.Errorf("post-check: sub-agent %q not written correctly", phase)
+			found := false
+			for _, ext := range []string{".md", ".yaml"} {
+				checkPath := filepath.Join(agentsDir, phase+ext)
+				if info, err := os.Stat(checkPath); err == nil && info.Size() >= 10 {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return InjectionResult{}, fmt.Errorf("post-check: sub-agent %q not written correctly (missing or truncated)", phase)
 			}
 		}
 	}
@@ -632,7 +686,7 @@ func Inject(homeDir string, adapter agents.Adapter, sddMode model.SDDModeID, opt
 	return InjectionResult{Changed: changed, Files: files}, nil
 }
 
-func inlineOpenCodeSDDPrompts(overlayBytes []byte, homeDir string) ([]byte, error) {
+func inlineOpenCodeSDDPrompts(overlayBytes []byte, homeDir, settingsPath string, preserveExistingOrchestratorPrompt bool) ([]byte, error) {
 	var overlay map[string]any
 	if err := json.Unmarshal(overlayBytes, &overlay); err != nil {
 		return nil, fmt.Errorf("unmarshal OpenCode SDD overlay: %w", err)
@@ -647,7 +701,8 @@ func inlineOpenCodeSDDPrompts(overlayBytes []byte, homeDir string) ([]byte, erro
 		return overlayBytes, nil
 	}
 
-	// Inline the orchestrator prompt (always inlined, not a file reference).
+	// Inline the orchestrator prompt (always inlined, not a file reference),
+	// unless an external strategy requested preserving the existing prompt.
 	orchestratorRaw, ok := agentsMap["sdd-orchestrator"]
 	if !ok {
 		return overlayBytes, nil
@@ -656,7 +711,19 @@ func inlineOpenCodeSDDPrompts(overlayBytes []byte, homeDir string) ([]byte, erro
 	if !ok {
 		return overlayBytes, nil
 	}
-	orchestratorMap["prompt"] = assets.MustRead("generic/sdd-orchestrator.md")
+	if preserveExistingOrchestratorPrompt {
+		existingPrompt, err := readOpenCodeAgentPrompt(settingsPath, "sdd-orchestrator")
+		if err != nil {
+			return nil, err
+		}
+		if existingPrompt != "" {
+			orchestratorMap["prompt"] = existingPrompt
+		} else {
+			orchestratorMap["prompt"] = assets.MustRead("generic/sdd-orchestrator.md")
+		}
+	} else {
+		orchestratorMap["prompt"] = assets.MustRead("generic/sdd-orchestrator.md")
+	}
 
 	// Replace sub-agent prompt placeholders with {file:<absolutePath>} references.
 	// The placeholder format is __PROMPT_FILE_{phase}__ where {phase} is the agent name.
@@ -684,6 +751,44 @@ func inlineOpenCodeSDDPrompts(overlayBytes []byte, homeDir string) ([]byte, erro
 	}
 
 	return append(result, '\n'), nil
+}
+
+func readOpenCodeAgentPrompt(settingsPath, agentKey string) (string, error) {
+	if strings.TrimSpace(settingsPath) == "" || strings.TrimSpace(agentKey) == "" {
+		return "", nil
+	}
+
+	data, err := os.ReadFile(settingsPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "", nil
+		}
+		return "", fmt.Errorf("read OpenCode settings %q: %w", settingsPath, err)
+	}
+
+	var root map[string]any
+	if err := json.Unmarshal(data, &root); err != nil {
+		return "", nil
+	}
+
+	agentsRaw, ok := root["agent"]
+	if !ok {
+		return "", nil
+	}
+	agentsMap, ok := agentsRaw.(map[string]any)
+	if !ok {
+		return "", nil
+	}
+	agentRaw, ok := agentsMap[agentKey]
+	if !ok {
+		return "", nil
+	}
+	agentMap, ok := agentRaw.(map[string]any)
+	if !ok {
+		return "", nil
+	}
+	prompt, _ := agentMap["prompt"].(string)
+	return prompt, nil
 }
 
 // installOpenCodePlugins copies the background-agents plugin and installs its
@@ -901,6 +1006,8 @@ func sddOrchestratorAsset(agent model.AgentID) string {
 		return "windsurf/sdd-orchestrator.md"
 	case model.AgentCursor:
 		return "cursor/sdd-orchestrator.md"
+	case model.AgentKimi:
+		return "kimi/sdd-orchestrator.md"
 	case model.AgentQwenCode:
 		return "qwen/sdd-orchestrator.md"
 	case model.AgentKiroIDE:
@@ -1046,7 +1153,7 @@ func stripBareOrchestratorForFilePrompt(content string) string {
 }
 
 const instructionsFrontmatter = "---\n" +
-	"name: Gentle AI Persona\n" +
+	"name: Gentle-QA Persona\n" +
 	"description: Gentleman persona with SDD orchestration and Engram protocol\n" +
 	"applyTo: \"**\"\n" +
 	"---\n"

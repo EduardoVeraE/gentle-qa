@@ -20,6 +20,13 @@ type InjectionResult struct {
 	Files   []string
 }
 
+// bootstrapper is an optional adapter capability: if an adapter implements
+// this interface, any injector that writes Jinja modules will first ensure
+// the base template (entry point) exists.
+type bootstrapper interface {
+	BootstrapTemplate(homeDir string) error
+}
+
 // EngramLookPath is the function used to resolve the engram binary path.
 // It is a package-level variable so it can be replaced in tests — both from
 // within the engram package and from external test packages (e.g. golden_test.go).
@@ -190,6 +197,17 @@ func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 		changed = changed || mcpWrite.Changed
 		files = append(files, mcpPath)
 
+		if adapter.Agent() == model.AgentAntigravity {
+			settingsWrite, err := ensureAntigravitySettings(homeDir, adapter)
+			if err != nil {
+				return InjectionResult{}, err
+			}
+			changed = changed || settingsWrite.Changed
+			if settingsWrite.Path != "" {
+				files = append(files, settingsWrite.Path)
+			}
+		}
+
 	case model.StrategyTOMLFile:
 		// Codex: upsert [mcp_servers.engram] block and instruction-file keys
 		// in ~/.codex/config.toml, then write instruction files.
@@ -245,6 +263,26 @@ func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 			changed = changed || mdWrite.Changed
 			files = append(files, promptPath)
 
+		case model.StrategyJinjaModules:
+			// Ensure the base template exists for Jinja-based agents.
+			if bs, ok := adapter.(bootstrapper); ok {
+				if err := bs.BootstrapTemplate(homeDir); err != nil {
+					return InjectionResult{}, fmt.Errorf("bootstrap template: %w", err)
+				}
+			}
+
+			// Write the Engram protocol as a standalone Jinja include module.
+			// The static KIMI.md template references it via {% include "engram-protocol.md" %}.
+			configDir := adapter.GlobalConfigDir(homeDir)
+			protocolContent := assets.MustRead("claude/engram-protocol.md")
+			modulePath := filepath.Join(configDir, "engram-protocol.md")
+			mdWrite, err := filemerge.WriteFileAtomic(modulePath, []byte(protocolContent), 0o644)
+			if err != nil {
+				return InjectionResult{}, err
+			}
+			changed = changed || mdWrite.Changed
+			files = append(files, modulePath)
+
 		default:
 			promptPath := adapter.SystemPromptFile(homeDir)
 			protocolContent := assets.MustRead("claude/engram-protocol.md")
@@ -266,6 +304,40 @@ func Inject(homeDir string, adapter agents.Adapter) (InjectionResult, error) {
 	}
 
 	return InjectionResult{Changed: changed, Files: files}, nil
+}
+
+type settingsBootstrapResult struct {
+	Changed bool
+	Path    string
+}
+
+func ensureAntigravitySettings(homeDir string, adapter agents.Adapter) (settingsBootstrapResult, error) {
+	settingsPath := adapter.SettingsPath(homeDir)
+	if settingsPath == "" {
+		return settingsBootstrapResult{}, nil
+	}
+
+	if _, err := os.Stat(settingsPath); err == nil {
+		return settingsBootstrapResult{Path: settingsPath}, nil
+	} else if !os.IsNotExist(err) {
+		return settingsBootstrapResult{}, fmt.Errorf("stat antigravity settings %q: %w", settingsPath, err)
+	}
+
+	sourcePath := filepath.Join(homeDir, ".gemini", "settings.json")
+	content, err := os.ReadFile(sourcePath)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return settingsBootstrapResult{}, fmt.Errorf("read gemini settings %q: %w", sourcePath, err)
+		}
+		content = []byte("{}")
+	}
+
+	writeResult, err := filemerge.WriteFileAtomic(settingsPath, content, 0o644)
+	if err != nil {
+		return settingsBootstrapResult{}, err
+	}
+
+	return settingsBootstrapResult{Changed: writeResult.Changed, Path: settingsPath}, nil
 }
 
 // writeCodexInstructionFiles writes the Engram memory protocol and compact prompt

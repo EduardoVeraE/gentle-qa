@@ -25,7 +25,7 @@ This is NOT just an AI agent installer. This is a **QA ecosystem configurator** 
 
 **After**: Your agent has memory, testing skills, SDD workflow, and an SDET persona that helps you ship quality software — not just code.
 
-### 9 Supported Agents
+### 10 Supported Agents
 
 | Agent | Delegation Model | Key Feature |
 |-------|:---:|---|
@@ -38,6 +38,7 @@ This is NOT just an AI agent installer. This is a **QA ecosystem configurator** 
 | **Windsurf** | Solo-agent | Plan Mode, Code Mode, native workflows |
 | **Antigravity** | Solo-agent + Mission Control | Built-in Browser/Terminal sub-agents |
 | **Kiro IDE** | Full (native subagents) | Native `~/.kiro/agents/` + steering orchestration |
+| **Qwen Code** | Full (native sub-agents) | Slash commands, `~/.qwen/commands/`, `auto_edit` mode |
 
 ---
 
@@ -187,6 +188,16 @@ engram tui                    # Visual memory browser
 | [Architecture & Development](docs/architecture.md) | Codebase layout, testing, and relationship to Gentleman.Dots |
 
 ---
+
+## Community Highlights
+
+This project gets better when the community builds on top of it.
+
+### Community Integrations
+
+- [sdd-engram-plugin](https://github.com/j0k3r-dev-rgl/sdd-engram-plugin) — manage OpenCode SDD profiles and browse Engram memories directly from OpenCode, with runtime profile activation and no restart required.
+
+Using a tool like this? Gentle-QA now supports a safer OpenCode sync compatibility path for external single-active profile managers.
 
 ## Contributors
 

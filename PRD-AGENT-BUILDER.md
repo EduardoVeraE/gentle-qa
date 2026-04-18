@@ -610,7 +610,7 @@ func (e *OpenCodeEngine) Generate(ctx context.Context, prompt string) (string, e
 ```mermaid
 sequenceDiagram
     participant User
-    participant TUI as Gentle AI TUI
+    participant TUI as Gentle-QA TUI
     participant Builder as Agent Builder
     participant Engine as Generation Engine<br/>(Claude/OpenCode/etc.)
     participant Parser as Output Parser
