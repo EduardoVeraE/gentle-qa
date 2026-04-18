@@ -1,18 +1,17 @@
 <div align="center">
 
-<img alt="Gentle-QA Banner" src="docs/banner.png" />
+  <img alt="Gentle-QA Banner" src="docs/banner.png" />
 
-<h1>Gentle-QA</h1>
+  <h1>Gentle-QA</h1>
 
-<p><strong>One command. Any test. Any framework. Your QA agents — configured and ready.</strong></p>
+  <p><strong>One command. Any test. Any framework. Your QA agents — configured and ready.</strong></p>
 
-<p>
-<a href="https://github.com/EduardoVeraE/Gentle-QA/releases"><img src="https://img.shields.io/github/v/release/EduardoVeraE/Gentle-QA" alt="Release"></a>
-<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-<img src="https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go&logoColor=white" alt="Go 1.24+">
-<img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform">
-</p>
-
+  <p>
+    <a href="https://github.com/EduardoVeraE/Gentle-QA/releases"><img src="https://img.shields.io/github/v/release/EduardoVeraE/Gentle-QA" alt="Release"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+    <img src="https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go&logoColor=white" alt="Go 1.24+" />
+    <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform" />
+  </p>
 </div>
 
 ---
@@ -118,16 +117,94 @@ Download the binary for your platform from [GitHub Releases](https://github.com/
 
 ## QA Skills Included
 
-Gentle-QA ships with curated skills for the most common QA frameworks. Your AI agent gets context-aware assistance for all of them out of the box.
-
-| Skill | What it covers |
-|-------|---------------|
-| **Playwright (BDD)** | Cucumber/Gherkin integration, Page Objects, fixture composition |
-| **Playwright (CLI)** | Test runner flags, trace viewer, screenshot/video debugging |
-| **Karate DSL** | API testing, mocking, GraphQL, performance scenarios |
-| **k6 Load Testing** | Virtual users, thresholds, scenarios, cloud execution |
+Gentle-QA ships with **20+ curated skills** across every layer of the quality engineering stack. Your AI agent gets context-aware assistance for all of them out of the box — skills auto-activate based on the files you touch and the task at hand.
 
 > The **SDET persona** orients your agent toward quality-first thinking: test pyramid strategy, shift-left practices, risk-based coverage, and CI/CD gate design.
+
+---
+
+### Playwright Testing
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **playwright-e2e-testing** | Writing E2E tests for UI flows, auth, forms | Page Object Model, fixtures, network interception, screenshot comparison, parallel execution |
+| **playwright-bdd** | BDD-style tests (Given/When/Then) | Cucumber/Gherkin integration, fixture composition |
+| **playwright-regression-testing** | Building regression suites or debugging flaky tests | Regression strategy, flaky test management, CI/CD integration |
+| **a11y-playwright-testing** | Accessibility testing (WCAG 2.1 AA) | ARIA patterns, axe-core integration, WCAG checklist |
+| **webapp-playwright-testing** | Web app UI validation | Responsive testing, multi-viewport, mobile device emulation |
+| **playwright-cli** | Running and debugging Playwright from CLI | Test runner flags, trace viewer, screenshot/video debugging |
+
+---
+
+### API Testing
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **api-testing** | Creating or debugging API tests (REST, GraphQL) | Schema validation (Zod/JSON Schema), auth flows (OAuth2, JWT), error state coverage, contract testing, idempotency — Playwright TypeScript and REST Assured (Java 21+) |
+
+---
+
+### Selenium Testing
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **webapp-selenium-testing** | Web app automation with Selenium | Locator strategies, Page Object Model, wait strategies |
+| **accessibility-selenium-testing** | Accessibility testing with Selenium | axe-core patterns, WCAG 2.1 AA checklist |
+
+---
+
+### Load & Performance Testing
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **k6-load-test** | Performance and load testing | Virtual users, thresholds, scenarios, cloud execution |
+
+---
+
+### Manual QA & Planning
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **qa-manual-istqb** | ISTQB-aligned test planning and design | Full lifecycle: test planning → analysis → design → execution → completion. Techniques: EP, BVA, decision tables, state transitions. Templates: test plan, bug report, regression suite, exploratory charter, traceability matrix |
+| **qa-test-planner** | Creating test plans, test cases, and bug reports | Markdown/CSV templates for planification, regression suite definition, manual test case generation |
+
+---
+
+### Other Frameworks
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **karate-dsl** | API testing with Karate | BDD-style API tests, mocking, GraphQL, performance scenarios |
+
+---
+
+### Workflow & Tooling
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **go-testing** | Writing Go tests (unit, integration, Bubbletea TUI) | teatest, mocking patterns, TUI test harness |
+| **skill-creator** | Creating a new skill for the project | Skill scaffolding, metadata, compact rules |
+| **skill-registry** | Updating the skill registry after adding/removing skills | Scans all skills, writes `.atl/skill-registry.md`, saves to Engram |
+| **branch-pr** | Creating GitHub PRs | Issue-first enforcement, PR template, structured description |
+| **issue-creation** | Reporting bugs or requesting features on GitHub | Issue template, structured format |
+| **judgment-day** | Adversarial code review | Launches two independent blind judge agents in parallel, synthesizes findings, auto-fixes, re-judges |
+
+---
+
+### Recommended Usage by Scenario
+
+| Scenario | Skills to activate |
+|----------|-------------------|
+| Writing E2E tests for a web app | `playwright-e2e-testing` + `qa-test-planner` |
+| Testing REST/GraphQL APIs | `api-testing` + `qa-test-planner` |
+| Accessibility audit | `a11y-playwright-testing` |
+| Performance / load testing | `k6-load-test` |
+| ISTQB-aligned test plan & design | `qa-manual-istqb` |
+| Debugging flaky tests in CI | `playwright-regression-testing` |
+| Structured change (new feature, big refactor) | `/sdd-init` → `/sdd-explore` → `/sdd-propose` → `/sdd-apply` |
+| Code review with quality bar | `judgment-day` |
+
+Skills activate automatically based on context. You can also invoke any skill explicitly: `/playwright-e2e-testing`, `/qa-test-planner`, `/api-testing`, etc.
 
 ---
 
