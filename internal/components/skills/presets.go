@@ -59,10 +59,7 @@ func SkillsForPreset(preset model.PresetID) []model.SkillID {
 	case model.PresetEcosystemOnly:
 		return copySkills(append(sddSkills, foundationSkills...))
 	case model.PresetFullGentleman:
-		all := make([]model.SkillID, 0, len(sddSkills)+len(foundationSkills))
-		all = append(all, sddSkills...)
-		all = append(all, foundationSkills...)
-		return all
+		return AllSkillIDs()
 	case model.PresetQEFront:
 		all := make([]model.SkillID, 0, len(sddSkills)+len(qeFrontSkills))
 		all = append(all, sddSkills...)
