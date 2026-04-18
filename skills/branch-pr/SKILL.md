@@ -1,7 +1,7 @@
 ---
 name: gentle-qa-branch-pr
 description: >
-  PR creation workflow for Gentle AI following the issue-first enforcement system.
+  PR creation workflow for Gentle-QA following the issue-first enforcement system.
   Trigger: When creating a pull request, opening a PR, or preparing changes for review.
 license: Apache-2.0
 metadata:
@@ -9,7 +9,7 @@ metadata:
   version: "2.0"
 ---
 
-# Gentle AI — Branch & PR Skill
+# Gentle-QA — Branch & PR Skill
 
 ## When to Use
 

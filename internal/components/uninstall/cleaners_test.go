@@ -56,7 +56,7 @@ func TestRemoveMarkdownSections_RemovesOnlyManagedBlock(t *testing.T) {
 func TestRemoveManagedPersonaPreamble_PreservesManagedSuffix(t *testing.T) {
 	input := strings.Join([]string{
 		"---",
-		"name: Gentle AI Persona",
+		"name: Gentle-QA Persona",
 		"description: Teaching-oriented persona with SDD orchestration and Engram protocol",
 		"applyTo: \"**\"",
 		"---",
@@ -76,7 +76,7 @@ func TestRemoveManagedPersonaPreamble_PreservesManagedSuffix(t *testing.T) {
 	if !changed {
 		t.Fatal("removeManagedPersonaPreamble() changed = false, want true")
 	}
-	if strings.Contains(updated, "name: Gentle AI Persona") || strings.Contains(updated, "## Personality") {
+	if strings.Contains(updated, "name: Gentle-QA Persona") || strings.Contains(updated, "## Personality") {
 		t.Fatalf("managed persona preamble still present:\n%s", updated)
 	}
 	if !strings.HasPrefix(updated, "<!-- gentle-qa:sdd-orchestrator -->") {
@@ -87,7 +87,7 @@ func TestRemoveManagedPersonaPreamble_PreservesManagedSuffix(t *testing.T) {
 func TestRemoveManagedPersonaPreamble_WithoutMarkerDoesNotDeleteContent(t *testing.T) {
 	input := strings.Join([]string{
 		"---",
-		"name: Gentle AI Persona",
+		"name: Gentle-QA Persona",
 		"description: Teaching-oriented persona with SDD orchestration and Engram protocol",
 		"---",
 		"",

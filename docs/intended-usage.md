@@ -68,6 +68,8 @@ If you want multi-mode in OpenCode:
 
 You can create multiple profiles (e.g., "cheap" for experimentation, "premium" for production) and switch between them freely.
 
+If you prefer a **runtime profile manager** that keeps profiles outside `opencode.json`, gentle-qa now supports that too. During sync, OpenCode can auto-detect external profile files under `~/.config/opencode/profiles/*.json` and switch to a safer compatibility path that preserves the active `sdd-orchestrator` prompt instead of overwriting it.
+
 **Full step-by-step guide**: [OpenCode SDD Profiles](opencode-profiles.md)
 
 ---
@@ -127,7 +129,7 @@ There's also an automated side: `sdd-init` runs the same registry logic internal
 
 ## The Golden Rule
 
-Gentle AI is an ecosystem **configurator**. It sets up your AI agent with memory, skills, workflows, and a persona -- then gets out of the way.
+Gentle-QA is an ecosystem **configurator**. It sets up your AI agent with memory, skills, workflows, and a persona -- then gets out of the way.
 
 The less you think about gentle-qa after installing, the better it's working.
 

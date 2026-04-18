@@ -58,7 +58,7 @@ func removeManagedPersonaPreamble(content string) (string, bool) {
 }
 
 func looksLikeManagedPersonaPrefix(prefix string) bool {
-	if strings.Contains(prefix, "name: Gentle AI Persona") && strings.Contains(prefix, "description: Teaching-oriented persona") {
+	if strings.Contains(prefix, "name: Gentle-QA Persona") && strings.Contains(prefix, "description: Teaching-oriented persona") {
 		return true
 	}
 

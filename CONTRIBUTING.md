@@ -1,6 +1,6 @@
-# Contributing to Gentle AI
+# Contributing to Gentle-QA
 
-Thank you for your interest in contributing to **Gentle AI** (`gga`) — a Go TUI installer for AI agent environments.
+Thank you for your interest in contributing to **Gentle-QA** (`gga`) — a Go TUI installer for AI agent environments.
 
 Before you dive in, please read this guide fully. We have a structured workflow to keep the project organized and maintainable.
 
