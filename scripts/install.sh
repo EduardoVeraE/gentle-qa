@@ -14,10 +14,10 @@ set -euo pipefail
 #   ./install.sh
 # ============================================================================
 
-GITHUB_OWNER="Gentleman-Programming"
-GITHUB_REPO="gentle-qa"
+GITHUB_OWNER="EduardoVeraE"
+GITHUB_REPO="Gentle-QA"
 BINARY_NAME="gentle-qa"
-BREW_TAP="Gentleman-Programming/homebrew-tap"
+BREW_TAP="EduardoVeraE/homebrew-tap"
 
 # ============================================================================
 # Color support
