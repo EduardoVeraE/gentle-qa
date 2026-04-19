@@ -12,8 +12,8 @@ package update
 var Tools = []ToolInfo{
 	{
 		Name:          "gentle-qa",
-		Owner:         "Gentleman-Programming",
-		Repo:          "gentle-qa",
+		Owner:         "EduardoVeraE",
+		Repo:          "Gentle-QA",
 		DetectCmd:     nil, // version comes from build-time ldflags (app.Version)
 		VersionPrefix: "v",
 		// gentle-qa: brew on macOS, binary release download on Linux/Windows.
