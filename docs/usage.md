@@ -189,7 +189,7 @@ See [OpenCode SDD Profiles](opencode-profiles.md) for the full guide.
 
 ```bash
 # First time: install everything
-brew install gentleman-programming/tap/gentle-qa
+brew install EduardoVeraE/tap/gentle-qa
 gentle-qa install --agent claude-code,cursor --preset full-gentleman
 
 # After a new release: upgrade + sync

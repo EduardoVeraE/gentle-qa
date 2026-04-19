@@ -299,7 +299,7 @@ func TestCheckAll(t *testing.T) {
 		path := r.URL.Path
 		var release githubRelease
 		switch {
-		case contains(path, "gentle-qa"):
+		case contains(path, "Gentle-QA"):
 			release = githubRelease{TagName: "v1.5.0", HTMLURL: "https://github.com/EduardoVeraE/Gentle-QA/releases/tag/v1.5.0"}
 		case contains(path, "engram"):
 			release = githubRelease{TagName: "v0.4.0", HTMLURL: "https://github.com/Gentleman-Programming/engram/releases/tag/v0.4.0"}
@@ -655,7 +655,7 @@ func TestRegistryContents(t *testing.T) {
 		owner string
 		repo  string
 	}{
-		"gentle-qa": {owner: "Gentleman-Programming", repo: "gentle-qa"},
+		"gentle-qa": {owner: "EduardoVeraE", repo: "Gentle-QA"},
 		"engram":    {owner: "Gentleman-Programming", repo: "engram"},
 		"gga":       {owner: "Gentleman-Programming", repo: "gentleman-guardian-angel"},
 	}
@@ -904,7 +904,7 @@ func TestCheckFiltered_DevBuildSkipNotEligible(t *testing.T) {
 		path := r.URL.Path
 		var release githubRelease
 		switch {
-		case contains(path, "gentle-qa"):
+		case contains(path, "Gentle-QA"):
 			release = githubRelease{TagName: "v9.9.9"}
 		case contains(path, "engram"):
 			release = githubRelease{TagName: "v2.0.0"}
