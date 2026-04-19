@@ -66,13 +66,13 @@ Test coverage:
 
 ## Relationship to Gentleman.Dots
 
-| | Gentleman.Dots | AI Gentle Stack |
+| | Gentleman.Dots | Gentle-QA |
 |--|---------------|-----------------|
 | **Purpose** | Dev environment (editors, shells, terminals) | AI development layer (agents, memory, skills) |
 | **Installs** | Neovim, Fish/Zsh, Tmux/Zellij, Ghostty | Configures Claude Code, OpenCode, Gemini CLI, Cursor, VS Code Copilot, Codex, Windsurf, Antigravity |
 | **Overlap** | None — complementary | None — different layer |
 
-Install Gentleman.Dots first for your dev environment, then AI Gentle Stack for the AI layer on top.
+Install Gentleman.Dots first for your dev environment, then Gentle-QA for the AI layer on top.
 
 ---
 

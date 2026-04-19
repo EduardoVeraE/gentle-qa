@@ -278,7 +278,7 @@ func Execute(ctx context.Context, results []update.UpdateResult, profile system.
 			NewVersion: r.LatestVersion,
 			Method:     effectiveMethod(r.Tool, profile),
 			Status:     UpgradeSkipped,
-			ManualHint: fmt.Sprintf("source build — upgrade manually or install a release binary from https://github.com/Gentleman-Programming/%s/releases", r.Tool.Repo),
+			ManualHint: fmt.Sprintf("source build — upgrade manually or install a release binary from https://github.com/%s/%s/releases", r.Tool.Owner, r.Tool.Repo),
 		})
 	}
 
