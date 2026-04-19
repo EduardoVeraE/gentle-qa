@@ -1,71 +1,64 @@
 package styles
 
 import (
+	"bytes"
+	_ "embed"
+	"fmt"
+	"image"
+	_ "image/png"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/image/draw"
 )
 
-// logoLines contains the braille ASCII art for the Gentle-QA owl mascot
-// (inspired by the GitHub Copilot owl style).
-var logoLines = []string{
-	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⢀⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠙⠻⠿⠿⠿⠿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠛⠿⠿⠿⠿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⡿⠿⠛⠉⠁⠀⠀⠀⠀⠉⠙⠻⢿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⠟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠻⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⣼⣿⡿⠃⠀⠀⠀⢀⣴⣿⣷⡄⠀⠀⢠⣾⣿⣦⡀⠀⠀⠘⢿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⢸⣿⣿⠁⠀⠀⠀⠀⣿⣿⣿⣿⡇⠀⠀⢸⣿⣿⣿⣿⠀⠀⠀⠈⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⢸⣿⣿⠀⠀⠀⠀⠀⠙⠿⠿⠿⠁⠀⠀⠈⠿⠿⠿⠋⠀⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⢸⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⣶⣶⣶⡆⠀⠀⠀⠀⠀⠀⠀⣀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠈⢿⣿⣷⡀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⣠⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣦⣀⠀⠀⠀⠀⠘⠛⠛⠛⠋⠀⠀⠀⠀⣀⣴⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠿⣿⣿⣶⣤⣄⣀⣀⣀⣀⣀⣠⣤⣶⣿⣿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠛⠿⠿⣿⣿⣿⠿⠿⠛⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-}
+//go:embed cosmonaut.png
+var cosmonautPNG []byte
 
-// gradientColors defines the top-to-bottom gradient for the Gentle-QA owl logo.
-// Teal → Blue → Lavender → Mauve → Green — QE testing palette.
-var gradientColors = []lipgloss.Color{
-	ColorTeal,     // band 1 — ear tufts
-	ColorBlue,     // band 2 — upper face
-	ColorLavender, // band 3 — eyes
-	ColorMauve,    // band 4 — lower face
-	ColorGreen,    // band 5 — neck/body
-}
+// logoWidth is the output width in terminal columns (one pixel per column).
+const logoWidth = 60
 
-// brandLine is rendered below the owl art: mascot text face + product name.
-const brandLine = "  (^.^)  Gentle-QA"
-
-// RenderLogo returns the Gentle-QA owl logo with gradient + brand line.
+// RenderLogo returns the Gentle-QA cosmonaut rendered with Unicode half-block
+// characters (▀) and ANSI TrueColor escape codes.
+//
+// Each character cell covers two pixel rows: the upper pixel sets the
+// foreground color and the lower pixel sets the background color.
+// A reset sequence (\x1b[0m) is emitted at the end of every line.
 func RenderLogo() string {
-	total := len(logoLines)
-	if total == 0 {
+	src, _, err := image.Decode(bytes.NewReader(cosmonautPNG))
+	if err != nil {
 		return ""
 	}
 
-	bands := len(gradientColors)
-	var b strings.Builder
-
-	for i, line := range logoLines {
-		bandIdx := (i * bands) / total
-		if bandIdx >= bands {
-			bandIdx = bands - 1
-		}
-		style := lipgloss.NewStyle().Foreground(gradientColors[bandIdx])
-		b.WriteString(style.Render(line))
-		b.WriteByte('\n')
+	srcBounds := src.Bounds()
+	targetW := logoWidth
+	targetH := srcBounds.Dy() * targetW / srcBounds.Dx()
+	if targetH == 0 {
+		return ""
 	}
 
-	// Brand line: mascot face (Mauve) + product name (Lavender bold)
-	mascotStyle := lipgloss.NewStyle().Foreground(ColorMauve).Bold(true)
-	nameStyle := lipgloss.NewStyle().Foreground(ColorLavender).Bold(true)
-	b.WriteString(mascotStyle.Render("  (^.^)"))
-	b.WriteString(nameStyle.Render("  Gentle-QA"))
+	dst := image.NewRGBA(image.Rect(0, 0, targetW, targetH))
+	draw.BiLinear.Scale(dst, dst.Bounds(), src, srcBounds, draw.Over, nil)
+
+	var b strings.Builder
+
+	for y := 0; y < targetH; y += 2 {
+		for x := 0; x < targetW; x++ {
+			top := dst.RGBAAt(x, y)
+			var br, bg, bb uint8
+			if y+1 < targetH {
+				bot := dst.RGBAAt(x, y+1)
+				br, bg, bb = bot.R, bot.G, bot.B
+			}
+			fmt.Fprintf(&b, "\x1b[38;2;%d;%d;%dm\x1b[48;2;%d;%d;%dm▀",
+				top.R, top.G, top.B,
+				br, bg, bb)
+		}
+		b.WriteString("\x1b[0m\n")
+	}
+
+	// Brand line: visor face (Teal #9ccfd8) + product name (Lavender #c4a7e7)
+	b.WriteString("\x1b[38;2;156;207;216m\x1b[1m  [*_*]\x1b[0m")
+	b.WriteString("\x1b[38;2;196;167;231m\x1b[1m  Gentle-QA\x1b[0m")
 
 	return b.String()
 }
