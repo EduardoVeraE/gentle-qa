@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
     gentle-qa — Install Script for Windows
-    One command to configure any AI coding agent on any OS.
+    One command. Any test. Any framework.
 
 .DESCRIPTION
     Downloads and installs the gentle-qa binary for Windows.
@@ -63,7 +63,7 @@ function Show-Banner {
     Write-Host " | |_| |  __/ | | | |_| |  __/_____/ ___ \ | | " -ForegroundColor Cyan
     Write-Host "  \____|\___|_| |_|\__|_|\___|    /_/   \_\___|" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "  One command to configure any AI coding agent on any OS" -ForegroundColor DarkGray
+    Write-Host "  One command. Any test. Any framework." -ForegroundColor DarkGray
     Write-Host ""
 }
 
@@ -238,7 +238,11 @@ function Install-ViaBinary {
         # Determine install directory
         $installDir = $InstallDir
         if (-not $installDir) {
-            $installDir = Join-Path $env:LOCALAPPDATA "gentle-qa\bin"
+            if ([Environment]::OSVersion.Platform -eq "Win32NT" -and [Environment]::Is64BitOperatingSystem) {
+                $installDir = Join-Path $env:LOCALAPPDATA "Programs\gentle-qa"
+            } else {
+                $installDir = Join-Path $env:USERPROFILE ".local\bin"
+            }
         }
 
         if (-not (Test-Path $installDir)) {
@@ -288,7 +292,7 @@ function Test-Installation {
         $gopath = & go env GOPATH 2>$null
     }
     $locations = @(
-        (Join-Path $env:LOCALAPPDATA "gentle-qa\bin\$BINARY_NAME.exe")
+        (Join-Path $env:LOCALAPPDATA "gentle-qa\$BINARY_NAME.exe")
     )
     if ($gopath) {
         $locations += (Join-Path $gopath "bin\$BINARY_NAME.exe")
@@ -315,8 +319,8 @@ function Show-NextSteps {
     Write-Host "Installation complete!" -ForegroundColor Green
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor White
-    Write-Host "  1. Run '$BINARY_NAME' to start the TUI installer" -ForegroundColor Cyan
-    Write-Host "  2. Select your AI agent(s) and tools to configure" -ForegroundColor Cyan
+    Write-Host "  1. Run '$BINARY_NAME' to start the TUI" -ForegroundColor Cyan
+    Write-Host "  2. Configure your QA tools and testing frameworks" -ForegroundColor Cyan
     Write-Host "  3. Follow the interactive prompts" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "For help: $BINARY_NAME --help" -ForegroundColor DarkGray
