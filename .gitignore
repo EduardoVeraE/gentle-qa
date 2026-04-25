@@ -1,5 +1,4 @@
 # Binaries
-/gentle-ai
 /gentle-qa
 *.exe
 *.dll
@@ -38,3 +37,5 @@ dist/
 
 # Engram persistent memory
 .engram/
+.claude/
+.beads

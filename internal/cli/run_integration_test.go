@@ -797,7 +797,7 @@ func TestRunInstallEngramFallsBackToInjectWhenSetupFails(t *testing.T) {
 }
 
 func TestRunInstallEngramSetupStrictFailsWhenSetupFails(t *testing.T) {
-	t.Setenv("GENTLE_AI_ENGRAM_SETUP_STRICT", "1")
+	t.Setenv("GENTLE_QA_ENGRAM_SETUP_STRICT", "1")
 
 	home := t.TempDir()
 	restoreHome := osUserHomeDir

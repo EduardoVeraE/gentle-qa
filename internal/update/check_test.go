@@ -844,14 +844,14 @@ func TestCheckFiltered_UnknownToolIgnored(t *testing.T) {
 	}
 }
 
-// TestCheckFiltered_DevBuildSemanticsForGentleAI verifies the design requirement:
+// TestCheckFiltered_DevBuildSemanticsForGentleQA verifies the design requirement:
 // when the running gentle-qa binary reports version "dev", it is identified as a
 // DevBuild and NOT reported as UpdateAvailable or VersionUnknown.
 //
 // The spec says:
 //   - Dev build MUST be reported as development-build semantic
 //   - gentle-qa self-upgrade is skipped while engram/gga remain eligible
-func TestCheckFiltered_DevBuildSemanticsForGentleAI(t *testing.T) {
+func TestCheckFiltered_DevBuildSemanticsForGentleQA(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
