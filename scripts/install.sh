@@ -65,9 +65,14 @@ Options:
   -h, --help        Show this help
 
 Install methods (auto-detected in priority order):
-  1. brew    — Homebrew tap (recommended)
-  2. go      — go install from source
-  3. binary  — Pre-built binary from GitHub Releases
+  1. brew    — Homebrew tap (recommended for macOS/Linux)
+  2. binary  — Pre-built binary from GitHub Releases (all platforms)
+  3. go      — go install from source
+
+Supported platforms:
+  - macOS (Intel & Apple Silicon)
+  - Linux (Intel & ARM)
+  - Windows (via MSYS2, MINGW, or Cygwin)
 
 Examples:
   curl -sL https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/scripts/install.sh | bash
@@ -87,10 +92,14 @@ detect_platform() {
     uname_os="$(uname -s)"
     uname_arch="$(uname -m)"
 
+    # Detect Windows environments (MSYS, MINGW, CYGWIN)
+    # On Windows, uname -s returns something like MSYS_NT-10.0-19045 or MINGW64_NT-10.0-19045
     case "$uname_os" in
-        Darwin) OS="darwin"; OS_LABEL="macOS"; GORELEASER_OS="darwin" ;;
-        Linux)  OS="linux";  OS_LABEL="Linux"; GORELEASER_OS="linux" ;;
-        *)      fatal "Unsupported OS: $uname_os. Only macOS and Linux are supported." ;;
+        Darwin)    OS="darwin";  OS_LABEL="macOS";   GORELEASER_OS="darwin" ;;
+        Linux)     OS="linux";   OS_LABEL="Linux";   GORELEASER_OS="linux" ;;
+        MINGW*|MSYS*|CYGWIN*)  
+                       OS="windows"; OS_LABEL="Windows"; GORELEASER_OS="windows" ;;
+        *)         fatal "Unsupported OS: $uname_os. Only macOS, Linux, and Windows (MSYS/MINGW/CYGWIN) are supported." ;;
     esac
 
     case "$uname_arch" in
@@ -108,16 +117,35 @@ detect_platform() {
 # From .goreleaser.yaml:
 #   name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 #
-# GoReleaser v2 {{ .Os }} produces GOOS values (lowercase: darwin, linux)
+# GoReleaser v2 {{ .Os }} produces GOOS values (lowercase: darwin, linux, windows)
 # GoReleaser {{ .Arch }} produces GOARCH values (amd64, arm64)
 # Examples:
 #   gentle-qa_1.0.0_darwin_arm64.tar.gz
 #   gentle-qa_1.0.0_linux_amd64.tar.gz
+#   gentle-qa_1.0.0_windows_amd64.zip    (Windows uses .zip)
 # ============================================================================
 
 get_archive_name() {
     local version="$1"
-    echo "${BINARY_NAME}_${version}_${GORELEASER_OS}_${ARCH}.tar.gz"
+    local archive_ext="tar.gz"
+    
+    # Windows uses .zip instead of .tar.gz
+    if [ "$OS" = "windows" ]; then
+        archive_ext="zip"
+    fi
+    
+    echo "${BINARY_NAME}_${version}_${GORELEASER_OS}_${ARCH}.${archive_ext}"
+}
+
+# Get the binary name with extension (Windows uses .exe)
+get_binary_name() {
+    local bin_name="$BINARY_NAME"
+    
+    if [ "$OS" = "windows" ]; then
+        bin_name="${BINARY_NAME}.exe"
+    fi
+    
+    echo "$bin_name"
 }
 
 # ============================================================================
@@ -327,21 +355,37 @@ install_binary() {
         warn "Could not download checksums.txt — skipping verification"
     fi
 
-    # Extract binary
+    # Extract binary (Windows uses .zip, others use .tar.gz)
     info "Extracting ${BINARY_NAME}..."
-    if ! tar -xzf "${tmpdir}/${archive_name}" -C "$tmpdir"; then
-        fatal "Failed to extract archive"
+    local binary_name
+    binary_name="$(get_binary_name)"
+    
+    if [ "$OS" = "windows" ]; then
+        if ! unzip -q "${tmpdir}/${archive_name}" -d "$tmpdir"; then
+            fatal "Failed to extract archive"
+        fi
+    else
+        if ! tar -xzf "${tmpdir}/${archive_name}" -C "$tmpdir"; then
+            fatal "Failed to extract archive"
+        fi
     fi
 
-    if [ ! -f "${tmpdir}/${BINARY_NAME}" ]; then
-        fatal "Binary '${BINARY_NAME}' not found in archive"
+    if [ ! -f "${tmpdir}/${binary_name}" ]; then
+        fatal "Binary '${binary_name}' not found in archive"
     fi
 
     # Determine install directory
     local install_dir="${INSTALL_DIR:-}"
 
     if [ -z "$install_dir" ]; then
-        if [ -d "/usr/local/bin" ] && [ -w "/usr/local/bin" ]; then
+        if [ "$OS" = "windows" ]; then
+            # Windows: use %LOCALAPPDATA%\Programs or %USERPROFILE%\.local\bin
+            if [ -n "${LOCALAPPDATA:-}" ] && [ -d "$LOCALAPPDATA/Programs" ]; then
+                install_dir="$LOCALAPPDATA/Programs/$BINARY_NAME"
+            else
+                install_dir="$USERPROFILE/.local/bin"
+            fi
+        elif [ -d "/usr/local/bin" ] && [ -w "/usr/local/bin" ]; then
             install_dir="/usr/local/bin"
         elif [ "$(id -u)" = "0" ]; then
             install_dir="/usr/local/bin"
@@ -354,25 +398,47 @@ install_binary() {
     mkdir -p "$install_dir"
 
     # Install binary
-    info "Installing to ${install_dir}/${BINARY_NAME}..."
-    if cp "${tmpdir}/${BINARY_NAME}" "${install_dir}/${BINARY_NAME}" 2>/dev/null; then
-        chmod +x "${install_dir}/${BINARY_NAME}"
-    elif command -v sudo &>/dev/null; then
-        warn "Permission denied. Trying with sudo..."
-        sudo cp "${tmpdir}/${BINARY_NAME}" "${install_dir}/${BINARY_NAME}"
-        sudo chmod +x "${install_dir}/${BINARY_NAME}"
+    local binary_name
+    binary_name="$(get_binary_name)"
+    
+    info "Installing to ${install_dir}/${binary_name}..."
+    if [ "$OS" = "windows" ]; then
+        # Windows: create directory if needed, copy binary
+        mkdir -p "$install_dir"
+        if cp "${tmpdir}/${binary_name}" "${install_dir}/${binary_name}" 2>/dev/null; then
+            : # No chmod needed on Windows
+        elif command -v sudo &>/dev/null; then
+            warn "Permission denied. Trying with sudo..."
+            sudo cp "${tmpdir}/${binary_name}" "${install_dir}/${binary_name}"
+        else
+            fatal "Cannot write to ${install_dir}. Run with sudo or use --dir to specify a writable directory."
+        fi
     else
-        fatal "Cannot write to ${install_dir}. Run with sudo or use --dir to specify a writable directory."
+        # Unix-like: copy and set executable bit
+        if cp "${tmpdir}/${binary_name}" "${install_dir}/${binary_name}" 2>/dev/null; then
+            chmod +x "${install_dir}/${binary_name}"
+        elif command -v sudo &>/dev/null; then
+            warn "Permission denied. Trying with sudo..."
+            sudo cp "${tmpdir}/${binary_name}" "${install_dir}/${binary_name}"
+            sudo chmod +x "${install_dir}/${binary_name}"
+        else
+            fatal "Cannot write to ${install_dir}. Run with sudo or use --dir to specify a writable directory."
+        fi
     fi
 
-    success "Installed ${BINARY_NAME} to ${install_dir}/${BINARY_NAME}"
+    success "Installed ${BINARY_NAME} to ${install_dir}/${binary_name}"
 
     # Check if install dir is in PATH
     if [[ ":$PATH:" != *":${install_dir}:"* ]]; then
         warn "${install_dir} is not in your PATH"
         echo ""
-        warn "Add this to your shell profile (~/.bashrc, ~/.zshrc, etc.):"
-        echo -e "  ${DIM}export PATH=\"\$PATH:${install_dir}\"${NC}"
+        if [ "$OS" = "windows" ]; then
+            warn "Add this to your PowerShell profile (\$PROFILE):"
+            echo -e "  \${DIM}\$env:PATH += \";${install_dir}\"${NC}"
+        else
+            warn "Add this to your shell profile (~/.bashrc, ~/.zshrc, etc.):"
+            echo -e "  \${DIM}export PATH=\"\$PATH:${install_dir}\"${NC}"
+        fi
         echo ""
     fi
 }
@@ -387,6 +453,9 @@ verify_installation() {
     # Allow PATH changes to take effect
     hash -r 2>/dev/null || true
 
+    local binary_name
+    binary_name="$(get_binary_name)"
+
     if command -v "$BINARY_NAME" &>/dev/null; then
         local version_output
         version_output="$("$BINARY_NAME" version 2>&1 || true)"
@@ -396,13 +465,21 @@ verify_installation() {
 
     # Check common locations even if not in PATH
     local locations=(
-        "/usr/local/bin/${BINARY_NAME}"
-        "${HOME}/.local/bin/${BINARY_NAME}"
-        "$(go env GOPATH 2>/dev/null || echo "")/bin/${BINARY_NAME}"
+        "/usr/local/bin/${binary_name}"
+        "${HOME}/.local/bin/${binary_name}"
+        "$(go env GOPATH 2>/dev/null || echo "")/bin/${binary_name}"
     )
 
+    # Add Windows-specific locations
+    if [ "$OS" = "windows" ]; then
+        locations+=(
+            "${LOCALAPPDATA:-${USERPROFILE}}/Programs/${BINARY_NAME}/${binary_name}"
+            "${USERPROFILE}/.local/bin/${binary_name}"
+        )
+    fi
+
     for loc in "${locations[@]}"; do
-        if [ -n "$loc" ] && [ -x "$loc" ]; then
+        if [ -n "$loc" ] && [ -f "$loc" ]; then
             local version_output
             version_output="$("$loc" version 2>&1 || true)"
             success "Found ${BINARY_NAME} at ${loc}: ${version_output}"
