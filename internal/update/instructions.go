@@ -8,7 +8,7 @@ import (
 func updateHint(tool ToolInfo, profile system.PlatformProfile) string {
 	switch tool.Name {
 	case "gentle-qa":
-		return gentleAIHint(profile)
+		return gentleQAHint(profile)
 	case "engram":
 		return engramHint(profile)
 	case "gga":
@@ -18,7 +18,7 @@ func updateHint(tool ToolInfo, profile system.PlatformProfile) string {
 	}
 }
 
-func gentleAIHint(profile system.PlatformProfile) string {
+func gentleQAHint(profile system.PlatformProfile) string {
 	switch profile.OS {
 	case "darwin":
 		return "brew upgrade gentle-qa"

@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	SetupModeEnvVar   = "GENTLE_AI_ENGRAM_SETUP_MODE"
-	SetupStrictEnvVar = "GENTLE_AI_ENGRAM_SETUP_STRICT"
+	SetupModeEnvVar   = "GENTLE_QA_ENGRAM_SETUP_MODE"
+	SetupStrictEnvVar = "GENTLE_QA_ENGRAM_SETUP_STRICT"
 )
 
 type SetupMode string

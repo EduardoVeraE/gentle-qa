@@ -1182,7 +1182,7 @@ type Preset struct {
 | Method | Command | Priority |
 |--------|---------|----------|
 | curl (recommended) | `curl -sL get.gentleman.ai/ai \| sh` | P0 |
-| Homebrew | `brew install Gentleman-Programming/tap/gentle-qa` | P0 |
+| Homebrew | `brew install EduardoVeraE/tap/gentle-qa` | P0 |
 | Go install | `go install github.com/EduardoVeraE/Gentle-QA/cmd/gentle-qa@latest` | P1 |
 | Direct binary | Download from GitHub Releases | P1 |
 | winget (Windows) | `winget install gentle-qa` | P2 |

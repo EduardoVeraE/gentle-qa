@@ -20,8 +20,8 @@ var lookPathFn = exec.LookPath
 
 // Environment variable names for self-update control.
 const (
-	envNoSelfUpdate   = "GENTLE_AI_NO_SELF_UPDATE"
-	envSelfUpdateDone = "GENTLE_AI_SELF_UPDATE_DONE"
+	envNoSelfUpdate   = "GENTLE_QA_NO_SELF_UPDATE"
+	envSelfUpdateDone = "GENTLE_QA_SELF_UPDATE_DONE"
 )
 
 // selfUpdateTimeout is the maximum time allowed for the update check + upgrade.
@@ -39,8 +39,8 @@ var goOS = func() string { return runtime.GOOS }
 // Returns nil on success or skip; errors are non-fatal (caller logs and continues).
 //
 // Guard evaluation order (per spec):
-//  1. GENTLE_AI_SELF_UPDATE_DONE=1 → skip (loop guard)
-//  2. GENTLE_AI_NO_SELF_UPDATE=1 → skip (opt-out)
+//  1. GENTLE_QA_SELF_UPDATE_DONE=1 → skip (loop guard)
+//  2. GENTLE_QA_NO_SELF_UPDATE=1 → skip (opt-out)
 //  3. version == "dev" → skip (dev build)
 //  4. Proceed with update check
 func selfUpdate(ctx context.Context, version string, profile system.PlatformProfile, stdout io.Writer) error {
