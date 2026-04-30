@@ -234,6 +234,19 @@ After creating a profile, open OpenCode and press **Tab** to switch between `sdd
 
 **Full guide**: [OpenCode SDD Profiles](docs/opencode-profiles.md)
 
+### OpenCode Community Plugins
+
+Gentle-QA can install curated community plugins for the OpenCode TUI alongside the SDD foundation:
+
+- **sub-agent-statusline** — see which sub-agent is active in the OpenCode statusline
+- **sdd-engram-plugin** — manage SDD profiles and browse Engram memories from inside OpenCode (runtime profile activation, no restart)
+
+Pick them in the TUI under **OpenCode Community Plugins**, or pass them through `gentle-qa sync` for unattended setups.
+
+### Per-Phase Claude Models
+
+When Claude Code is your active agent, every SDD phase (`sdd-explore`, `sdd-propose`, `sdd-spec`, `sdd-design`, `sdd-tasks`, `sdd-apply`, `sdd-verify`, `sdd-archive`) can be pinned to a specific Claude alias (`opus`, `sonnet`, `haiku`). The orchestrator reads the assignments table and forwards the right `model` parameter on every delegation — no manual switching during a session. Configure it from the TUI's **Configure Models** screen or via `--claude-model`/`--kiro-model` flags.
+
 ### Engram (Persistent Memory)
 
 Your AI agent automatically remembers test strategy decisions, bug patterns, and project context across sessions. You don't need to do anything — but when you do:
