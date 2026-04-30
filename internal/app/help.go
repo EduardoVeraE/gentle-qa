@@ -6,7 +6,7 @@ import (
 )
 
 func printHelp(w io.Writer, version string) {
-	fmt.Fprintf(w, `gentle-qa — Gentle-QA (%s)
+	fmt.Fprintf(w, `gentle-qa — AI Gentle Stack (%s)
 
 USAGE
   gentle-qa                     Launch interactive TUI

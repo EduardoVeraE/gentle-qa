@@ -65,7 +65,7 @@ The Agent Builder is a **top-level menu option** on the Welcome screen, alongsid
 ┌──────────────────────────────────────────────────────────────────┐
 │                                                                  │
 │   ╔═══════════════════════════════════════╗                      │
-│   ║   GENTLE QA                          ║                      │
+│   ║   GENTLE AI                          ║                      │
 │   ╚═══════════════════════════════════════╝                      │
 │                                                                  │
 │   Supercharge your AI agents. v0.x.x                             │

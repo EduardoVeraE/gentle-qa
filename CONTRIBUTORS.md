@@ -1,6 +1,6 @@
 # Contributors
 
-Thanks to everyone who has contributed to gentle-qa. This project exists because of the community.
+Thanks to everyone who has contributed to Gentle-QA (and the upstream gentle-ai project it forks from). This project exists because of the community.
 
 ## Maintainer
 

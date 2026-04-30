@@ -91,7 +91,9 @@ func TestGoldenConfigs(t *testing.T) {
 func TestGoldenSDD_Claude(t *testing.T) {
 	home := t.TempDir()
 
-	result, err := sdd.Inject(home, claudeAdapter(), "")
+	adapter := claudeAdapter()
+
+	result, err := sdd.Inject(home, adapter, "")
 	if err != nil {
 		t.Fatalf("sdd.Inject(claude) error = %v", err)
 	}
@@ -101,6 +103,23 @@ func TestGoldenSDD_Claude(t *testing.T) {
 
 	claudeMD := readTestFile(t, filepath.Join(home, ".claude", "CLAUDE.md"))
 	assertGolden(t, "sdd-claude-claudemd.golden", claudeMD)
+
+	for _, name := range []string{
+		"sdd-apply", "sdd-archive", "sdd-continue", "sdd-explore",
+		"sdd-ff", "sdd-init", "sdd-new", "sdd-onboard", "sdd-verify",
+	} {
+		content := readTestFile(t, filepath.Join(home, ".claude", "commands", name+".md"))
+		assertGolden(t, "sdd-claude-cmd-"+name+".golden", content)
+	}
+
+	agentsDir := adapter.SubAgentsDir(home)
+	for _, name := range []string{
+		"sdd-explore", "sdd-propose", "sdd-spec", "sdd-design",
+		"sdd-tasks", "sdd-apply", "sdd-verify", "sdd-archive",
+	} {
+		agentContent := readTestFile(t, filepath.Join(agentsDir, name+".md"))
+		assertGolden(t, "sdd-claude-agent-"+name+".golden", agentContent)
+	}
 }
 
 func TestGoldenSDD_OpenCode(t *testing.T) {
@@ -125,7 +144,7 @@ func TestGoldenSDD_OpenCode(t *testing.T) {
 	// Verify ALL expected command files exist.
 	expectedCommands := []string{
 		"sdd-init.md", "sdd-apply.md", "sdd-archive.md", "sdd-continue.md",
-		"sdd-explore.md", "sdd-ff.md", "sdd-new.md", "sdd-verify.md",
+		"sdd-explore.md", "sdd-ff.md", "sdd-new.md", "sdd-onboard.md", "sdd-verify.md",
 	}
 	commandsDir := filepath.Join(home, ".config", "opencode", "commands")
 	for _, name := range expectedCommands {

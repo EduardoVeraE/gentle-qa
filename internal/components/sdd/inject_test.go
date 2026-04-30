@@ -117,6 +117,49 @@ func TestInjectClaudeIsIdempotent(t *testing.T) {
 	}
 }
 
+func TestInjectClaudeWritesCommandFiles(t *testing.T) {
+	home := t.TempDir()
+
+	result, err := Inject(home, claudeAdapter(), "")
+	if err != nil {
+		t.Fatalf("Inject() error = %v", err)
+	}
+	if !result.Changed {
+		t.Fatalf("Inject() first changed = false")
+	}
+
+	expectedCommands := []string{
+		"sdd-apply.md", "sdd-archive.md", "sdd-continue.md", "sdd-explore.md",
+		"sdd-ff.md", "sdd-init.md", "sdd-new.md", "sdd-onboard.md", "sdd-verify.md",
+	}
+	for _, name := range expectedCommands {
+		path := filepath.Join(home, ".claude", "commands", name)
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("expected command file %q not found: %v", name, err)
+		}
+	}
+
+	commandPath := filepath.Join(home, ".claude", "commands", "sdd-init.md")
+	content, err := os.ReadFile(commandPath)
+	if err != nil {
+		t.Fatalf("ReadFile(sdd-init.md) error = %v", err)
+	}
+
+	text := string(content)
+	if !strings.Contains(text, "description:") {
+		t.Fatal("sdd-init.md missing frontmatter description")
+	}
+	if strings.Contains(text, "agent: sdd-orchestrator") {
+		t.Fatal("sdd-init.md contains OpenCode-specific agent frontmatter")
+	}
+	if !strings.Contains(text, "If the native `sdd-init` sub-agent is available") {
+		t.Fatal("sdd-init.md missing Claude delegation guidance")
+	}
+	if !strings.Contains(text, "~/.claude/skills/sdd-init/SKILL.md") {
+		t.Fatal("sdd-init.md missing Claude skill path")
+	}
+}
+
 func TestInjectClaudeCustomModelAssignments(t *testing.T) {
 	home := t.TempDir()
 
@@ -255,6 +298,46 @@ func TestInjectOpenCodeIsIdempotent(t *testing.T) {
 	}
 	if second.Changed {
 		t.Fatalf("Inject() second changed = true")
+	}
+}
+
+func TestInjectOpenCodeUsesOpenCodeSpecificOrchestratorPrompt(t *testing.T) {
+	for _, mode := range []model.SDDModeID{model.SDDModeSingle, model.SDDModeMulti} {
+		t.Run(string(mode), func(t *testing.T) {
+			home := t.TempDir()
+			mockNoPackageManager(t)
+
+			if _, err := Inject(home, opencodeAdapter(), mode); err != nil {
+				t.Fatalf("Inject(%s) error = %v", mode, err)
+			}
+
+			settingsPath := filepath.Join(home, ".config", "opencode", "opencode.json")
+			content, err := os.ReadFile(settingsPath)
+			if err != nil {
+				t.Fatalf("ReadFile(opencode.json) error = %v", err)
+			}
+
+			text := string(content)
+			for _, unwanted := range []string{
+				"Agent Teams Lite",
+				"| orchestrator | opus |",
+				"| sdd-explore | sonnet |",
+				"| sdd-archive | haiku |",
+			} {
+				if strings.Contains(text, unwanted) {
+					t.Fatalf("opencode.json contains legacy OpenCode orchestrator prompt content %q", unwanted)
+				}
+			}
+
+			for _, wanted := range []string{
+				"Gentle-QA",
+				"Read the configured models from `opencode.json`",
+			} {
+				if !strings.Contains(text, wanted) {
+					t.Fatalf("opencode.json missing OpenCode orchestrator prompt content %q", wanted)
+				}
+			}
+		})
 	}
 }
 
@@ -2620,7 +2703,7 @@ func TestSDDOrchestratorAssetSelection(t *testing.T) {
 		{agent: model.AgentCursor, want: "cursor/sdd-orchestrator.md"},
 		{agent: model.AgentQwenCode, want: "qwen/sdd-orchestrator.md"},
 		{agent: model.AgentClaudeCode, want: "generic/sdd-orchestrator.md"},
-		{agent: model.AgentOpenCode, want: "generic/sdd-orchestrator.md"},
+		{agent: model.AgentOpenCode, want: "opencode/sdd-orchestrator.md"},
 		{agent: model.AgentVSCodeCopilot, want: "generic/sdd-orchestrator.md"},
 	}
 
@@ -3734,5 +3817,219 @@ func TestInjectOpenCodeWithTwoProfiles_BothOrchestratorsPresent(t *testing.T) {
 	}
 	if !strings.Contains(text, `"sdd-orchestrator-premium"`) {
 		t.Error("opencode.json missing sdd-orchestrator-premium")
+	}
+}
+
+// TestInjectClaudeSubAgentsResolveModels verifies that when SDD is injected
+// for the Claude adapter, the embedded sub-agent files are copied to
+// ~/.claude/agents/ and the {{CLAUDE_MODEL}} placeholder is substituted per
+// phase using opts.ClaudeModelAssignments.
+func TestInjectClaudeSubAgentsResolveModels(t *testing.T) {
+	home := t.TempDir()
+
+	assignments := map[string]model.ClaudeModelAlias{
+		"sdd-design":  model.ClaudeModelOpus,
+		"sdd-archive": model.ClaudeModelHaiku,
+		"default":     model.ClaudeModelSonnet,
+	}
+
+	result, err := Inject(home, claudeAdapter(), "", InjectOptions{ClaudeModelAssignments: assignments})
+	if err != nil {
+		t.Fatalf("Inject(claude, custom assignments) error = %v", err)
+	}
+	if !result.Changed {
+		t.Fatal("Inject(claude, custom assignments) changed = false")
+	}
+
+	tests := []struct {
+		phase string
+		want  string
+	}{
+		{phase: "sdd-design", want: "model: opus"},
+		{phase: "sdd-archive", want: "model: haiku"},
+		{phase: "sdd-spec", want: "model: sonnet"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.phase, func(t *testing.T) {
+			path := filepath.Join(home, ".claude", "agents", tt.phase+".md")
+			content, readErr := os.ReadFile(path)
+			if readErr != nil {
+				t.Fatalf("ReadFile(%s) error = %v", tt.phase, readErr)
+			}
+			text := string(content)
+			if strings.Contains(text, "{{CLAUDE_MODEL}}") {
+				t.Fatalf("agent %s still contains unresolved {{CLAUDE_MODEL}} placeholder", tt.phase)
+			}
+			if !strings.Contains(text, tt.want) {
+				t.Fatalf("agent %s missing %q\n--- file ---\n%s", tt.phase, tt.want, text)
+			}
+		})
+	}
+}
+
+func TestInjectClaudeSubAgentsUseBalancedDefaultsWhenAssignmentsUnset(t *testing.T) {
+	home := t.TempDir()
+
+	result, err := Inject(home, claudeAdapter(), "")
+	if err != nil {
+		t.Fatalf("Inject(claude, default assignments) error = %v", err)
+	}
+	if !result.Changed {
+		t.Fatal("Inject(claude, default assignments) changed = false")
+	}
+
+	tests := []struct {
+		phase string
+		want  string
+	}{
+		{phase: "sdd-design", want: "model: opus"},
+		{phase: "sdd-spec", want: "model: sonnet"},
+		{phase: "sdd-archive", want: "model: haiku"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.phase, func(t *testing.T) {
+			path := filepath.Join(home, ".claude", "agents", tt.phase+".md")
+			content, readErr := os.ReadFile(path)
+			if readErr != nil {
+				t.Fatalf("ReadFile(%s) error = %v", tt.phase, readErr)
+			}
+			if !strings.Contains(string(content), tt.want) {
+				t.Fatalf("agent %s missing balanced default %q\n--- file ---\n%s", tt.phase, tt.want, string(content))
+			}
+		})
+	}
+}
+
+func TestInjectClaudeSubAgentsIgnoreInvalidAliases(t *testing.T) {
+	home := t.TempDir()
+
+	assignments := map[string]model.ClaudeModelAlias{
+		"sdd-design":  model.ClaudeModelAlias("claude-opus-4-1"),
+		"sdd-archive": model.ClaudeModelAlias("bad-value"),
+		"default":     model.ClaudeModelHaiku,
+	}
+
+	_, err := Inject(home, claudeAdapter(), "", InjectOptions{ClaudeModelAssignments: assignments})
+	if err != nil {
+		t.Fatalf("Inject(claude, invalid aliases) error = %v", err)
+	}
+
+	checks := []struct {
+		phase string
+		want  string
+	}{
+		{phase: "sdd-design", want: "model: opus"},
+		{phase: "sdd-archive", want: "model: haiku"},
+		{phase: "sdd-spec", want: "model: sonnet"},
+	}
+
+	for _, tt := range checks {
+		path := filepath.Join(home, ".claude", "agents", tt.phase+".md")
+		content, readErr := os.ReadFile(path)
+		if readErr != nil {
+			t.Fatalf("ReadFile(%s) error = %v", tt.phase, readErr)
+		}
+		text := string(content)
+		if !strings.Contains(text, tt.want) {
+			t.Fatalf("agent %s missing sanitized model %q\n--- file ---\n%s", tt.phase, tt.want, text)
+		}
+		if strings.Contains(text, "bad-value") || strings.Contains(text, "claude-opus-4-1") {
+			t.Fatalf("agent %s contains invalid alias in frontmatter\n--- file ---\n%s", tt.phase, text)
+		}
+	}
+}
+
+// TestInjectClaudeSubAgentsScopedTools verifies that each generated Claude
+// sub-agent carries a scoped tools: frontmatter entry so the phase cannot use
+// tools outside its contract (e.g. sdd-explore cannot Edit/Write; no phase
+// carries Task so recursion is impossible).
+func TestInjectClaudeSubAgentsScopedTools(t *testing.T) {
+	home := t.TempDir()
+
+	_, err := Inject(home, claudeAdapter(), "", InjectOptions{ClaudeModelAssignments: model.ClaudeModelPresetBalanced()})
+	if err != nil {
+		t.Fatalf("Inject(claude, balanced preset) error = %v", err)
+	}
+
+	tests := []struct {
+		phase       string
+		mustContain []string
+		mustNotHave []string
+	}{
+		{
+			phase:       "sdd-explore",
+			mustContain: []string{"Read", "Grep", "Glob", "WebFetch", "WebSearch", "mcp__plugin_engram_engram__mem_save"},
+			mustNotHave: []string{"Edit", "Write", "Bash", "Task"},
+		},
+		{
+			phase:       "sdd-propose",
+			mustContain: []string{"Read", "Edit", "Write", "Grep", "Glob", "mcp__plugin_engram_engram__mem_search", "mcp__plugin_engram_engram__mem_get_observation", "mcp__plugin_engram_engram__mem_save"},
+			mustNotHave: []string{"Bash", "Task"},
+		},
+		{
+			phase:       "sdd-spec",
+			mustContain: []string{"Read", "Edit", "Write", "Grep", "Glob", "mcp__plugin_engram_engram__mem_search", "mcp__plugin_engram_engram__mem_get_observation", "mcp__plugin_engram_engram__mem_save"},
+			mustNotHave: []string{"Bash", "Task"},
+		},
+		{
+			phase:       "sdd-design",
+			mustContain: []string{"Read", "Edit", "Write", "Grep", "Glob", "mcp__plugin_engram_engram__mem_search", "mcp__plugin_engram_engram__mem_get_observation", "mcp__plugin_engram_engram__mem_save"},
+			mustNotHave: []string{"Bash", "Task"},
+		},
+		{
+			phase:       "sdd-tasks",
+			mustContain: []string{"Read", "Edit", "Write", "Grep", "Glob", "mcp__plugin_engram_engram__mem_search", "mcp__plugin_engram_engram__mem_get_observation", "mcp__plugin_engram_engram__mem_save"},
+			mustNotHave: []string{"Bash", "Task"},
+		},
+		{
+			phase:       "sdd-apply",
+			mustContain: []string{"Read", "Edit", "Write", "Bash", "mcp__plugin_engram_engram__mem_search", "mcp__plugin_engram_engram__mem_get_observation", "mcp__plugin_engram_engram__mem_save", "mcp__plugin_engram_engram__mem_update"},
+			mustNotHave: []string{"Task"},
+		},
+		{
+			phase:       "sdd-verify",
+			mustContain: []string{"Read", "Bash", "mcp__plugin_engram_engram__mem_search", "mcp__plugin_engram_engram__mem_get_observation", "mcp__plugin_engram_engram__mem_save"},
+			mustNotHave: []string{"Edit", "Write", "Task"},
+		},
+		{
+			phase:       "sdd-archive",
+			mustContain: []string{"Read", "Edit", "Write", "mcp__plugin_engram_engram__mem_search", "mcp__plugin_engram_engram__mem_get_observation", "mcp__plugin_engram_engram__mem_save"},
+			mustNotHave: []string{"Bash", "Task"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.phase, func(t *testing.T) {
+			path := filepath.Join(home, ".claude", "agents", tt.phase+".md")
+			content, readErr := os.ReadFile(path)
+			if readErr != nil {
+				t.Fatalf("ReadFile(%s) error = %v", tt.phase, readErr)
+			}
+			text := string(content)
+
+			toolsLine := ""
+			for _, line := range strings.Split(text, "\n") {
+				if strings.HasPrefix(line, "tools:") {
+					toolsLine = line
+					break
+				}
+			}
+			if toolsLine == "" {
+				t.Fatalf("agent %s missing tools: frontmatter line\n--- file ---\n%s", tt.phase, text)
+			}
+
+			for _, want := range tt.mustContain {
+				if !strings.Contains(toolsLine, want) {
+					t.Errorf("agent %s tools line %q missing required tool %q", tt.phase, toolsLine, want)
+				}
+			}
+			for _, forbidden := range tt.mustNotHave {
+				if strings.Contains(toolsLine, forbidden) {
+					t.Errorf("agent %s tools line %q must not grant %q", tt.phase, toolsLine, forbidden)
+				}
+			}
+		})
 	}
 }

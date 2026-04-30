@@ -18,6 +18,7 @@ import (
 	"github.com/EduardoVeraE/Gentle-QA/internal/components/engram"
 	"github.com/EduardoVeraE/Gentle-QA/internal/components/gga"
 	"github.com/EduardoVeraE/Gentle-QA/internal/components/mcp"
+	"github.com/EduardoVeraE/Gentle-QA/internal/components/opencodeplugin"
 	"github.com/EduardoVeraE/Gentle-QA/internal/components/permissions"
 	"github.com/EduardoVeraE/Gentle-QA/internal/components/persona"
 	"github.com/EduardoVeraE/Gentle-QA/internal/components/sdd"
@@ -303,6 +304,12 @@ func (r *installRuntime) stagePlan() pipeline.StagePlan {
 		apply = append(apply, agentInstallStep{id: "agent:" + string(agent), agent: agent, homeDir: r.homeDir, profile: r.profile})
 	}
 
+	if containsAgent(r.resolved.Agents, model.AgentOpenCode) {
+		for _, plugin := range r.selection.OpenCodePlugins {
+			apply = append(apply, openCodePluginInstallStep{id: "opencode-plugin:" + string(plugin), plugin: plugin, homeDir: r.homeDir})
+		}
+	}
+
 	for _, component := range r.resolved.OrderedComponents {
 		apply = append(apply, componentApplyStep{
 			id:           "component:" + string(component),
@@ -418,6 +425,19 @@ type agentInstallStep struct {
 	agent   model.AgentID
 	homeDir string
 	profile system.PlatformProfile
+}
+
+type openCodePluginInstallStep struct {
+	id      string
+	plugin  model.OpenCodeCommunityPluginID
+	homeDir string
+}
+
+func (s openCodePluginInstallStep) ID() string { return s.id }
+
+func (s openCodePluginInstallStep) Run() error {
+	_, err := opencodeplugin.Install(s.homeDir, s.plugin)
+	return err
 }
 
 func (s agentInstallStep) ID() string {
@@ -969,19 +989,12 @@ func componentPaths(homeDir string, selection model.Selection, adapters []agents
 	return paths
 }
 
-type sddSubAgentAdapter interface {
-	SupportsSubAgents() bool
-	SubAgentsDir(homeDir string) string
-	EmbeddedSubAgentsDir() string
-}
-
 func sddSubAgentPaths(homeDir string, adapter agents.Adapter) []string {
-	sai, ok := adapter.(sddSubAgentAdapter)
-	if !ok || !sai.SupportsSubAgents() {
+	if !adapter.SupportsSubAgents() {
 		return nil
 	}
 
-	entries, err := assets.FS.ReadDir(sai.EmbeddedSubAgentsDir())
+	entries, err := assets.FS.ReadDir(adapter.EmbeddedSubAgentsDir())
 	if err != nil {
 		return nil
 	}
@@ -991,7 +1004,7 @@ func sddSubAgentPaths(homeDir string, adapter agents.Adapter) []string {
 		if entry.IsDir() {
 			continue
 		}
-		paths = append(paths, filepath.Join(sai.SubAgentsDir(homeDir), entry.Name()))
+		paths = append(paths, filepath.Join(adapter.SubAgentsDir(homeDir), entry.Name()))
 	}
 
 	return paths
@@ -1041,6 +1054,15 @@ func runPostApplyVerification(homeDir string, selection model.Selection, resolve
 func hasComponent(components []model.ComponentID, target model.ComponentID) bool {
 	for _, c := range components {
 		if c == target {
+			return true
+		}
+	}
+	return false
+}
+
+func containsAgent(agents []model.AgentID, target model.AgentID) bool {
+	for _, agent := range agents {
+		if agent == target {
 			return true
 		}
 	}

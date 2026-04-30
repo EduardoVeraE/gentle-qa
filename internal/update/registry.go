@@ -12,8 +12,8 @@ package update
 var Tools = []ToolInfo{
 	{
 		Name:          "gentle-qa",
-		Owner:         "EduardoVeraE",
-		Repo:          "Gentle-QA",
+		Owner:         "Gentleman-Programming",
+		Repo:          "gentle-qa",
 		DetectCmd:     nil, // version comes from build-time ldflags (app.Version)
 		VersionPrefix: "v",
 		// gentle-qa: brew on macOS, binary release download on Linux/Windows.
@@ -39,5 +39,21 @@ var Tools = []ToolInfo{
 		// GGA does not publish pre-built release binary assets — only source archives.
 		// Using InstallScript runs curl | bash via the project's install.sh.
 		InstallMethod: InstallScript,
+	},
+	{
+		Name:          "opencode-subagent-statusline",
+		Owner:         "Joaquinvesapa",
+		Repo:          "sub-agent-statusline",
+		VersionPrefix: "v",
+		InstallMethod: InstallOpenCodePlugin,
+		NpmPackage:    "opencode-subagent-statusline",
+	},
+	{
+		Name:          "opencode-sdd-engram-manage",
+		Owner:         "j0k3r-dev-rgl",
+		Repo:          "sdd-engram-plugin",
+		VersionPrefix: "v",
+		InstallMethod: InstallOpenCodePlugin,
+		NpmPackage:    "opencode-sdd-engram-manage",
 	},
 }
