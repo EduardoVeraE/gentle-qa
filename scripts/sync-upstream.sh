@@ -152,12 +152,24 @@ do_merge() {
     if ! git merge --no-ff upstream/main -m "$merge_msg"; then
         # Check for conflicts
         if git diff --name-only --diff-filter=U | grep -q .; then
-            echo ""
-            fail "Merge conflicts detected in the following files:"
-            git diff --name-only --diff-filter=U
-            echo ""
-            fail "Resolve manually, then re-run scripts/verify-branding.sh and commit."
-            fail "Aborting auto-rewrite step."
+            local conflicted_files
+            conflicted_files="$(git diff --name-only --diff-filter=U)"
+            echo "" >&2
+            fail "Merge conflicts detected. Conflicted files:"
+            echo "$conflicted_files" | while IFS= read -r f; do
+                echo -e "  ${YELLOW}${f}${NC}" >&2
+            done
+            echo "" >&2
+            warn "This is expected when upstream modifies lines that our rebrand previously rewrote."
+            warn "See internal/assets/skills/upstream-sync/SKILL.md#expected-conflict-pattern-branding-rewritten-files for resolution steps."
+            echo "" >&2
+            warn "After resolving manually:"
+            warn "  1. Scan for branding leaks in non-conflict regions: rg -i 'gentle-ai|gentleAi|GENTLE_AI' <file>"
+            warn "  2. Run: scripts/verify-branding.sh  (must exit 0)"
+            warn "  3. Run: go build ./... && go test ./..."
+            warn "  4. Run: git add <file> && git commit --no-edit"
+            warn "Do NOT skip the rewrite — branding leaks can exist outside conflict markers."
+            echo "" >&2
             exit 3
         fi
         die 2 "Merge failed for an unexpected reason. Check git output above."

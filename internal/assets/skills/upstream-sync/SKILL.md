@@ -76,6 +76,52 @@ These files contain prohibited-looking tokens that are legitimate and MUST NOT b
 
 **Judgment rule for new cases:** if a token appears inside a test fixture, a historical document (changelog, attribution), or an archived spec, it is almost certainly safe. If it appears in production Go source, a help string, or a UI label, it is a leak and must be rewritten.
 
+## Expected Conflict Pattern: Branding-Rewritten Files
+
+### Why these conflicts happen
+
+Every upstream commit that touches a line we previously rewrote (import paths, renamed function identifiers, replaced string literals) will cause a merge conflict on that line. Git cannot auto-merge because both sides changed the same line — upstream changed the logic, we changed the identifier. This is **structural to the rebrand-fork model**, not a script bug. Exit 3 from `sync-upstream.sh` is correct behavior. Expect this pattern on every upstream commit that touches a file containing our rebranded identifiers (e.g. anything using `gentleQaHint`, `EduardoVeraE/Gentle-QA`, or `GENTLE_QA`).
+
+### How to recognize the pattern
+
+After `exit 3`, run:
+```bash
+git diff --name-only --diff-filter=U
+```
+If the conflicted files are files you know were rebranded (they contain our markers — `gentleQaHint`, `github.com/EduardoVeraE/Gentle-QA`, etc.) you are in this pattern. The conflict is on the renamed line; upstream's new logic is on `>>>>>>> upstream/main` side.
+
+### Manual resolution checklist
+
+1. Open the conflicted file in full. Read both `<<<<<<< HEAD` and `>>>>>>> upstream/main` sides to understand what upstream changed.
+
+2. **Cross-file dependency check** — identify every file that imports or calls into the conflicted file:
+   ```bash
+   rg -l '<conflicted_basename without extension>'   # e.g. rg -l 'instructions'
+   ```
+   Read those callers. Confirm which symbols they reference. Any NEW symbol introduced by upstream on the `>>>>>>> upstream/main` side that is called from another file MUST be preserved in your resolution — dropping it breaks the build silently after the merge commit.
+
+3. Resolve the conflict: keep our renamed identifiers and module paths; fold upstream's new logic under our names; rewrite any branding tokens in new code that upstream introduced.
+
+4. **Re-apply branding rewrite before continuing** — the script aborts before its rewrite step when there are conflicts, so non-conflict regions of the same file can contain upstream tokens that were never rewritten. After saving the conflict resolution, scan for leaks:
+   ```bash
+   rg -i 'gentle-ai|gentleAi|GENTLE_AI' <resolved-file>
+   ```
+   Rewrite any hits manually (map to `gentle-qa` / `gentleQa` / `GENTLE_QA`).
+
+5. Stage and complete the merge:
+   ```bash
+   git add <file>
+   git commit --no-edit
+   ```
+
+6. Run `scripts/verify-branding.sh` standalone — must exit 0.
+
+7. Run `go build ./...` and `go test ./...` — both must pass.
+
+**First-run reference:** this pattern was first encountered with upstream commit `a164adc` (`fix(opencode): handle plugin update layers`, 11 files in `internal/update/**`), resolved manually into commit `f15b945`.
+
+---
+
 ## Failure Modes & Recovery
 
 **`verify-branding.sh` exits non-zero after merge**
@@ -88,7 +134,7 @@ Manually rewrite the offending tokens, stage the changes, then re-run verificati
 
 **Merge conflict in a branding-sensitive file**
 
-Resolve the conflict manually. Keep the Gentle-QA token everywhere the upstream would have placed a prohibited token. After resolving, run `scripts/verify-branding.sh` before staging.
+See **Expected Conflict Pattern: Branding-Rewritten Files** above.
 
 **`go build ./...` or `go test ./...` fails after merge**
 
@@ -107,6 +153,7 @@ git remote -v   # confirm both origin and upstream are present
 - [ ] `go test ./...` passes
 - [ ] `scripts/verify-branding.sh` exits 0
 - [ ] Commit message follows the exact format: `chore(sync): merge upstream gentle-ai (<N> commits) into gentle-qa fork`
+- [ ] If conflict was resolved manually, verify cross-file callers of any modified function still build (see **Expected Conflict Pattern** above)
 - [ ] Save a memory entry to engram with `topic_key: sync/upstream-history` noting the upstream commit range merged and the date
 - [ ] Push to `origin` only when Eduardo explicitly decides to
 

@@ -97,10 +97,10 @@ scan_working_tree() {
 
     read_globs_array
 
-    # Collect matches
+    # Collect matches; --verbose adds 2 lines of context around each hit
     local match_output
     if [ "$verbose" = "1" ]; then
-        match_output="$(rg --line-number --with-filename \
+        match_output="$(rg --line-number --with-filename -C 2 \
             "${RG_GLOB_ARGS[@]}" \
             -e "$PROHIBITED_PATTERN" . 2>/dev/null || true)"
     else
