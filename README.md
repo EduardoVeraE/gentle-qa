@@ -127,12 +127,12 @@ Gentle-QA ships with **20+ curated skills** across every layer of the quality en
 
 | Skill | When to use it | What it covers |
 |-------|---------------|----------------|
-| **playwright-e2e-testing** | Writing E2E tests for UI flows, auth, forms | Page Object Model, fixtures, network interception, screenshot comparison, parallel execution |
-| **playwright-bdd** | BDD-style tests (Given/When/Then) | Cucumber/Gherkin integration, fixture composition |
-| **playwright-regression-testing** | Building regression suites or debugging flaky tests | Regression strategy, flaky test management, CI/CD integration |
-| **a11y-playwright-testing** | Accessibility testing (WCAG 2.1 AA) | ARIA patterns, axe-core integration, WCAG checklist |
-| **webapp-playwright-testing** | Web app UI validation | Responsive testing, multi-viewport, mobile device emulation |
-| **playwright-cli** | Running and debugging Playwright from CLI | Test runner flags, trace viewer, screenshot/video debugging |
+| **playwright-e2e-testing** | Writing E2E test SUITES for UI flows, auth, forms | Page Object Model, fixtures, network interception, screenshot comparison, parallel execution |
+| **playwright-bdd** | BDD/ATDD tests (Given/When/Then) | Cucumber/Gherkin integration, fixture composition, ISTQB acceptance level |
+| **playwright-regression-strategy** | Planning/organizing regression suites, debugging flaky tests | Tier model, risk- and change-based selection, sharding, CI/CD, flake quarantine |
+| **a11y-playwright-testing** | Accessibility testing (WCAG 2.1/2.2 AA) | ARIA patterns, axe-core integration, WCAG checklist, POUR principles |
+| **playwright-mcp-inspect** | Live browser inspection in a running session | MCP-driven navigation, interactive debugging, screenshot capture, console log inspection |
+| **playwright-cli** | Scripted exploratory testing from CLI | Session evidence (trace/screenshot/video), state save/load, network mocking, multi-role |
 
 ---
 
@@ -148,8 +148,8 @@ Gentle-QA ships with **20+ curated skills** across every layer of the quality en
 
 | Skill | When to use it | What it covers |
 |-------|---------------|----------------|
-| **webapp-selenium-testing** | Web app automation with Selenium | Locator strategies, Page Object Model, wait strategies |
-| **accessibility-selenium-testing** | Accessibility testing with Selenium | axe-core patterns, WCAG 2.1 AA checklist |
+| **selenium-e2e-testing** | Writing E2E test SUITES with Selenium WebDriver + Java/JUnit 5 | Locator strategies, Page Object Model, explicit waits, AssertJ, Maven scaffolding |
+| **a11y-selenium-testing** | Accessibility testing with Selenium + axe-core | WCAG 2.1/2.2 AA checklist, keyboard nav, ARIA semantics, POUR principles |
 
 ---
 
@@ -165,8 +165,7 @@ Gentle-QA ships with **20+ curated skills** across every layer of the quality en
 
 | Skill | When to use it | What it covers |
 |-------|---------------|----------------|
-| **qa-manual-istqb** | ISTQB-aligned test planning and design | Full lifecycle: test planning → analysis → design → execution → completion. Techniques: EP, BVA, decision tables, state transitions. Templates: test plan, bug report, regression suite, exploratory charter, traceability matrix |
-| **qa-test-planner** | Creating test plans, test cases, and bug reports | Markdown/CSV templates for planification, regression suite definition, manual test case generation |
+| **qa-manual-istqb** | ISTQB-aligned test planning and design (canonical) | Full lifecycle: test planning → analysis → design → execution → completion. Techniques: EP, BVA, decision tables, state transitions. Templates: test plan, bug report, regression suite, exploratory charter, traceability matrix |
 
 ---
 
@@ -195,16 +194,19 @@ Gentle-QA ships with **20+ curated skills** across every layer of the quality en
 
 | Scenario | Skills to activate |
 |----------|-------------------|
-| Writing E2E tests for a web app | `playwright-e2e-testing` + `qa-test-planner` |
-| Testing REST/GraphQL APIs | `api-testing` + `qa-test-planner` |
-| Accessibility audit | `a11y-playwright-testing` |
+| Writing E2E tests for a web app | `playwright-e2e-testing` + `qa-manual-istqb` |
+| Testing REST/GraphQL APIs | `api-testing` + `qa-manual-istqb` |
+| Accessibility audit (Playwright) | `a11y-playwright-testing` |
+| Accessibility audit (Selenium) | `a11y-selenium-testing` |
 | Performance / load testing | `k6-load-test` |
 | ISTQB-aligned test plan & design | `qa-manual-istqb` |
-| Debugging flaky tests in CI | `playwright-regression-testing` |
+| Debugging flaky tests / regression suite design | `playwright-regression-strategy` |
+| Live browser debugging (no test file) | `playwright-mcp-inspect` |
+| Exploratory testing with evidence | `playwright-cli` |
 | Structured change (new feature, big refactor) | `/sdd-init` → `/sdd-explore` → `/sdd-propose` → `/sdd-apply` |
 | Code review with quality bar | `judgment-day` |
 
-Skills activate automatically based on context. You can also invoke any skill explicitly: `/playwright-e2e-testing`, `/qa-test-planner`, `/api-testing`, etc.
+Skills activate automatically based on context. You can also invoke any skill explicitly: `/playwright-e2e-testing`, `/qa-manual-istqb`, `/api-testing`, etc.
 
 ---
 

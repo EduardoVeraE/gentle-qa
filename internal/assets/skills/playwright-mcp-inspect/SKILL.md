@@ -1,6 +1,6 @@
 ---
-name: webapp-playwright-testing
-description: Browser automation toolkit using Playwright MCP for testing web applications. Use when asked to navigate pages, click elements, fill forms, take screenshots, verify UI components, check console logs, debug frontend issues, or validate responsive design. Supports live browser interaction and accessibility snapshots.
+name: playwright-mcp-inspect
+description: Live browser inspection and debugging via Playwright MCP. Use when interacting with a running browser session — navigate pages, click elements, fill forms, capture screenshots, inspect console logs, validate UI state in real time, or reproduce a bug interactively. NOT for writing test suites — use playwright-e2e-testing. NOT for regression strategy — use playwright-regression-strategy.
 ---
 
 # Web Application Testing

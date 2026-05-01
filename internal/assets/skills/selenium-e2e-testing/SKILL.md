@@ -1,6 +1,6 @@
 ---
-name: webapp-selenium-testing
-description: 'Browser automation toolkit using Selenium WebDriver with Java and JUnit 5. Use for creating, debugging, or running Selenium tests, implementing Page Object Model, handling explicit waits, capturing screenshots, or setting up Maven test projects. Supports Chrome, Firefox, and Edge.'
+name: selenium-e2e-testing
+description: 'End-to-end browser test automation using Selenium WebDriver 4+ with Java 21+, JUnit 5, and Maven. Use when writing or maintaining Selenium test suites — Page Object Model, explicit waits, AssertJ assertions, multi-browser execution (Chrome/Firefox/Edge), Maven project scaffolding. NOT for accessibility testing — use a11y-selenium-testing. NOT for Playwright tests — use playwright-e2e-testing.'
 ---
 
 # Web Application Testing with Selenium WebDriver
@@ -139,7 +139,7 @@ assertThat(errorMessage.isDisplayed())
 1. **Use the included setup script**
 
    ```powershell
-   # Run from skills/webapp-selenium-testing/scripts/
+   # Run from skills/selenium-e2e-testing/scripts/
    .\setup-maven-project.ps1 -ProjectName "my-tests"
    ```
 
