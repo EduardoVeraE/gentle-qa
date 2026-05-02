@@ -50,3 +50,7 @@ validation-reports/
 # qa-mobile-testing validation harness runtime artifacts
 internal/assets/skills/qa-mobile-testing/scripts/test/.cache/
 mobile-out/
+
+# Node.js (no real JS deps in repo; package.json is metadata only)
+node_modules/
+package-lock.json

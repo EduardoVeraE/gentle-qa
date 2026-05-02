@@ -8,48 +8,23 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ---
 
-## [Unreleased] — 2026-05-02
+## [1.25.0] — 2026-05-02
 
-### QA skill expansion — 4 new/enriched skills + validation harness
+This release combines two unreleased streams of work since `v1.24.3`:
 
-Major expansion of the QA skill catalog under the **5-layer ISTQB taxonomy**, with disjoint triggers + exclusion clauses across all entries to keep orchestrator routing unambiguous.
+1. **QA skill expansion** (2026-05-02) — 4 new skills + 1 enriched skill under the new ISTQB taxonomy, with deterministic validation harnesses.
+2. **Upstream sync** (2026-04-29) — 172 commits from `Gentleman-Programming/gentle-ai` integrated without losing Gentle-QA branding or QE skills.
 
-#### Added
+### Added
+
+#### New QA skills (5-layer ISTQB taxonomy)
 
 - **`qa-owasp-security`** (Layer 4 — Non-functional / Security) — OWASP Web Top 10 + API Top 10 + MASVS coverage, ZAP active scans, dependency scanning (trivy), XSS/SQLi attack scripts. Ships a deterministic validation harness (docker-compose + DVWA fixtures + `lib.sh` with `assert_exit_code` to avoid the pipe-to-tail trap) — 4/4 PASS.
 - **`qa-mobile-testing`** (cross-cutting platform skill) — Appium (iOS + Android) and Detox (React Native grey-box), device strategy guidance (sims/emulators vs real devices vs cloud farms), gesture/wait patterns, flake mitigation. Validation harness validates the deterministic surfaces only (CLI behavior, scaffold syntax via `ts.transpileModule` parser-only) — 8/8 PASS.
 - **`qa-visual-regression`** (Layer 4 — Non-functional / Tooling) — Percy, Chromatic, and Playwright `toHaveScreenshot` covered as separate tools with explicit tradeoffs (paid SaaS vs free in-repo baselines, perceptual vs pixel diff). Includes baseline workflow, masking, threshold tuning, CI gating, and Docker pinning guidance for OS-font determinism. CLI self-test 9/9 PASS.
 - **`qa-contract-pact`** (Layer 3 — Functional / Integration) — Consumer-driven contract testing with PACT-JS v12+ and PACT-JVM v4.6+, Pact Broker (self-hosted Docker + Postgres) and PactFlow, `can-i-deploy` gates, `record-deployment`, broker webhooks, HTTP and async (Kafka/RabbitMQ/SNS/SQS) message contracts. CLI self-test 4/4 PASS.
 
-#### Enriched
-
-- **`api-testing`** — promoted to ISTQB-aligned skill: mandatory headers, OpenAPI-first workflow, contract-testing bridge to `qa-contract-pact`, scope explicitly bounded (NOT for security → `qa-owasp-security`, NOT for performance → `k6-load-test`). Playwright TypeScript + REST Assured (Java 21+) examples.
-
-#### Conventions established
-
-- **5-layer ISTQB taxonomy** for skill organization: Foundation → Strategy → Functional-by-level → Non-functional-by-type → Tooling.
-- **Disjoint triggers + exclusion clauses** in every skill description (`NOT for X — use Y`) — the orchestrator matches by trigger text; overlap caused both-fire or neither-fire problems before this convention.
-- **CLI artifact-generation pattern** standardized across `security_artifacts.mjs`, `mobile_artifacts.mjs`, `api_artifacts.mjs`, `visual_artifacts.mjs`, `contract_artifacts.mjs` — byte-near-identical except DESCRIPTIONS map + name strings + template count.
-
-#### Cross-skill links
-
-- `playwright-e2e-testing` → points to `qa-visual-regression` (no longer buries visual regression inside the E2E skill).
-- `karate-dsl` → clarifies strict-match scope and points to `qa-contract-pact` for consumer-driven testing.
-- `api-testing/references/headers-and-contracts.md` → linked to `qa-contract-pact`.
-
-#### Tech debt opened (P3)
-
-- iOS Simulator-based Detox/Appium runner, Android Emulator-based runner, cloud device-farm smoke runner — tracked under beads as dependents of the closed mobile harness issue.
-
----
-
-## [Unreleased] — 2026-04-29
-
-### Upstream sync — 171 commits from `Gentleman-Programming/gentle-ai`
-
-Major refresh from upstream `gentle-ai`, integrated without losing the Gentle-QA branding, QE skill set, or SDET tooling.
-
-#### Added (from upstream)
+#### From upstream `gentle-ai`
 
 - **OpenCode Community Plugins** — install curated community plugins for the OpenCode TUI alongside the SDD foundation:
   - `sub-agent-statusline` — surfaces the active sub-agent in the statusline
@@ -63,7 +38,23 @@ Major refresh from upstream `gentle-ai`, integrated without losing the Gentle-QA
 - **Qwen Code idempotency hardening** — engram skips unsupported qwen setup; e2e cleanup extended
 - **Kimi agent** — `uv` preflight aligned with install flow
 
-#### Fixed (from upstream)
+### Enriched
+
+- **`api-testing`** — promoted to ISTQB-aligned skill: mandatory headers, OpenAPI-first workflow, contract-testing bridge to `qa-contract-pact`, scope explicitly bounded (NOT for security → `qa-owasp-security`, NOT for performance → `k6-load-test`). Playwright TypeScript + REST Assured (Java 21+) examples.
+
+### Changed
+
+- **5-layer ISTQB taxonomy** adopted for skill organization: Foundation → Strategy → Functional-by-level → Non-functional-by-type → Tooling.
+- **Disjoint triggers + exclusion clauses** required in every skill description (`NOT for X — use Y`) — the orchestrator matches by trigger text; overlap caused both-fire or neither-fire problems before this convention.
+- **CLI artifact-generation pattern** standardized across `security_artifacts.mjs`, `mobile_artifacts.mjs`, `api_artifacts.mjs`, `visual_artifacts.mjs`, `contract_artifacts.mjs` — byte-near-identical except DESCRIPTIONS map + name strings + template count.
+- `playwright-e2e-testing` → points to `qa-visual-regression` (no longer buries visual regression inside the E2E skill).
+- `karate-dsl` → clarifies strict-match scope and points to `qa-contract-pact` for consumer-driven testing.
+- `api-testing/references/headers-and-contracts.md` → linked to `qa-contract-pact`.
+- Engram MCP goldens regenerated for stable absolute paths (`/opt/homebrew/bin/engram`).
+- `skills-presets.json` golden refreshed to include Gentle-QA QE skills under `full-gentleman`.
+- Embedded skill directory count: 17 → 30 (10 SDD + judgment-day + 5 foundation + `_shared` + 13 QA/SDET).
+
+### Fixed (from upstream)
 
 - `engram` — migrate stale Homebrew paths; retry latest release lookup anonymously
 - `sdd` — replace wildcard `task` permissions with explicit allowlists; complete Claude native sub-agent integration
@@ -72,11 +63,9 @@ Major refresh from upstream `gentle-ai`, integrated without losing the Gentle-QA
 - `persona` — keep English sessions in English; add response length discipline
 - `e2e` — Claude SDD tool assertions, pacman keyring init in Arch image, qwen idempotency
 
-#### Changed
+### Tech debt opened (P3)
 
-- Engram MCP goldens regenerated for stable absolute paths (`/opt/homebrew/bin/engram`)
-- `skills-presets.json` golden refreshed to include Gentle-QA QE skills under `full-gentleman`
-- Embedded skill directory count: 17 → 30 (10 SDD + judgment-day + 5 foundation + `_shared` + 13 QA/SDET)
+- iOS Simulator-based Detox/Appium runner, Android Emulator-based runner, cloud device-farm smoke runner — tracked under beads as dependents of the closed mobile harness issue.
 
 ### Preserved (Gentle-QA fork)
 
