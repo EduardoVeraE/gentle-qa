@@ -23,6 +23,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Live browser inspection/debugging via Playwright MCP — navigate, click, fill, screenshot, console, real-time UI validation | playwright-mcp-inspect | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/playwright-mcp-inspect/SKILL.md |
 | Regression test STRATEGY for Playwright/TS — tier model, risk/change-based selection, sharding, CI, flaky management; NOT writing tests | playwright-regression-strategy | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/playwright-regression-strategy/SKILL.md |
 | ISTQB CTFL aligned manual+auto QA — test plans, cases, design techniques, bug reports, traceability, exploratory charters | qa-manual-istqb | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-manual-istqb/SKILL.md |
+| Mobile functional testing — Appium (cross-platform iOS/Android), Detox (React Native), XCUITest, Espresso, gestures, device matrix, real vs sim/emu, cloud farms (BrowserStack/Sauce/AWS Device Farm/Firebase Test Lab); NOT mobile security/a11y/perf | qa-mobile-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-mobile-testing/SKILL.md |
 | OWASP-aligned security testing — Top 10 Web 2025, API 2023, Mobile 2024, threat modeling (STRIDE), pentest, vuln scan, XSS, SQLi, CSRF, SSRF, BOLA/BFLA, JWT attacks, secrets, deps; NOT api-testing/qa-mobile-testing/a11y/k6 | qa-owasp-security | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-owasp-security/SKILL.md |
 | Selenium WebDriver 4+ Java 21+ JUnit 5 Maven E2E suites — POM, explicit waits, AssertJ, multi-browser; NOT a11y, NOT Playwright | selenium-e2e-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/selenium-e2e-testing/SKILL.md |
 | Creating a new agent skill, adding agent instructions, or documenting patterns for AI per Agent Skills spec | skill-creator | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/skill-creator/SKILL.md |
@@ -181,6 +182,19 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 - Use bundled `templates/` (test-plan, test-cases.csv, bug-report, traceability-matrix, regression-suite, exploratory-charter) and `references/` for techniques.
 - Static testing (reviews) shifts left: schedule reviews of requirements, designs, plans, and cases with checklists; track findings to resolution.
 - Estimation: combine expert judgment + historical data + WBS; add explicit contingency for risk and unknowns.
+
+### qa-mobile-testing
+- Choose framework by app type: Appium for cross-platform native, Detox for React Native (grey-box, faster sync), XCUITest/Espresso for native-only when app source is available (lower flake, faster than Appium).
+- Prefer accessibility identifiers (`accessibilityIdentifier` iOS, `contentDescription`/`testTag` Android, `testID` RN) over xpath/text — locators by id are 10×+ faster and resilient to copy/locale changes.
+- Use `references/appium.md` (W3C caps, POM, gestures, parallel), `detox.md` (`.detoxrc.js`, `by.id`, Device API, isolation), `native-and-device-strategy.md` (XCUITest/Espresso decision matrix, 80/20 device coverage, cloud-farm comparison).
+- Generate artifacts via `node scripts/mobile_artifacts.mjs create <template> --out <dir> --<placeholder> <value>` (templates: mobile-test-plan, device-matrix, gesture-catalog, mobile-bug-report).
+- Bug reports MUST include device fingerprint: Make/Model, OS version, build, locale, network, orientation, dark-mode, app build+version. Without this, mobile bugs are unreproducible.
+- Device matrix follows 80/20 rule: pick devices covering 80% of real user base from analytics; cover OS N/N-1 (iOS) and the top 5 Android API levels; include low-RAM tier; include landscape + dark mode.
+- Real device 20% / simulator 80% for fast iteration; final pre-release runs on real devices to catch camera/sensor/network/GPU bugs that simulators hide.
+- For parallel runs: separate Appium server per device (port allocation table in appium.md); Detox does NOT parallelize within a single config — use `--shard N/M` instead.
+- NEVER use implicit waits as primary sync; use explicit waits (`waitFor`, `waitUntil`) and idle resources (Espresso) or Detox's built-in JS-bridge synchronization.
+- See `examples/appium-wdio-ts/` and `examples/detox-rn/` for runnable scaffolds (real code, not templates).
+- NOT for mobile security testing — use `qa-owasp-security`. NOT for mobile a11y — escalate. NOT for mobile performance — out of scope.
 
 ### qa-owasp-security
 - ALWAYS require explicit written authorization before any active security test; print AUTHORIZATION REQUIRED banner; never test prod without approval.

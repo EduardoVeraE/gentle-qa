@@ -1,0 +1,30 @@
+{
+  "name": "appium-wdio-ts-example",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Appium 2 + WebdriverIO v9 + TypeScript starter for iOS sim and Android emu",
+  "scripts": {
+    "test": "wdio run ./wdio.conf.ts",
+    "test:ios": "wdio run ./wdio.conf.ts --capabilities=ios",
+    "test:android": "wdio run ./wdio.conf.ts --capabilities=android",
+    "appium": "appium --base-path /wd/hub"
+  },
+  "devDependencies": {
+    "@wdio/cli": "^9.0.0",
+    "@wdio/local-runner": "^9.0.0",
+    "@wdio/mocha-framework": "^9.0.0",
+    "@wdio/spec-reporter": "^9.0.0",
+    "@wdio/appium-service": "^9.0.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.0",
+    "appium": "^2.5.0",
+    "appium-uiautomator2-driver": "^3.7.0",
+    "appium-xcuitest-driver": "^7.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0",
+    "webdriverio": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
