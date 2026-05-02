@@ -23,6 +23,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Live browser inspection/debugging via Playwright MCP — navigate, click, fill, screenshot, console, real-time UI validation | playwright-mcp-inspect | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/playwright-mcp-inspect/SKILL.md |
 | Regression test STRATEGY for Playwright/TS — tier model, risk/change-based selection, sharding, CI, flaky management; NOT writing tests | playwright-regression-strategy | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/playwright-regression-strategy/SKILL.md |
 | ISTQB CTFL aligned manual+auto QA — test plans, cases, design techniques, bug reports, traceability, exploratory charters | qa-manual-istqb | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-manual-istqb/SKILL.md |
+| OWASP-aligned security testing — Top 10 Web 2025, API 2023, Mobile 2024, threat modeling (STRIDE), pentest, vuln scan, XSS, SQLi, CSRF, SSRF, BOLA/BFLA, JWT attacks, secrets, deps; NOT api-testing/qa-mobile-testing/a11y/k6 | qa-owasp-security | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-owasp-security/SKILL.md |
 | Selenium WebDriver 4+ Java 21+ JUnit 5 Maven E2E suites — POM, explicit waits, AssertJ, multi-browser; NOT a11y, NOT Playwright | selenium-e2e-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/selenium-e2e-testing/SKILL.md |
 | Creating a new agent skill, adding agent instructions, or documenting patterns for AI per Agent Skills spec | skill-creator | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/skill-creator/SKILL.md |
 
@@ -180,6 +181,19 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 - Use bundled `templates/` (test-plan, test-cases.csv, bug-report, traceability-matrix, regression-suite, exploratory-charter) and `references/` for techniques.
 - Static testing (reviews) shifts left: schedule reviews of requirements, designs, plans, and cases with checklists; track findings to resolution.
 - Estimation: combine expert judgment + historical data + WBS; add explicit contingency for risk and unknowns.
+
+### qa-owasp-security
+- ALWAYS require explicit written authorization before any active security test; print AUTHORIZATION REQUIRED banner; never test prod without approval.
+- Anchor every test to a specific OWASP category (Web 2025 A01-A10, API 2023 API1-API10, Mobile 2024 M1-M10) or STRIDE element — no untraceable testing.
+- Use `references/owasp-top10-2025-web.md`, `owasp-api-top10-2023.md`, `owasp-mobile-top10-2024.md`, `threat-modeling-stride.md`, `security-tooling.md` for canonical attack vectors, payloads, and tools.
+- Generate artifacts via `node scripts/security_artifacts.mjs create <template> --out <dir> --<placeholder> <value>` (templates: security-test-plan, threat-model, vuln-report, pentest-report, security-checklist).
+- Run per-attack helpers from `scripts/attacks/`: `sqli-test.sh` (sqlmap), `xss-scan.sh` (dalfox/ZAP), `secrets-scan.sh` (gitleaks/trufflehog), `deps-scan.sh` (npm audit + trivy + ecosystem-aware), `jwt-test.mjs` (none/weak/kid/alg-confusion), `ssrf-test.mjs` (cloud metadata), `bola-test.mjs` (object-id enumeration with `--rate` limit).
+- Map every finding: severity (CVSS 4.0 vector + score), OWASP category, CWE IDs, affected component, remediation.
+- BOLA/BFLA/BOPLA tests REQUIRE two real account tokens to validate horizontal privilege escalation; cross-account is the gating signal.
+- For mobile, separate static (apktool/jadx/MobSF) from dynamic (Frida/objection) — both required for M7 binary protections and M9 storage.
+- Threat model first (STRIDE) when scoping; map STRIDE elements to OWASP categories before selecting tests.
+- Exit codes from attack scripts: 0 clean / 1 findings ≥ threshold / 2 tool missing / 3 runtime error / 64 usage error — let CI distinguish failure modes.
+- NOT for general API/mobile/a11y/perf testing — use api-testing, qa-mobile-testing, a11y-playwright-testing, or k6-load-test respectively.
 
 ### selenium-e2e-testing
 - NEVER `Thread.sleep()` — always `WebDriverWait` + `ExpectedConditions.visibilityOfElementLocated/elementToBeClickable`.
