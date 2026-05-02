@@ -117,7 +117,7 @@ Download the binary for your platform from [GitHub Releases](https://github.com/
 
 ## QA Skills Included
 
-Gentle-QA ships with **20+ curated skills** across every layer of the quality engineering stack. Your AI agent gets context-aware assistance for all of them out of the box — skills auto-activate based on the files you touch and the task at hand.
+Gentle-QA ships with **25+ curated skills** across every layer of the quality engineering stack, organized by the **5-layer ISTQB taxonomy** (Foundation → Strategy → Functional-by-level → Non-functional-by-type → Tooling). Your AI agent gets context-aware assistance for all of them out of the box — skills auto-activate based on the files you touch and the task at hand.
 
 > The **SDET persona** orients your agent toward quality-first thinking: test pyramid strategy, shift-left practices, risk-based coverage, and CI/CD gate design.
 
@@ -140,7 +140,32 @@ Gentle-QA ships with **20+ curated skills** across every layer of the quality en
 
 | Skill | When to use it | What it covers |
 |-------|---------------|----------------|
-| **api-testing** | Creating or debugging API tests (REST, GraphQL) | Schema validation (Zod/JSON Schema), auth flows (OAuth2, JWT), error state coverage, contract testing, idempotency — Playwright TypeScript and REST Assured (Java 21+) |
+| **api-testing** | Creating or debugging API tests (REST, GraphQL) | Schema validation (Zod/JSON Schema), auth flows (OAuth2, JWT), error state coverage, mandatory headers, OpenAPI-first workflow, idempotency — Playwright TypeScript and REST Assured (Java 21+) |
+| **qa-contract-pact** | Consumer-driven contract testing between services | PACT-JS + PACT-JVM, Pact Broker (self-hosted + PactFlow), `can-i-deploy` gates, HTTP and async (Kafka/RabbitMQ/SNS/SQS) message contracts, provider state setup |
+
+---
+
+### Mobile Testing
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **qa-mobile-testing** | Native and cross-platform mobile E2E testing | Appium (iOS + Android), Detox (React Native grey-box), device strategy (sims/emulators vs real devices vs cloud farms), gesture/wait patterns, flake mitigation |
+
+---
+
+### Security Testing
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **qa-owasp-security** | OWASP-aligned security testing (Web / API / Mobile) | OWASP Top 10 + API Top 10 + MASVS, ZAP active scans, dependency scanning (trivy), XSS/SQLi attack scripts, validated against DVWA fixtures |
+
+---
+
+### Visual Regression
+
+| Skill | When to use it | What it covers |
+|-------|---------------|----------------|
+| **qa-visual-regression** | Screenshot diffing for UI regression | Percy (perceptual diff, multi-browser), Chromatic (Storybook-first, TurboSnap), Playwright `toHaveScreenshot` (free, baselines in repo, Docker-pinned), baseline workflow, masking, threshold tuning, CI gating |
 
 ---
 
@@ -196,6 +221,10 @@ Gentle-QA ships with **20+ curated skills** across every layer of the quality en
 |----------|-------------------|
 | Writing E2E tests for a web app | `playwright-e2e-testing` + `qa-manual-istqb` |
 | Testing REST/GraphQL APIs | `api-testing` + `qa-manual-istqb` |
+| Consumer-driven contract testing between services | `qa-contract-pact` + `api-testing` |
+| Mobile E2E (native or React Native) | `qa-mobile-testing` |
+| Security testing (OWASP Web / API / Mobile) | `qa-owasp-security` |
+| Visual regression on UI | `qa-visual-regression` |
 | Accessibility audit (Playwright) | `a11y-playwright-testing` |
 | Accessibility audit (Selenium) | `a11y-selenium-testing` |
 | Performance / load testing | `k6-load-test` |
