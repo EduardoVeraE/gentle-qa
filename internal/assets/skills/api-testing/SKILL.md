@@ -1,6 +1,6 @@
 ---
 name: api-testing
-description: "Comprehensive API testing for REST and GraphQL endpoints. Use when asked to create, run, or debug API tests, validate schemas, test authentication, verify contracts, or check error handling. Covers Playwright request fixture (TypeScript) and REST Assured (Java 21+)."
+description: "API testing for REST and GraphQL — functional behavior, contracts, schemas, mandatory headers, and OpenAPI-driven workflows. Stacks: Playwright TypeScript (request fixture, Supertest, Zod) and REST Assured Java 21+ (AssertJ, JSON Schema Validator). Trigger keywords: API test, REST test, GraphQL test, schema validation, OpenAPI, contract test, request/response shape, status codes, idempotency, pagination, mandatory headers, content negotiation, ETag, rate limit headers, error contract. NOT for security testing (XSS, SQLi, BOLA, JWT attacks, OWASP API Top 10) — use `qa-owasp-security`. NOT for performance/load testing — use `k6-load-test`. NOT for E2E browser flows — use `playwright-e2e-testing` or `selenium-e2e-testing`. NOT for mobile API testing harness — use `qa-mobile-testing` (the API call patterns from this skill still apply, but device/sim setup belongs there)."
 ---
 
 # API Testing (Playwright + REST Assured)
@@ -18,6 +18,25 @@ Comprehensive API testing skill covering both Playwright TypeScript (request fix
 - Contract testing between services
 - Rate limiting validation
 
+## ISTQB API Testing Levels
+
+| Level       | Scope                          | Tools                                            | Reference                                                                |
+| ----------- | ------------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------ |
+| Component   | Single endpoint, mocked deps   | Playwright request, Supertest, MSW               | [api-testing-levels-istqb.md](./references/api-testing-levels-istqb.md)  |
+| Integration | Multi-service real deps        | REST Assured, Playwright, contract tests         | [api-testing-levels-istqb.md](./references/api-testing-levels-istqb.md)  |
+| System      | Full E2E API flow              | Playwright + real env                            | [api-testing-levels-istqb.md](./references/api-testing-levels-istqb.md)  |
+
+## OpenAPI-First Workflow
+
+1. Lint the spec with Spectral.
+2. Generate types with `openapi-typescript`.
+3. Validate request bodies against the spec (consumer side).
+4. Validate response bodies against the spec (provider side).
+5. Detect breaking changes with `oasdiff` in CI.
+6. Generate examples and edge cases from the spec (Faker + spec).
+
+See [openapi-driven-testing.md](./references/openapi-driven-testing.md) for full workflow details.
+
 ## Prerequisites
 
 | Stack      | Requirements                                                          |
@@ -32,6 +51,28 @@ Comprehensive API testing skill covering both Playwright TypeScript (request fix
 3. **Auth testing is mandatory** — verify 401/403 for protected endpoints
 4. **Data-driven** — test with valid, invalid, boundary, and empty values
 5. **Stateless where possible** — each test cleans up or uses unique data
+
+## Mandatory Headers Convention
+
+Every API test should assert the presence and shape of headers in these eight categories. See [headers-and-contracts.md](./references/headers-and-contracts.md) for the full catalog with examples and validation patterns.
+
+- **Auth** — `Authorization`, API keys, session cookies
+- **Content negotiation** — `Accept`, `Content-Type`, `Accept-Language`
+- **Idempotency** — `Idempotency-Key` for unsafe-but-repeatable mutations
+- **Tracing** — W3C `traceparent`, `tracestate`, correlation IDs
+- **Pagination** — `Link` (RFC 5988), `X-Total-Count`, cursor headers
+- **Rate limit** — `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`
+- **Security** — `Strict-Transport-Security`, `X-Content-Type-Options`, CORS headers
+- **Caching** — `ETag`, `Cache-Control`, `Last-Modified`, `Vary`
+
+## Contract Testing
+
+Two complementary paths — choose based on coupling and ownership:
+
+- **Consumer-driven via Pact** — when consumer and provider teams are separate and need to negotiate the contract bidirectionally. Pact files live with the consumer, are verified by the provider in CI. See `qa-contract-pact` (when available).
+- **OpenAPI as contract** — when the provider owns the spec and consumers conform to it. Validate both request and response shapes against the spec on every test run. Covered in [openapi-driven-testing.md](./references/openapi-driven-testing.md).
+
+Use Pact for cross-team contracts where breaking changes need explicit negotiation. Use OpenAPI when the spec is the source of truth and consumers track it.
 
 ## Quick Reference — Playwright
 
@@ -129,3 +170,14 @@ After completing this skill's workflow, confirm:
 - [ ] **Idempotency verified** — PUT/DELETE produce same result when called multiple times
 - [ ] **Edge cases covered** — Empty payloads, invalid types, boundary values, SQL injection attempts
 - [ ] **All tests pass** — Playwright API tests or REST Assured tests exit successfully
+
+---
+
+## Exclusions
+
+This skill is scoped to functional, contract, schema, and OpenAPI testing. It does NOT cover:
+
+- NOT for security testing (XSS, SQLi, BOLA, JWT attacks, OWASP API Top 10) — use `qa-owasp-security`
+- NOT for performance/load testing — use `k6-load-test`
+- NOT for E2E browser flows — use `playwright-e2e-testing` or `selenium-e2e-testing`
+- NOT for mobile API testing harness — use `qa-mobile-testing` (the API call patterns from this skill still apply, but device/sim setup belongs there)

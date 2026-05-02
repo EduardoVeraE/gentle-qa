@@ -10,7 +10,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 |---------|-------|------|
 | Writing/running/debugging automated a11y checks, keyboard navigation, focus, ARIA, WCAG 2.1 AA with Playwright + axe-core (TypeScript) | a11y-playwright-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/a11y-playwright-testing/SKILL.md |
 | WCAG 2.1/2.2 a11y testing with Selenium WebDriver 4+ (Java 21+) and axe-core; NOT general E2E nor Playwright a11y | a11y-selenium-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/a11y-selenium-testing/SKILL.md |
-| Creating/running/debugging API tests for REST/GraphQL — schema, auth, contracts, error handling (Playwright TS or REST Assured Java) | api-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/api-testing/SKILL.md |
+| API testing for REST/GraphQL — functional behavior, schemas, contracts, mandatory headers, OpenAPI-first workflows; ISTQB component/integration/system levels (Playwright TS + REST Assured Java); NOT security/perf/E2E browser/mobile-harness | api-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/api-testing/SKILL.md |
 | Creating a pull request, opening a PR, or preparing changes for review (issue-first enforcement) | branch-pr | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/branch-pr/SKILL.md |
 | Writing Go tests, Bubbletea TUI tests with teatest, or adding test coverage | go-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/go-testing/SKILL.md |
 | Creating a GitHub issue, reporting a bug, or requesting a feature | issue-creation | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/issue-creation/SKILL.md |
@@ -52,13 +52,16 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 - Never disable rules globally; theme-dependent contrast must test light AND dark modes.
 
 ### api-testing
-- Validate every response schema (Zod for TS, JSON Schema / json-schema-validator for Java) — never trust unvalidated responses.
-- Test ALL relevant status codes: 2xx happy path AND 400/401/403/404/409/422/500 error paths.
-- Auth tests are mandatory: every protected endpoint MUST have a 401 test without credentials.
-- Verify idempotency for PUT/DELETE — multiple calls must produce identical state.
-- Use unique data per test (or explicit cleanup); avoid shared mutable fixtures.
-- Cover edge cases: empty payloads, invalid types, boundary values, injection attempts.
-- For flexible fields use Zod `.passthrough()` or JSON Schema `additionalProperties: true`; tighten contracts where possible.
+- Pick the ISTQB level by oracle: Component (single endpoint, mocked deps, schema check) → Integration (multi-service, real deps, contract + side-effects) → System (full E2E API journey, real env). Pyramid ~70/25/5; not every endpoint needs all 3 levels.
+- Validate every response schema (Zod for TS, JSON Schema / json-schema-validator for Java) — never trust unvalidated responses. Validate REQUEST bodies too on the consumer side.
+- OpenAPI-first: lint with Spectral, generate types via `openapi-typescript`, validate request+response with Ajv/Zod, detect breaks with `oasdiff` in CI, generate edge cases via Faker + spec.
+- Test ALL relevant status codes: 2xx happy path AND 400/401/403/404/409/422/500. Every protected endpoint needs a 401-without-credentials test.
+- Mandatory headers per category: auth (Authorization/X-Api-Key), content (Content-Type/Accept), idempotency (Idempotency-Key on POST/PATCH), tracing (W3C traceparent + X-Request-ID), pagination (Link/X-Total-Count), rate-limit (X-RateLimit-* + Retry-After), security (HSTS/X-Frame-Options/CSP — functional check only), caching (ETag/Cache-Control round-trip).
+- Idempotency: PUT/DELETE must produce identical state; POST with same Idempotency-Key returns same response, different body same key returns 422.
+- Contract testing: choose Pact (consumer-driven, external/many consumers) OR OpenAPI-as-contract (one provider, internal). Both can coexist in polyglot orgs. Pact requires can-i-deploy gating in CI.
+- Use unique data per test (or explicit cleanup). For flexible fields use Zod `.passthrough()` / JSON Schema `additionalProperties: true`; tighten contracts where possible.
+- Generate artifacts via `node scripts/api_artifacts.mjs create <template> --out <dir>` (templates: api-test-plan, openapi-test-checklist, mandatory-headers-checklist, contract-test-charter).
+- NOT for security testing (XSS/SQLi/BOLA/JWT/OWASP API Top 10) — use `qa-owasp-security`. NOT for perf/load — use `k6-load-test`. NOT for E2E browser flows — use `playwright-e2e-testing`/`selenium-e2e-testing`. NOT for mobile harness — use `qa-mobile-testing`.
 
 ### branch-pr
 - Every PR MUST link an approved issue: body contains `Closes/Fixes/Resolves #N` and the issue has label `status:approved`.
