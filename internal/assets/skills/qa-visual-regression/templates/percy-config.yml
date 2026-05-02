@@ -1,0 +1,56 @@
+# Skill: qa-visual-regression · Template: percy-config
+# .percy.yml — place at repo root.
+# Docs: percy.io/docs
+
+version: 2
+snapshot:
+  # Viewport widths (each adds a billed snapshot).
+  widths: [375, 768, 1280]
+
+  # Minimum height of the rendered viewport.
+  min-height: 1024
+
+  # Global CSS injected ONLY for Percy snapshots.
+  # Use to suppress dynamic regions and animations across the whole app.
+  percy-css: |
+    /* Hide regions that change every run */
+    .timestamp,
+    [data-testid="last-updated"],
+    [data-testid="user-avatar-initials"],
+    [data-testid="ad-slot"] {
+      visibility: hidden !important;
+    }
+
+    /* Disable all animations and transitions */
+    *, *::before, *::after {
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
+      transition-duration: 0s !important;
+      transition-delay: 0s !important;
+    }
+
+    /* Hide blinking caret */
+    input, textarea {
+      caret-color: transparent !important;
+    }
+
+discovery:
+  # Wait this many ms after `load` before considering the page idle.
+  network-idle-timeout: 1500
+
+  # Restrict asset discovery to your own origins.
+  allowed-hostnames: []
+  disallowed-hostnames:
+    - "*.googletagmanager.com"
+    - "*.google-analytics.com"
+    - "*.facebook.com"
+    - "*.doubleclick.net"
+
+# Optional: per-snapshot overrides (uncomment and adapt)
+# snapshot:
+#   - name: Home — desktop only
+#     widths: [1280]
+#   - name: Modal open
+#     additional-snapshots:
+#       - suffix: " (mobile)"
+#         widths: [375]

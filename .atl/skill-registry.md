@@ -11,6 +11,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Writing/running/debugging automated a11y checks, keyboard navigation, focus, ARIA, WCAG 2.1 AA with Playwright + axe-core (TypeScript) | a11y-playwright-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/a11y-playwright-testing/SKILL.md |
 | WCAG 2.1/2.2 a11y testing with Selenium WebDriver 4+ (Java 21+) and axe-core; NOT general E2E nor Playwright a11y | a11y-selenium-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/a11y-selenium-testing/SKILL.md |
 | API testing for REST/GraphQL — functional behavior, schemas, contracts, mandatory headers, OpenAPI-first workflows; ISTQB component/integration/system levels (Playwright TS + REST Assured Java); NOT security/perf/E2E browser/mobile-harness | api-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/api-testing/SKILL.md |
+| Consumer-driven contract testing with Pact — PACT-JS (Node/TS), PACT-JVM (Java/Kotlin/Scala), Pact Broker / PactFlow, can-i-deploy gating, consumer version selectors, provider state handlers, message pact (Kafka/Rabbit/SNS), troubleshooting; NOT OpenAPI-as-contract / general API tests / Spring Cloud Contract / security / perf | qa-contract-pact | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-contract-pact/SKILL.md |
 | Creating a pull request, opening a PR, or preparing changes for review (issue-first enforcement) | branch-pr | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/branch-pr/SKILL.md |
 | Writing Go tests, Bubbletea TUI tests with teatest, or adding test coverage | go-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/go-testing/SKILL.md |
 | Creating a GitHub issue, reporting a bug, or requesting a feature | issue-creation | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/issue-creation/SKILL.md |
@@ -25,6 +26,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | ISTQB CTFL aligned manual+auto QA — test plans, cases, design techniques, bug reports, traceability, exploratory charters | qa-manual-istqb | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-manual-istqb/SKILL.md |
 | Mobile functional testing — Appium (cross-platform iOS/Android), Detox (React Native), XCUITest, Espresso, gestures, device matrix, real vs sim/emu, cloud farms (BrowserStack/Sauce/AWS Device Farm/Firebase Test Lab); NOT mobile security/a11y/perf | qa-mobile-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-mobile-testing/SKILL.md |
 | OWASP-aligned security testing — Top 10 Web 2025, API 2023, Mobile 2024, threat modeling (STRIDE), pentest, vuln scan, XSS, SQLi, CSRF, SSRF, BOLA/BFLA, JWT attacks, secrets, deps; NOT api-testing/qa-mobile-testing/a11y/k6 | qa-owasp-security | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-owasp-security/SKILL.md |
+| Visual regression testing — Percy, Chromatic, Playwright `toHaveScreenshot`; baseline workflow, browser/viewport matrix, masking dynamic regions, threshold tuning, CI gating, baseline review/approval; NOT functional E2E nor a11y nor perf nor live debug nor regression-suite tiering | qa-visual-regression | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/qa-visual-regression/SKILL.md |
 | Selenium WebDriver 4+ Java 21+ JUnit 5 Maven E2E suites — POM, explicit waits, AssertJ, multi-browser; NOT a11y, NOT Playwright | selenium-e2e-testing | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/selenium-e2e-testing/SKILL.md |
 | Creating a new agent skill, adding agent instructions, or documenting patterns for AI per Agent Skills spec | skill-creator | /Users/eduardo/Proyectos/public/gentle-qa/internal/assets/skills/skill-creator/SKILL.md |
 
@@ -174,6 +176,19 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 - ISTQB regression types: Corrective (no app change), Progressive (new features), Selective (specific change), Complete (RC/major refactor).
 - NOT for writing individual tests — that's playwright-e2e-testing.
 
+### qa-contract-pact
+- Consumer DRIVES the contract — only assert what the consumer actually reads. Drop unused fields. Wrap dynamic fields in matchers (`like`, `integer`, `string`, `eachLike`, `regex`, `iso8601DateTime`); reserve exact values for enums/discriminators only.
+- Use Pact spec V4 (`PactV3` in JS, `pactVersion = PactSpecVersion.V4` in JVM) — V2 is legacy, V3+V4 give proper matchers.
+- Pacticipant version MUST be the immutable `$GIT_SHA`; branches and environments are mutable tags. Never publish with `version=latest`.
+- Provider state handlers MUST be idempotent: `resetDb()` then seed; never assume prior state. Non-determinism is the #1 verification flake source.
+- Always set `consumerVersionSelectors: [{ mainBranch: true }, { deployedOrReleased: true }, { matchingBranch: true }]` — without selectors providers verify every pact ever published.
+- `publishVerificationResult: true` is REQUIRED in CI; without it the broker never learns of passes and `can-i-deploy` blocks every deploy.
+- Insert `pact-broker can-i-deploy --to-environment <env>` BEFORE every deploy step (exit 0 = safe). After successful deploy, run `pact-broker record-deployment`. Skipping either makes the gate ineffective.
+- Configure broker webhooks: `contract_content_changed` → trigger provider verify; `provider_verification_published` → trigger consumer can-i-deploy. Without webhooks, drift goes unnoticed until next nightly.
+- Generate artifacts via `node scripts/contract_artifacts.mjs create <template> --out <dir> --<placeholder> <value>` (templates: contract-test-charter, broker-setup-checklist, can-i-deploy-gate, pact-mismatch-report).
+- Choose Pact when: external/many consumers, polyglot, separate release cadence. Choose OpenAPI-as-contract (api-testing) when: monorepo, internal, single-language. Choose Spring Cloud Contract when: provider-driven, Java/Spring shop already standardized on it.
+- NOT for OpenAPI schema validation, OpenAPI-as-contract, or runtime spec validation — use `api-testing`. NOT for general API tests or strict-match within one suite — use `api-testing` / `karate-dsl`. NOT for security — use `qa-owasp-security`. NOT for perf — use `k6-load-test`. NOT for Spring Cloud Contract — out of scope; refer team to SCC docs directly.
+
 ### qa-manual-istqb
 - Always derive test conditions from the test basis BEFORE writing step-by-step cases.
 - Apply ISTQB techniques per area: EP + BVA for inputs/validation, Decision Tables for rule combinations, State Transition for lifecycle, Use Cases for E2E, Exploratory for learning.
@@ -211,6 +226,20 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 - Threat model first (STRIDE) when scoping; map STRIDE elements to OWASP categories before selecting tests.
 - Exit codes from attack scripts: 0 clean / 1 findings ≥ threshold / 2 tool missing / 3 runtime error / 64 usage error — let CI distinguish failure modes.
 - NOT for general API/mobile/a11y/perf testing — use api-testing, qa-mobile-testing, a11y-playwright-testing, or k6-load-test respectively.
+
+### qa-visual-regression
+- Pick ONE primary tool per project — never mix Percy + Chromatic + Playwright; duplicate baselines double review cost without doubling signal.
+- Decision tree: Storybook design system → Chromatic (TurboSnap saves 70-90% cost). SaaS budget OK + full-page web app → Percy (perceptual diff, multi-browser). No SaaS budget OR want baselines in repo → Playwright `toHaveScreenshot`.
+- Headline tradeoff per tool: Percy = perceptual diff + multi-browser, paid SaaS, vendor lock-in; Chromatic = Storybook-first + TurboSnap, paid SaaS, weak for full-page flows; Playwright built-in = free + baselines in PR diff, requires Docker pinning to avoid OS font flake.
+- Determinism is mandatory BEFORE coverage: kill animations globally, hide caret, mask dynamic regions (timestamps, ads, A/B variants), wait for `document.fonts.ready`, freeze test data via API mocks.
+- Playwright built-in MUST run in pinned `mcr.microsoft.com/playwright:v1.x.x-jammy` Docker — OS font rendering varies between Ubuntu releases and developer macOS, causing endless flake.
+- Chromatic config requires `onlyChanged: true` (TurboSnap) AND `autoAcceptChanges: "main"` AND CI checkout `fetch-depth: 0`; missing any of these = exhausted quota or merge gridlock.
+- Percy snapshot cost = `snapshots × widths × browsers`; keep under 50 snapshots × 3 widths until quota headroom is proven.
+- Diff triage classification: (1) real regression → file defect, fix code, do NOT update baseline; (2) intentional change → accept new baseline, document in PR; (3) rendering noise → fix determinism BEFORE updating baseline. NEVER `--update-snapshots` to "make CI pass".
+- Threshold tuning: start permissive (`maxDiffPixelRatio: 0.05`, `threshold: 0.3`), tighten over 2 weeks once flake root-causes are fixed; below `0.001` only for design-system primitives.
+- Snapshot matrix follows 80/20: Chromium mandatory, WebKit only if iOS Safari is top-3 traffic, Firefox only on explicit requirement; viewports 375/768/1280; themes only if shipped; locales default + 1 RTL only if RTL supported.
+- Generate artifacts via `node scripts/visual_artifacts.mjs create <template> --out <dir> --<placeholder> <value>` (templates: visual-test-plan, snapshot-matrix, baseline-runbook, visual-diff-report). Tool-specific starter configs in `templates/`: `percy-config.yml`, `chromatic-config.json`, `playwright-screenshot.spec.ts`.
+- NOT for functional E2E (use playwright-e2e-testing/selenium-e2e-testing). NOT for a11y/contrast (use a11y-playwright-testing/a11y-selenium-testing). NOT for perf (use k6-load-test). NOT for live debug (use playwright-mcp-inspect). NOT for regression-suite tiering (use playwright-regression-strategy). NOT for mobile native UI (web only).
 
 ### selenium-e2e-testing
 - NEVER `Thread.sleep()` — always `WebDriverWait` + `ExpectedConditions.visibilityOfElementLocated/elementToBeClickable`.

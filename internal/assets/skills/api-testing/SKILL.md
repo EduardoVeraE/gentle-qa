@@ -69,7 +69,7 @@ Every API test should assert the presence and shape of headers in these eight ca
 
 Two complementary paths — choose based on coupling and ownership:
 
-- **Consumer-driven via Pact** — when consumer and provider teams are separate and need to negotiate the contract bidirectionally. Pact files live with the consumer, are verified by the provider in CI. See `qa-contract-pact` (when available).
+- **Consumer-driven via Pact** — when consumer and provider teams are separate and need to negotiate the contract bidirectionally. Pact files live with the consumer, are verified by the provider in CI. Covered in depth in the `qa-contract-pact` skill (PACT-JS, PACT-JVM, broker, can-i-deploy, message contracts).
 - **OpenAPI as contract** — when the provider owns the spec and consumers conform to it. Validate both request and response shapes against the spec on every test run. Covered in [openapi-driven-testing.md](./references/openapi-driven-testing.md).
 
 Use Pact for cross-team contracts where breaking changes need explicit negotiation. Use OpenAPI when the spec is the source of truth and consumers track it.

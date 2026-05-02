@@ -721,7 +721,7 @@ Consumer tests describe expected interactions ("when I send X, I expect response
 - **Best for:** external consumers, many consumers, polyglot stacks.
 - **Strength:** consumer's actual usage drives the contract — no field gets dropped because "no one uses it" when in fact someone does.
 - **Weakness:** state setup (provider must be seeded before each interaction); pact files can drift if not gated by a broker.
-- **Bridges to skill:** `qa-contract-pact` (issue gentle-qa-2z7) — that skill covers Pact in depth (broker, can-i-deploy, matchers, message pact).
+- **Bridges to skill:** `qa-contract-pact` — that skill covers Pact in depth (PACT-JS, PACT-JVM, broker, can-i-deploy, matchers, message pact, troubleshooting).
 
 ### OpenAPI as Contract
 
@@ -895,4 +895,4 @@ Tag versions by environment (`staging`, `production`, `main`) so the broker know
 - `references/contract-testing.md` — broader contract testing patterns (request/response shape, status codes).
 - `references/playwright-api-testing.md` — Playwright `request` fixture for HTTP testing.
 - `qa-owasp-security` skill — deeper security analysis of the response headers in section 7.
-- `qa-contract-pact` skill (issue gentle-qa-2z7) — Pact-specific patterns: matchers, message pact, broker workflows.
+- `qa-contract-pact` skill — Pact-specific patterns: matchers, message pact, broker workflows, can-i-deploy, troubleshooting.

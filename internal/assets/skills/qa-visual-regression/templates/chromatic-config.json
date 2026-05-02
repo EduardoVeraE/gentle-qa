@@ -1,0 +1,23 @@
+{
+  "$schema": "https://www.chromatic.com/config-file.schema.json",
+  "_comment_intro": "Skill: qa-visual-regression · Template: chromatic-config. Place at repo root as chromatic.config.json.",
+
+  "projectId": "Project:REPLACE_ME",
+  "buildScriptName": "build-storybook",
+
+  "_comment_turbosnap": "TurboSnap re-snapshots only stories whose dependency graph changed. Mandatory for libraries above ~50 stories.",
+  "onlyChanged": true,
+
+  "_comment_autoaccept": "Auto-accept new baselines on main after merge. Without this, every merge blocks the next PR.",
+  "autoAcceptChanges": "main",
+
+  "_comment_exit": "Fail the CI step on diffs. Set true if you want UI Review (web) to be the only gate.",
+  "exitZeroOnChanges": false,
+  "exitOnceUploaded": false,
+
+  "_comment_skip": "Storybook config files / fixtures that should not trigger TurboSnap rebuilds.",
+  "skip": "dependabot/**",
+
+  "_comment_externals": "Treat these paths as external — changes do NOT trigger story rebuilds.",
+  "externals": ["public/**", "*.md"]
+}

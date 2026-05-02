@@ -26,13 +26,13 @@ metadata:
 ## When to Use
 
 - API endpoint behavior (CRUD, auth, error handling)
-- Contract testing between services (consumer-driven)
+- Strict-schema contract checks within a single Karate suite (`match response == { ... }` for breaking-change detection)
 - Schema validation against OpenAPI spec
 - Business rule assertions (calculations, state machines)
 - Security surface testing (auth, injection, exposure)
 - API mocking for downstream service isolation
 
-**Not here**: UI flows (use playwright-bdd), performance (use k6), unit logic.
+**Not here**: UI flows (use playwright-bdd), performance (use k6), unit logic, consumer-driven contract testing across teams (use `qa-contract-pact` for Pact / broker / can-i-deploy / message contracts).
 
 ---
 
@@ -372,6 +372,6 @@ java -jar karate.jar -m src/test/java/mocks/product-mock.feature -p 8081  # Mock
 ## Resources
 
 - [Karate docs](https://karatelabs.github.io/karate/)
-- [Consumer-Driven Contracts](https://martinfowler.com/articles/consumerDrivenContracts.html)
+- [Consumer-Driven Contracts](https://martinfowler.com/articles/consumerDrivenContracts.html) — for true consumer-driven workflows use the `qa-contract-pact` skill (Pact, broker, can-i-deploy)
 - [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
 - [ISTQB Glossary](https://glossary.istqb.org)

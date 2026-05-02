@@ -9,6 +9,8 @@ Comprehensive toolkit for end-to-end testing of web applications using Playwrigh
 
 > **Activation:** This skill is triggered when working with Playwright tests, browser automation, E2E testing, API testing with Playwright, or test infrastructure setup.
 
+> **See also — visual regression**: this skill covers single-screenshot assertions inside functional E2E tests. For a full visual regression program (Percy / Chromatic / Playwright `toHaveScreenshot` baselines, masking, CI gating, baseline review workflow), use the dedicated **`qa-visual-regression`** skill.
+
 ## When to Use This Skill
 
 - **Write E2E tests** for user flows, forms, navigation, and authentication
