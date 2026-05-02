@@ -61,31 +61,50 @@ run_eco() {
   local kind="$1" cmd="$2" outfile="$3" pattern="$4" hint="$5"
   echo "Detected $kind" | tee -a "$SUMMARY"
   if [[ -n "$hint" ]] && ! command -v "${cmd%% *}" >/dev/null 2>&1; then
-    echo "Hint: $hint" >&2; return
+    echo "Hint: $hint" >&2; return 0
   fi
   set +e
   (cd "$TARGET" && eval "$cmd") > "$OUT_DIR/$outfile" 2>>"$SUMMARY"
+  local eco_exit=$?
+  eco_findings=$({ grep -Eo "$pattern" "$OUT_DIR/$outfile" 2>/dev/null || true; } | wc -l | tr -d ' ')
   set -e
-  eco_findings=$(grep -Eo "$pattern" "$OUT_DIR/$outfile" 2>/dev/null | wc -l | tr -d ' ')
+  return "$eco_exit"
 }
 
 ECOSYSTEM="none"
 if [[ -f "$TARGET/package.json" ]]; then
   ECOSYSTEM="node"
-  run_eco "Node (package.json)" "npm audit --json" "npm-audit.json" \
-    '"severity"\s*:\s*"(high|critical)"' ""
+  # npm audit fails with ENOLOCK on repos without package-lock.json. Generate
+  # a read-only lockfile (no install, no scripts) so audit can proceed.
+  if [[ ! -f "$TARGET/package-lock.json" && ! -f "$TARGET/npm-shrinkwrap.json" ]]; then
+    cat <<'WARN' >&2
+Warning: no package-lock.json found. Generating read-only lockfile via
+         'npm i --package-lock-only --ignore-scripts' so npm audit can run.
+WARN
+    set +e
+    (cd "$TARGET" && npm i --package-lock-only --ignore-scripts) >>"$SUMMARY" 2>&1
+    npm_lock_exit=$?
+    set -e
+    if [[ "$npm_lock_exit" -ne 0 ]]; then
+      echo "Warning: npm i --package-lock-only failed (exit $npm_lock_exit). Skipping npm audit; trivy will still run." >&2
+    fi
+  fi
+  if [[ -f "$TARGET/package-lock.json" || -f "$TARGET/npm-shrinkwrap.json" ]]; then
+    run_eco "Node (package.json)" "npm audit --json" "npm-audit.json" \
+      '"severity"\s*:\s*"(high|critical)"' "" || true
+  fi
 elif [[ -f "$TARGET/requirements.txt" || -f "$TARGET/pyproject.toml" ]]; then
   ECOSYSTEM="python"
   run_eco "Python (requirements/pyproject)" "pip-audit --format json" "pip-audit.json" \
-    '"id"\s*:' "pip install pip-audit"
+    '"id"\s*:' "pip install pip-audit" || true
 elif [[ -f "$TARGET/go.mod" ]]; then
   ECOSYSTEM="go"
   run_eco "Go (go.mod)" "govulncheck -json ./..." "govulncheck.json" \
-    '"OSV"' "go install golang.org/x/vuln/cmd/govulncheck@latest"
+    '"OSV"' "go install golang.org/x/vuln/cmd/govulncheck@latest" || true
 elif [[ -f "$TARGET/Cargo.toml" ]]; then
   ECOSYSTEM="rust"
   run_eco "Rust (Cargo.toml)" "cargo audit --json" "cargo-audit.json" \
-    '"id"\s*:' "cargo install cargo-audit"
+    '"id"\s*:' "cargo install cargo-audit" || true
 else
   echo "No supported manifest detected — skipping ecosystem audit." | tee -a "$SUMMARY"
 fi
@@ -96,7 +115,7 @@ if command -v trivy >/dev/null 2>&1; then
   trivy fs --scanners vuln,license --format json --output "$OUT_DIR/trivy.json" \
     --severity HIGH,CRITICAL "$TARGET" 2>>"$SUMMARY"
   set -e
-  trivy_findings=$(grep -Eo '"VulnerabilityID"' "$OUT_DIR/trivy.json" 2>/dev/null | wc -l | tr -d ' ')
+  trivy_findings=$({ grep -Eo '"VulnerabilityID"' "$OUT_DIR/trivy.json" 2>/dev/null || true; } | wc -l | tr -d ' ')
 else
   cat <<'HINT' >&2
 Warning: trivy not installed — skipping fs scanner.

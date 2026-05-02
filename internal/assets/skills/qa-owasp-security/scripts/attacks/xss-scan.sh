@@ -63,6 +63,8 @@ mkdir -p "$OUT_DIR"
 SUMMARY="$OUT_DIR/summary.txt"
 JSON_OUT="$OUT_DIR/dalfox.json"
 
+SCAN_EXIT=0
+
 run_dalfox() {
   local mode="url"
   [[ "$CRAWL" -eq 1 ]] && mode="url --deep-domain-xss --skip-bav"
@@ -70,6 +72,7 @@ run_dalfox() {
   set +e
   # shellcheck disable=SC2086
   dalfox $mode "$TARGET" --format json -o "$JSON_OUT" 2>&1 | tee -a "$SUMMARY"
+  SCAN_EXIT=${PIPESTATUS[0]}
   set -e
 }
 
@@ -82,16 +85,43 @@ Or install dalfox: go install github.com/hahwul/dalfox/v2@latest
 HINT
     exit 2
   fi
-  echo "Running ZAP baseline (passive) — fallback mode" | tee "$SUMMARY"
-  docker run --rm -v "$OUT_DIR":/zap/wrk/:rw zaproxy/zap-stable \
-    zap-baseline.py -t "$TARGET" -J zap.json -r zap.html 2>&1 | tee -a "$SUMMARY" || true
+  # Rewrite localhost/127.0.0.1 → host.docker.internal so the ZAP container
+  # can reach the host. User input is preserved in logs above; only the
+  # docker invocation uses the rewritten URL.
+  local docker_target="$TARGET"
+  case "$TARGET" in
+    *://localhost*|*://localhost/*|*://localhost:*) docker_target="${TARGET//localhost/host.docker.internal}" ;;
+    *://127.0.0.1*) docker_target="${TARGET//127.0.0.1/host.docker.internal}" ;;
+  esac
+  if [[ "$docker_target" != "$TARGET" ]]; then
+    echo "ZAP container target rewrite: $TARGET -> $docker_target" | tee -a "$SUMMARY"
+  fi
+  cat <<'NOTE' | tee "$SUMMARY"
+Running ZAP FULL active scan (fallback mode).
+[!] Active scan is INVASIVE: it sends real attack payloads. Written
+[!] authorization is mandatory (see banner above).
+NOTE
+  set +e
+  docker run --rm \
+    --add-host=host.docker.internal:host-gateway \
+    -v "$OUT_DIR":/zap/wrk/:rw zaproxy/zap-stable \
+    zap-full-scan.py -t "$docker_target" -J zap.json -r zap.html 2>&1 | tee -a "$SUMMARY"
+  SCAN_EXIT=${PIPESTATUS[0]}
+  set -e
   JSON_OUT="$OUT_DIR/zap.json"
+  # zap-full-scan.py exits 0 clean / 1 warn / 2 fail (findings). Treat
+  # any of those as a successful scan run; >2 is a runtime failure.
+  if [[ "$SCAN_EXIT" -gt 2 ]]; then
+    echo "ZAP runtime error (exit $SCAN_EXIT)." >&2
+    exit 3
+  fi
+  SCAN_EXIT=0
 }
 
 if [[ "$USE_ZAP" -eq 1 ]] || ! command -v dalfox >/dev/null 2>&1; then
   if [[ "$USE_ZAP" -ne 1 ]]; then
     cat <<'HINT' >&2
-Warning: dalfox not installed — falling back to ZAP.
+Warning: dalfox not installed — falling back to ZAP active scan.
 Install dalfox: go install github.com/hahwul/dalfox/v2@latest
             or: brew install dalfox
 HINT
@@ -99,11 +129,21 @@ HINT
   run_zap
 else
   run_dalfox
+  if [[ "$SCAN_EXIT" -ne 0 ]]; then
+    echo "dalfox runtime error (exit $SCAN_EXIT)." >&2
+    exit 3
+  fi
+fi
+
+# Distinguish "scan completed with zero findings" from "scan never ran".
+if [[ ! -f "$JSON_OUT" ]]; then
+  echo "Scanner produced no report file ($JSON_OUT). Treating as runtime error." >&2
+  exit 3
 fi
 
 FINDINGS=0
-if [[ -f "$JSON_OUT" ]] && grep -Eq '"severity"\s*:\s*"(High|Medium|Low|Critical)"|"type"\s*:\s*"V"' "$JSON_OUT" 2>/dev/null; then
-  FINDINGS=$(grep -Eo '"severity"\s*:\s*"[^"]+"' "$JSON_OUT" | wc -l | tr -d ' ')
+if grep -Eq '"severity"\s*:\s*"(High|Medium|Low|Critical)"|"riskcode"\s*:\s*"[1-3]"|"type"\s*:\s*"V"' "$JSON_OUT" 2>/dev/null; then
+  FINDINGS=$({ grep -Eo '"severity"\s*:\s*"[^"]+"|"riskcode"\s*:\s*"[1-3]"|"type"\s*:\s*"V"' "$JSON_OUT" 2>/dev/null || true; } | wc -l | tr -d ' ')
 fi
 
 {
@@ -120,9 +160,14 @@ case "$SEVERITY_THRESHOLD" in
   *) echo "Invalid --severity-threshold: $SEVERITY_THRESHOLD" >&2; exit 64 ;;
 esac
 
+# Per-finding severity is unreliable across dalfox/ZAP outputs, so we treat
+# any finding as ≥ HIGH. Anything except --severity-threshold critical
+# triggers exit 1 when findings > 0.
 if [[ "$FINDINGS" -gt 0 ]]; then
-  echo "XSS findings detected." >&2
-  exit 1
+  case "$SEVERITY_THRESHOLD" in
+    low|medium|high) echo "XSS findings detected."; exit 1 ;;
+    critical)        echo "Findings present but below 'critical' threshold."; exit 0 ;;
+  esac
 fi
 echo "No XSS findings."
 exit 0
