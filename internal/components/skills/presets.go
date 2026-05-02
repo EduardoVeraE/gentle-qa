@@ -42,6 +42,26 @@ var qeAPISkills = []model.SkillID{
 	model.SkillKarateDSL,
 }
 
+// qaSecuritySkills covers OWASP security testing.
+var qaSecuritySkills = []model.SkillID{
+	model.SkillQAOWASPSecurity,
+}
+
+// qaMobileSkills covers mobile testing (Appium + Detox + native).
+var qaMobileSkills = []model.SkillID{
+	model.SkillQAMobileTesting,
+}
+
+// qaVisualSkills covers visual regression testing.
+var qaVisualSkills = []model.SkillID{
+	model.SkillQAVisualRegression,
+}
+
+// qaContractSkills covers consumer-driven contract testing with Pact.
+var qaContractSkills = []model.SkillID{
+	model.SkillQAContractPact,
+}
+
 // SkillsForPreset returns which skills should be installed for a given preset.
 //
 //   - "minimal" / PresetMinimal:       SDD skills only
@@ -51,7 +71,8 @@ var qeAPISkills = []model.SkillID{
 //   - "qe-front" / PresetQEFront:      SDD + Playwright BDD + Playwright CLI
 //   - "qe-perf"  / PresetQEPerf:       SDD + k6 load testing
 //   - "qe-api"   / PresetQEAPI:        SDD + Karate DSL
-//   - "qe-sdet"  / PresetQESDET:       SDD + all QE skills
+//   - "qe-sdet"  / PresetQESDET:       SDD + all QE skills (front + perf + api +
+//     security + mobile + visual + contract)
 func SkillsForPreset(preset model.PresetID) []model.SkillID {
 	switch preset {
 	case model.PresetMinimal:
@@ -76,11 +97,17 @@ func SkillsForPreset(preset model.PresetID) []model.SkillID {
 		all = append(all, qeAPISkills...)
 		return all
 	case model.PresetQESDET:
-		all := make([]model.SkillID, 0, len(sddSkills)+len(qeFrontSkills)+len(qePerfSkills)+len(qeAPISkills))
+		all := make([]model.SkillID, 0,
+			len(sddSkills)+len(qeFrontSkills)+len(qePerfSkills)+len(qeAPISkills)+
+				len(qaSecuritySkills)+len(qaMobileSkills)+len(qaVisualSkills)+len(qaContractSkills))
 		all = append(all, sddSkills...)
 		all = append(all, qeFrontSkills...)
 		all = append(all, qePerfSkills...)
 		all = append(all, qeAPISkills...)
+		all = append(all, qaSecuritySkills...)
+		all = append(all, qaMobileSkills...)
+		all = append(all, qaVisualSkills...)
+		all = append(all, qaContractSkills...)
 		return all
 	case model.PresetCustom:
 		return nil
@@ -95,12 +122,18 @@ func SkillsForPreset(preset model.PresetID) []model.SkillID {
 
 // AllSkillIDs returns every known skill ID.
 func AllSkillIDs() []model.SkillID {
-	all := make([]model.SkillID, 0, len(sddSkills)+len(foundationSkills)+len(qeFrontSkills)+len(qePerfSkills)+len(qeAPISkills))
+	all := make([]model.SkillID, 0,
+		len(sddSkills)+len(foundationSkills)+len(qeFrontSkills)+len(qePerfSkills)+len(qeAPISkills)+
+			len(qaSecuritySkills)+len(qaMobileSkills)+len(qaVisualSkills)+len(qaContractSkills))
 	all = append(all, sddSkills...)
 	all = append(all, foundationSkills...)
 	all = append(all, qeFrontSkills...)
 	all = append(all, qePerfSkills...)
 	all = append(all, qeAPISkills...)
+	all = append(all, qaSecuritySkills...)
+	all = append(all, qaMobileSkills...)
+	all = append(all, qaVisualSkills...)
+	all = append(all, qaContractSkills...)
 	return all
 }
 

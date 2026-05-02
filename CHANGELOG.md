@@ -8,6 +8,36 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ---
 
+## [1.25.1] — 2026-05-02
+
+### Fixed
+
+- **Wire qa-* skills end-to-end** — the 4 QA skills shipped in `v1.25.0`
+  (`qa-owasp-security`, `qa-mobile-testing`, `qa-visual-regression`,
+  `qa-contract-pact`) were embedded as assets but unreachable to end users
+  because they were not registered in `internal/model/types.go` and not
+  included in any preset. Now wired into `model`, `catalog`, and the
+  `full-gentleman` and `qe-sdet` presets so the installer actually
+  delivers them.
+- **`e2e_test.sh` SKILL.md count** — `full-gentleman` now expects 25 files
+  (11 SDD + 5 foundation + 4 QE + 4 QA + `_shared/SKILL.md`); the previous
+  17 was stale since 04-25 and caused CI to fail on every push to `main`
+  since 04-29.
+
+### Convention established
+
+- **Asset → distribution wiring is mandatory.** Adding a skill, preset, or
+  configuration to `internal/assets/` is NOT enough. Every addition must
+  also: (1) register a constant in `internal/model/types.go`, (2) appear
+  in the appropriate preset arrays in
+  `internal/components/skills/presets.go`, (3) update
+  `testdata/golden/skills-presets.json`, (4) update `e2e_test.sh`
+  expected counts, (5) update catalog entries. Asset-only changes ship in
+  the binary but stay orphaned to end users — that is a bug, not a
+  feature.
+
+---
+
 ## [1.25.0] — 2026-05-02
 
 This release combines two unreleased streams of work since `v1.24.3`:

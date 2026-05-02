@@ -34,6 +34,10 @@ var mvpSkills = []Skill{
 	{ID: model.SkillPlaywrightCLI, Name: "playwright-cli", Category: "qe-e2e", Priority: "p0"},
 	{ID: model.SkillK6LoadTest, Name: "k6-load-test", Category: "qe-performance", Priority: "p0"},
 	{ID: model.SkillKarateDSL, Name: "karate-dsl", Category: "qe-api", Priority: "p0"},
+	{ID: model.SkillQAOWASPSecurity, Name: "qa-owasp-security", Category: "qe-security", Priority: "p0"},
+	{ID: model.SkillQAMobileTesting, Name: "qa-mobile-testing", Category: "qe-mobile", Priority: "p0"},
+	{ID: model.SkillQAVisualRegression, Name: "qa-visual-regression", Category: "qe-visual", Priority: "p0"},
+	{ID: model.SkillQAContractPact, Name: "qa-contract-pact", Category: "qe-contract", Priority: "p0"},
 }
 
 func MVPSkills() []Skill {

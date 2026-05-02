@@ -77,10 +77,14 @@ const (
 	SkillIssueCreation SkillID = "issue-creation"
 	SkillSkillRegistry SkillID = "skill-registry"
 	// QE / SDET skills
-	SkillPlaywrightBDD SkillID = "playwright-bdd"
-	SkillPlaywrightCLI SkillID = "playwright-cli"
-	SkillK6LoadTest    SkillID = "k6-load-test"
-	SkillKarateDSL     SkillID = "karate-dsl"
+	SkillPlaywrightBDD      SkillID = "playwright-bdd"
+	SkillPlaywrightCLI      SkillID = "playwright-cli"
+	SkillK6LoadTest         SkillID = "k6-load-test"
+	SkillKarateDSL          SkillID = "karate-dsl"
+	SkillQAOWASPSecurity    SkillID = "qa-owasp-security"
+	SkillQAMobileTesting    SkillID = "qa-mobile-testing"
+	SkillQAVisualRegression SkillID = "qa-visual-regression"
+	SkillQAContractPact     SkillID = "qa-contract-pact"
 )
 
 type PersonaID string

@@ -21,7 +21,11 @@
       "playwright-bdd",
       "playwright-cli",
       "k6-load-test",
-      "karate-dsl"
+      "karate-dsl",
+      "qa-owasp-security",
+      "qa-mobile-testing",
+      "qa-visual-regression",
+      "qa-contract-pact"
     ]
   },
   {
