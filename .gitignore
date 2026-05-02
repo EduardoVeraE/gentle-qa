@@ -40,3 +40,9 @@ dist/
 .claude/
 .beads
 .windsurf
+
+# qa-owasp-security validation harness runtime artifacts
+internal/assets/skills/qa-owasp-security/scripts/attacks/test/fixtures/secrets-fixture/.git/
+internal/assets/skills/qa-owasp-security/scripts/attacks/test/fixtures/secrets-fixture/seed.txt
+security-out/
+validation-reports/
