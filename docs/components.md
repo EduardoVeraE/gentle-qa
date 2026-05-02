@@ -36,7 +36,7 @@ gga install
 
 ### Included Skills (installed by gentle-qa)
 
-14 skill files organized by category, embedded in the binary and injected into your agent's configuration:
+34 skill directories organized by category, embedded in the binary and injected into your agent's configuration. Skills follow the **5-layer ISTQB taxonomy** (Foundation → Strategy → Functional-by-level → Non-functional-by-type → Tooling) with disjoint triggers and explicit exclusion clauses (`NOT for X — use Y`) to keep orchestrator routing unambiguous.
 
 #### SDD (Spec-Driven Development)
 
@@ -61,8 +61,54 @@ gga install
 | Skill Creator | `skill-creator` | Create new AI agent skills following the Agent Skills spec |
 | Branch & PR | `branch-pr` | PR creation workflow with conventional commits, branch naming, and issue-first enforcement |
 | Issue Creation | `issue-creation` | Issue filing workflow with bug report and feature request templates |
+| Upstream Sync | `upstream-sync` | Workflow for merging upstream `gentle-ai` into the Gentle-QA fork while preserving rebranding |
 
 These foundation skills are installed by default with both `full-gentleman` and `ecosystem-only` presets.
+
+#### QA / SDET (Gentle-QA fork)
+
+These are the QA-focused skills shipped with the Gentle-QA fork, organized by ISTQB layer.
+
+##### Foundation & Strategy
+
+| Skill | ID | Description |
+|-------|-----|-------------|
+| Manual ISTQB | `qa-manual-istqb` | ISTQB-aligned test planning, analysis, design, execution, completion (Layer 1) |
+| Regression Strategy | `playwright-regression-strategy` | Tier model, risk-based selection, sharding, flake quarantine (Layer 2) |
+
+##### Functional — by level
+
+| Skill | ID | Description |
+|-------|-----|-------------|
+| Playwright E2E | `playwright-e2e-testing` | E2E SUITES with Page Object Model, fixtures, network interception |
+| Playwright BDD | `playwright-bdd` | BDD/ATDD with Cucumber/Gherkin (acceptance level) |
+| Selenium E2E | `selenium-e2e-testing` | Selenium WebDriver + Java/JUnit 5 with explicit waits, AssertJ |
+| API Testing | `api-testing` | REST/GraphQL with schema validation, OpenAPI-first, mandatory headers — Playwright TS + REST Assured (Java 21+) |
+| Karate DSL | `karate-dsl` | BDD-style API tests, mocking, GraphQL, performance scenarios |
+| Contract — PACT | `qa-contract-pact` | Consumer-driven contract testing with PACT-JS, PACT-JVM, broker, `can-i-deploy` (integration level) |
+
+##### Non-functional — by type
+
+| Skill | ID | Description |
+|-------|-----|-------------|
+| OWASP Security | `qa-owasp-security` | OWASP Web/API/Mobile testing, ZAP scans, deps scanning, validated against DVWA |
+| A11y (Playwright) | `a11y-playwright-testing` | WCAG 2.1/2.2 AA with axe-core, ARIA patterns, POUR principles |
+| A11y (Selenium) | `a11y-selenium-testing` | WCAG 2.1/2.2 AA with Selenium + axe-core |
+| Visual Regression | `qa-visual-regression` | Percy / Chromatic / Playwright `toHaveScreenshot` with baseline workflow + CI gating |
+| K6 Load Test | `k6-load-test` | Performance and load testing with virtual users, thresholds, scenarios |
+
+##### Cross-cutting platform
+
+| Skill | ID | Description |
+|-------|-----|-------------|
+| Mobile Testing | `qa-mobile-testing` | Appium (iOS/Android) + Detox (React Native), device strategy, gesture/wait patterns |
+
+##### Tooling
+
+| Skill | ID | Description |
+|-------|-----|-------------|
+| Playwright MCP Inspect | `playwright-mcp-inspect` | Live browser inspection in a running session via MCP |
+| Playwright CLI | `playwright-cli` | Scripted exploratory testing with session evidence |
 
 ### Coding Skills (separate repository)
 
