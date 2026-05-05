@@ -24,12 +24,20 @@
       "work-unit-commits",
       "playwright-bdd",
       "playwright-cli",
+      "playwright-e2e-testing",
+      "playwright-mcp-inspect",
+      "playwright-regression-strategy",
       "k6-load-test",
       "karate-dsl",
+      "api-testing",
       "qa-owasp-security",
       "qa-mobile-testing",
       "qa-visual-regression",
-      "qa-contract-pact"
+      "qa-contract-pact",
+      "qa-manual-istqb",
+      "a11y-playwright-testing",
+      "a11y-selenium-testing",
+      "selenium-e2e-testing"
     ]
   },
   {

@@ -76,6 +76,38 @@ These files contain prohibited-looking tokens that are legitimate and MUST NOT b
 
 **Judgment rule for new cases:** if a token appears inside a test fixture, a historical document (changelog, attribution), or an archived spec, it is almost certainly safe. If it appears in production Go source, a help string, or a UI label, it is a leak and must be rewritten.
 
+## Fork-specific Defaults
+
+These are configuration defaults that diverge from upstream `gentle-ai`. They are NOT branding leaks — `verify-branding.sh` will not catch them — so a careless upstream merge can silently revert them. **Treat any change to these locations as a potential conflict that must be re-applied to match the fork's intent.**
+
+| Location | Fork value (Gentle-QA) | Upstream value (gentle-ai) | Why it matters |
+|----------|-----------------------|----------------------------|----------------|
+| `internal/cli/validate.go` — `normalizePreset` empty-input branch | `model.PresetQESDET` | `model.PresetFullGentleman` | This is the preset selected when the user runs `gentle-qa install` without `--preset`. Gentle-QA is QA-focused, so the SDET stack must be the out-of-the-box experience. |
+| `internal/tui/model.go` — `NewModel` selection.Preset/Components | `model.PresetQESDET` | `model.PresetFullGentleman` | The TUI must boot with the same default the CLI uses, otherwise the two surfaces disagree. |
+| `internal/tui/screens/preset.go` — `PresetOptions()` and `presetDescriptions` | Includes `qe-sdet`, `qe-front`, `qe-perf`, `qe-api` (in that order, before the upstream presets) | Lists only `full-gentleman`, `ecosystem-only`, `minimal`, `custom` | Without the QE presets here, users on the TUI cannot select them. Order matters: `qe-sdet` must be first so it's the cursor default. |
+
+### Defense — automatic build-time guards
+
+Two unit tests fail the build if these defaults are reverted, which automatically aborts `scripts/sync-upstream.sh` at the `do_build_test` step (Step 6). Re-apply the override before completing the merge:
+
+| Test | What it asserts |
+|------|-----------------|
+| `TestNormalizePresetDefaultIsQESDET` (in `internal/cli/validate_test.go`) | `normalizePreset("")` returns `model.PresetQESDET` |
+| `TestTUIDefaultPresetIsQESDET` (in `internal/tui/model_test.go`) | `NewModel(...).Selection.Preset` equals `model.PresetQESDET` |
+
+If either fails after merge, the failure message identifies which file regressed. Fix the file, stage the change, run `scripts/verify-branding.sh && go test ./...` to confirm clean, then `git commit --amend --no-edit` to fold the fix into the merge commit.
+
+### When upstream introduces a NEW default
+
+If upstream adds a new "default preset" location not listed above (for example, a new entry-point command or a new TUI screen), do NOT just merge it. Steps:
+
+1. Open this section and add a new row to the table above with the location, the fork value (`PresetQESDET`), and a one-line rationale.
+2. Add a test in the appropriate `*_test.go` that asserts the fork value at that location.
+3. Re-apply the override in the merged code.
+4. Run `go test ./...` — the new test must pass.
+
+This keeps the defense surface in sync with reality. Documentation alone rots; tests do not.
+
 ## Expected Conflict Pattern: Branding-Rewritten Files
 
 ### Why these conflicts happen

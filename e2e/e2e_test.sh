@@ -602,9 +602,12 @@ test_cc_skills_full() {
         local skills_dir="$HOME/.claude/skills"
         assert_dir_exists "$skills_dir" "Claude skills directory"
 
-        # Full preset = 29 files: 11 SDD (incl judgment-day) + 9 foundation (incl 4 sustainable-review) +
-        # 4 QE + 4 QA (owasp/mobile/visual/contract) + _shared/SKILL.md
-        assert_file_count "$skills_dir" "SKILL.md" 29 "Full preset: 29 skill files"
+        # Full preset = 37 files: 11 SDD (incl judgment-day) + 9 foundation (incl 4 sustainable-review) +
+        # 5 Playwright (BDD/CLI/E2E/MCP/regression) + 1 k6 + 2 API (karate + api-testing) +
+        # 4 QA (owasp/mobile/visual/contract) + 1 ISTQB + 2 a11y (playwright + selenium) +
+        # 1 selenium-e2e + _shared/SKILL.md.
+        # upstream-sync is maintainer-only and excluded from full-gentleman.
+        assert_file_count "$skills_dir" "SKILL.md" 37 "Full preset: 37 skill files"
 
         # Verify foundation skills exist
         assert_file_exists "$skills_dir/go-testing/SKILL.md" "go-testing SKILL.md"
@@ -864,7 +867,7 @@ test_oc_skills_full() {
     if $BINARY install --agent opencode --component skills --preset full-gentleman --persona neutral 2>&1; then
         local skill_dir="$HOME/.config/opencode/skills"
         assert_dir_exists "$skill_dir" "OpenCode skill directory"
-        assert_file_count "$skill_dir" "SKILL.md" 29 "Full preset: 29 skill files"
+        assert_file_count "$skill_dir" "SKILL.md" 37 "Full preset: 37 skill files"
         assert_file_exists "$skill_dir/go-testing/SKILL.md" "go-testing skill"
         assert_file_exists "$skill_dir/skill-creator/SKILL.md" "skill-creator skill"
         assert_file_exists "$skill_dir/branch-pr/SKILL.md" "branch-pr skill"

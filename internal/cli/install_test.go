@@ -42,10 +42,14 @@ func TestNormalizeInstallFlagsDefaults(t *testing.T) {
 		t.Fatalf("NormalizeInstallFlags() error = %v", err)
 	}
 
+	// Gentle-QA fork default: qe-sdet (see normalizePreset comment in
+	// validate.go and upstream-sync/SKILL.md § Fork-specific defaults).
+	// Component set is identical to full-gentleman because qe-sdet also
+	// includes persona + permissions.
 	want := model.Selection{
 		Agents:  []model.AgentID{model.AgentClaudeCode, model.AgentOpenCode, model.AgentKilocode, model.AgentGeminiCLI, model.AgentCodex, model.AgentCursor, model.AgentVSCodeCopilot, model.AgentAntigravity, model.AgentWindsurf, model.AgentKimi, model.AgentQwenCode, model.AgentKiroIDE},
 		Persona: model.PersonaGentleman,
-		Preset:  model.PresetFullGentleman,
+		Preset:  model.PresetQESDET,
 		Components: []model.ComponentID{
 			model.ComponentEngram,
 			model.ComponentSDD,

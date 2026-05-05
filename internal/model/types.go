@@ -90,6 +90,22 @@ const (
 	SkillQAMobileTesting    SkillID = "qa-mobile-testing"
 	SkillQAVisualRegression SkillID = "qa-visual-regression"
 	SkillQAContractPact     SkillID = "qa-contract-pact"
+	// QE Playwright extended (E2E suite, MCP debug, regression strategy)
+	SkillPlaywrightE2E        SkillID = "playwright-e2e-testing"
+	SkillPlaywrightMCPInspect SkillID = "playwright-mcp-inspect"
+	SkillPlaywrightRegression SkillID = "playwright-regression-strategy"
+	// QE Selenium tier
+	SkillSeleniumE2E  SkillID = "selenium-e2e-testing"
+	SkillA11ySelenium SkillID = "a11y-selenium-testing"
+	// QA accessibility (Playwright)
+	SkillA11yPlaywright SkillID = "a11y-playwright-testing"
+	// QA API testing (Playwright + REST Assured)
+	SkillAPITesting SkillID = "api-testing"
+	// QA foundation (ISTQB)
+	SkillQAManualISTQB SkillID = "qa-manual-istqb"
+	// Maintainer-only — registered but excluded from AllSkillIDs and all presets.
+	// Invoked explicitly via `--skill upstream-sync` for fork maintenance.
+	SkillUpstreamSync SkillID = "upstream-sync"
 )
 
 type PersonaID string

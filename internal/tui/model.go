@@ -412,11 +412,15 @@ type Model struct {
 }
 
 func NewModel(detection system.DetectionResult, version string) Model {
+	// Gentle-QA fork default: qe-sdet (matches CLI normalizePreset). Do NOT
+	// switch to PresetFullGentleman without updating upstream-sync/SKILL.md
+	// § Fork-specific defaults — that guide protects this against upstream
+	// rewrites and TestTUIDefaultPresetIsQESDET enforces it at build time.
 	selection := model.Selection{
 		Agents:     preselectedAgents(detection),
 		Persona:    model.PersonaGentleman,
-		Preset:     model.PresetFullGentleman,
-		Components: componentsForPreset(model.PresetFullGentleman),
+		Preset:     model.PresetQESDET,
+		Components: componentsForPreset(model.PresetQESDET),
 	}
 
 	return Model{

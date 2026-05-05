@@ -3436,3 +3436,17 @@ func TestPinErrClearedOnScreenReentry(t *testing.T) {
 		t.Fatalf("PinErr should be nil after returning to ScreenBackups, got: %v", afterReturn.PinErr)
 	}
 }
+
+// TestTUIDefaultPresetIsQESDET is a fork-defense test for Gentle-QA.
+//
+// The TUI must boot with qe-sdet preselected to match the CLI default. If
+// upstream changes the TUI default in NewModel(), this test fails the build
+// and aborts `scripts/sync-upstream.sh`. See
+// `internal/assets/skills/upstream-sync/SKILL.md` § Fork-specific defaults.
+func TestTUIDefaultPresetIsQESDET(t *testing.T) {
+	m := NewModel(system.DetectionResult{}, "dev")
+	if m.Selection.Preset != model.PresetQESDET {
+		t.Fatalf("NewModel default preset = %q, want %q (Gentle-QA fork default)",
+			m.Selection.Preset, model.PresetQESDET)
+	}
+}

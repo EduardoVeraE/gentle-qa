@@ -72,7 +72,12 @@ func normalizePersona(value string) (model.PersonaID, error) {
 
 func normalizePreset(value string) (model.PresetID, error) {
 	if strings.TrimSpace(value) == "" {
-		return model.PresetFullGentleman, nil
+		// Gentle-QA default: qe-sdet — the QA-focused fork ships SDET-ready out
+		// of the box. Do NOT change to PresetFullGentleman without updating the
+		// upstream-sync workflow (see internal/assets/skills/upstream-sync/SKILL.md
+		// § Fork-specific defaults). TestNormalizePresetDefaultIsQESDET guards
+		// this invariant and will fail any upstream merge that overwrites it.
+		return model.PresetQESDET, nil
 	}
 
 	switch model.PresetID(value) {

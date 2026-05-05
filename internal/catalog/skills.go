@@ -43,6 +43,22 @@ var mvpSkills = []Skill{
 	{ID: model.SkillQAMobileTesting, Name: "qa-mobile-testing", Category: "qe-mobile", Priority: "p0"},
 	{ID: model.SkillQAVisualRegression, Name: "qa-visual-regression", Category: "qe-visual", Priority: "p0"},
 	{ID: model.SkillQAContractPact, Name: "qa-contract-pact", Category: "qe-contract", Priority: "p0"},
+	// QE Playwright extended
+	{ID: model.SkillPlaywrightE2E, Name: "playwright-e2e-testing", Category: "qe-e2e", Priority: "p0"},
+	{ID: model.SkillPlaywrightMCPInspect, Name: "playwright-mcp-inspect", Category: "qe-e2e", Priority: "p0"},
+	{ID: model.SkillPlaywrightRegression, Name: "playwright-regression-strategy", Category: "qe-e2e", Priority: "p0"},
+	// QE Selenium tier
+	{ID: model.SkillSeleniumE2E, Name: "selenium-e2e-testing", Category: "qe-e2e", Priority: "p0"},
+	{ID: model.SkillA11ySelenium, Name: "a11y-selenium-testing", Category: "qe-a11y", Priority: "p0"},
+	// QA accessibility (Playwright)
+	{ID: model.SkillA11yPlaywright, Name: "a11y-playwright-testing", Category: "qe-a11y", Priority: "p0"},
+	// QA API testing (generic Playwright + REST Assured)
+	{ID: model.SkillAPITesting, Name: "api-testing", Category: "qe-api", Priority: "p0"},
+	// QA foundation (ISTQB)
+	{ID: model.SkillQAManualISTQB, Name: "qa-manual-istqb", Category: "qa-foundation", Priority: "p0"},
+	// Maintainer-only — registered so `--skill upstream-sync` validates, but
+	// excluded from AllSkillIDs() and every preset.
+	{ID: model.SkillUpstreamSync, Name: "upstream-sync", Category: "maintenance", Priority: "p2"},
 }
 
 func MVPSkills() []Skill {
