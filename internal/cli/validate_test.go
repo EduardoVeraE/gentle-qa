@@ -9,7 +9,7 @@ import (
 // TestNormalizePresetDefaultIsQESDET is a fork-defense test for Gentle-QA.
 //
 // Gentle-QA ships qe-sdet as the default preset (the QA-focused fork bundles
-// the full SDET stack out of the box). Upstream gentle-ai uses a different
+// the full SDET stack out of the box). Upstream gentle-qa uses a different
 // default — every upstream-sync MUST preserve this fork-specific override.
 //
 // If this test fails after a `scripts/sync-upstream.sh` merge, an upstream
