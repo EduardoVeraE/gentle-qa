@@ -24,6 +24,7 @@ ALLOWLIST=(
     "CHANGELOG.md"
     "CONTRIBUTORS.md"
     "internal/components/filemerge/section_test.go"
+    "internal/components/sdd/inject_test.go"
     "scripts/verify-branding.sh"
     "scripts/sync-upstream.sh"
     "internal/assets/skills/upstream-sync/SKILL.md"
@@ -32,7 +33,7 @@ ALLOWLIST=(
 # ============================================================================
 # Prohibited tokens — combined into a single alternation regex for rg
 # ============================================================================
-PROHIBITED_PATTERN='gentle-ai|gentleAi|gentleAI|GENTLE_AI|gentleai|gentleman-programming/gentle-ai|Gentleman-Programming/gentle-ai'
+PROHIBITED_PATTERN='gentle-ai|gentleAi|gentleAI|GENTLE_AI|gentleai|Gentle-AI|Gentle AI|gentleman-programming/gentle-ai|Gentleman-Programming/gentle-ai'
 
 # ============================================================================
 # Color support

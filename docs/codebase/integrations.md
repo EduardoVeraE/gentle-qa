@@ -2,7 +2,7 @@
 
 [Back to Codebase Guide](../CODEBASE-GUIDE.md)
 
-Gentle-AI integration code should stay thin: adapters describe where and how an agent accepts configuration; components decide what managed content to inject.
+Gentle-QA integration code should stay thin: adapters describe where and how an agent accepts configuration; components decide what managed content to inject.
 
 ## Agent integration map
 
@@ -28,7 +28,7 @@ Gentle-AI integration code should stay thin: adapters describe where and how an 
 
 ## Thin plugin principle
 
-OpenCode community plugins are optional integrations. Gentle-AI only ensures `~/.config/opencode/tui.json` exists and contains the plugin package name. It does not vendor, execute, or own plugin runtime code.
+OpenCode community plugins are optional integrations. Gentle-QA only ensures `~/.config/opencode/tui.json` exists and contains the plugin package name. It does not vendor, execute, or own plugin runtime code.
 
 ```text
 TUI selection

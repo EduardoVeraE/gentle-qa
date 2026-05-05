@@ -1,7 +1,7 @@
 {
   "agent": {
     "gentle-orchestrator": {
-      "description": "Gentle AI SDD Orchestrator - coordinates sub-agents, never does work inline",
+      "description": "Gentle-QA SDD Orchestrator - coordinates sub-agents, never does work inline",
       "mode": "primary",
       "permission": {
         "task": {
