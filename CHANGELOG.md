@@ -8,6 +8,69 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ---
 
+## [1.25.2] — 2026-05-04
+
+Sync de upstream `gentle-ai` consolidando 5 patches (`v1.25.2..v1.25.6`, 73
+commits) en un solo release downstream. Mantiene fork-local versioning: la
+secuencia propia de Gentle-QA es 1.25.1 → 1.25.2 independientemente del
+número exacto del upstream incluido.
+
+### Added (from upstream)
+
+- **4 nuevos skills de "sustainable review"** registrados en `model/types.go`,
+  `catalog/skills.go` y presets:
+  - `chained-pr` — estrategias de PR encadenados con selección interactiva
+  - `cognitive-doc-design` — guía de diseño de documentación enfocada en carga
+    cognitiva
+  - `comment-writer` — convenciones de comentarios sostenibles
+  - `work-unit-commits` — granularidad de commits por unidad de trabajo
+- **SDD orchestrator: bloque "Review Workload Guard"** en los 6 agentes
+  (claude, cursor, antigravity, generic, opencode, windsurf, kilocode/kimi)
+  para limitar carga cognitiva durante revisiones.
+- **`docs/codebase/`** — guía estructural de la base de código y mapas
+  (dashboard, integrations, interfaces, maintainer-playbook, memory-core,
+  mental-model, reference-map, repository-map, sync-and-cloud).
+- **Captura de prompts en engram** y locking del nombre de proyecto.
+- **Migración de prompts preservados** del orquestador OpenCode tras retirar
+  el agente `gentleman` del flujo.
+
+### Changed
+
+- **`internal/assets/{agent}/sdd-orchestrator.md`** — actualizados con la
+  guía sostenible de revisión y referencias a los nuevos skills, todos con
+  branding `gentle-qa` aplicado vía rewrite del sync.
+- **`e2e/lib.sh`, `e2e/docker-test.sh`** — shim de engram para tests con
+  side effects, fallback de detección de binario `gentle-qa`.
+- **`e2e/e2e_test.sh`** — `assert_file_count` de `full-gentleman` actualizado
+  a 29 (= 25 anterior + 4 skills upstream).
+- **CI** — `pr-check.yml` y `ci.yml` con timeouts extendidos para mirrors
+  lentos; e2e Docker con tiempo de ejecución acotado.
+
+### Fixed
+
+- **`upgrade`** — diagnósticos de backup ya no se mezclan con la barra de
+  progreso (upstream fix).
+- **OpenCode** — agente revocado `gentleman` removido y prompts preservados
+  migrados al orquestador actual.
+
+### Removed
+
+- **`docs/assets/brand/gentle-ai-{banner,logo}.png`** — assets de marca de
+  upstream no referenciados en código del fork. Gentle-QA usa su propia
+  identidad visual.
+
+### Sync metadata
+
+- **Commits integrados:** 73 de `Gentleman-Programming/gentle-ai`
+  (`v1.25.2..v1.25.6`)
+- **Conflictos resueltos:** 32 archivos (registry como unión, branding
+  preservado, SDD orchestrators con tokens reescritos)
+- **Branding verification:** `verify-branding.sh` exit 0, 0 leaks en 739
+  archivos escaneados
+- **Backup pre-merge:** rama `backup/pre-upstream-merge-2026-05-04`
+
+---
+
 ## [1.25.1] — 2026-05-02
 
 ### Fixed
