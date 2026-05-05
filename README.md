@@ -9,7 +9,7 @@
   <p>
     <a href="https://github.com/EduardoVeraE/Gentle-QA/releases"><img src="https://img.shields.io/github/v/release/EduardoVeraE/Gentle-QA" alt="Release"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-    <img src="https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go&logoColor=white" alt="Go 1.24+" />
+    <img src="https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white" alt="Go 1.25+" />
     <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform" />
   </p>
 </div>
@@ -90,7 +90,7 @@ scoop install gentle-qa
 <details>
 <summary><strong>Other install methods</strong> (Go install, PowerShell script, binary download)</summary>
 
-#### Go install (any platform with Go 1.24+)
+#### Go install (any platform with Go 1.25+)
 
 ```bash
 go install github.com/EduardoVeraE/Gentle-QA/cmd/gentle-qa@latest

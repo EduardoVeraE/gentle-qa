@@ -8,6 +8,104 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ---
 
+## [1.25.3] — 2026-05-05
+
+Sync de upstream `gentle-ai` consolidando 16 commits del rango
+`v1.25.6..v1.26.1` en un solo release downstream. Mantiene fork-local
+versioning: la secuencia de Gentle-QA es 1.25.2 → 1.25.3 independientemente
+del número exacto del upstream incluido.
+
+### Added (from upstream)
+
+- **SKILL.md frontmatter linter** (`internal/assets/skills_frontmatter_test.go`)
+  — el test recorre los 21 SKILL.md embebidos y enforce 5 reglas:
+  delimitadores `---`, `name:` igual al basename del directorio padre,
+  `description:` plano (sin `>`/`|`), descripción en una sola línea
+  conteniendo `Trigger:`, y allowlist de claves top-level (`name`,
+  `description`, `license`, `metadata`, `version`).
+- **Contextual Skill Loading directive** en personas — reemplaza la antigua
+  tabla de auto-load por una directiva mandatoria que el agente lee del
+  bloque `<available_skills>`. Self-check antes de cada respuesta:
+  ¿el request matchea algún skill? Si sí → invocarlo con la tool `Skill`
+  antes de responder. Aplicado a `internal/assets/{claude,opencode,kiro,
+  kimi,generic}/persona-*.md`.
+- **Persona persistence en sync** (PR #438) — `gentle-qa sync` ahora lee
+  el campo `Persona` de `state.json` para regenerar la persona que el
+  usuario instaló (no un default hardcodeado). Tests: `TestPersonaRoundTrip`
+  + `TestPersonaBackwardCompat` en `internal/state/state_test.go`.
+- **BuildKit cache en e2e Docker** — los 3 Dockerfiles (`Dockerfile.arch`,
+  `Dockerfile.fedora`, `Dockerfile.ubuntu`) ahora declaran
+  `# syntax=docker/dockerfile:1` y usan `--mount=type=cache` para
+  `/root/.cache/go-build` y `/root/go/pkg/mod`. CI cachea las capas via
+  `cache-from`/`cache-to: type=gha`, eliminando el rebuild full en cada
+  push.
+- **CI E2E tier split por evento** — PRs corren solo Tier 1 (binary +
+  dry-run); push a `main` y schedule nightly corren Tier 1+2+3 completo.
+  El ruleset sigue exigiendo los 3 platform checks; lo que cambia es el
+  scope del test, no la matriz.
+- **Linter de skills name normalizado** — upstream alineó nombres de skills
+  con basename del directorio (`fix(skills): align chained-pr SKILL.md
+  name with directory`). Aplicado al fork: `chained-pr/SKILL.md` ahora
+  declara `name: chained-pr` (antes era `gentle-qa-chained-pr`, que
+  fallaba la regla 2 del nuevo linter).
+- **Flatten de SKILL.md description frontmatter** — `description:` pasa de
+  multilínea (`description: >` con folded scalar) a single-line plano
+  (`description: "..."`). Aplicado en todos los SKILL.md de
+  `internal/assets/skills/`.
+- **`drop non-standard allowed-tools`** — `skill-creator/SKILL.md` ya no
+  declara la clave no-estándar `allowed-tools` (rule 5 del linter rechaza
+  claves fuera del whitelist).
+
+### Changed
+
+- **Apply-progress continuity en orchestrator** — `sdd-apply` ahora detecta
+  un `apply-progress` previo en engram y exige merge en vez de overwrite
+  cuando se relanza el comando para una continuation batch.
+- **Mensajes de sync con `gentle-qa`** — `RenderSyncReport` y comentarios
+  internos en `internal/cli/sync.go` rebrandados tras pickup del bloque
+  upstream (`<!-- gentle-qa:persona -->` markers, copy en help strings).
+- **`internal/state/state.go`** — directorio de estado documentado como
+  `.gentle-qa/` (antes `.gentle-ai/` en comentarios introducidos por
+  upstream).
+
+### Fixed
+
+- **`fix(sync): regenerate persona block and persist persona selection`**
+  (upstream PR #438) — `sync` regenera el bloque entre marcadores de
+  persona y persiste la selección leída del state, evitando que un sync
+  posterior pisara el persona elegido por el usuario.
+- **`fix(skills): drop non-standard allowed-tools field from skill-creator`**
+  — frontmatter alineado al whitelist del nuevo linter.
+
+### Convention established
+
+- **Skill `name:` MUST equal directory basename.** Después de la regla 2
+  del nuevo linter, customizaciones del fork ya no pueden prefijar skills
+  con `gentle-qa-` aunque sean nuestros — `chained-pr/SKILL.md` debe
+  declarar `name: chained-pr`, no `name: gentle-qa-chained-pr`. Si el
+  fork necesita customizar contenido de un skill upstream, se hace en el
+  body del SKILL.md, no en el `name:` del frontmatter.
+
+### Sync metadata
+
+- **Commits integrados:** 16 de `Gentleman-Programming/gentle-ai`
+  (`v1.25.6..v1.26.1`, último: `f71ff03`)
+- **Conflictos resueltos:** 13 archivos (`.github/workflows/ci.yml`,
+  3 `e2e/Dockerfile.*`, `internal/assets/skills/chained-pr/SKILL.md`,
+  `internal/cli/sync.go` + `sync_test.go`,
+  `internal/state/state_test.go`, 5 goldens de persona). Patrón:
+  `do_rewrite` del script aborta cuando hay conflictos, así que las
+  regiones non-conflict de los archivos modificados también necesitaron
+  rewrite manual (16 archivos en total)
+- **Branding verification:** `verify-branding.sh` exit 0, 0 leaks en 751
+  archivos escaneados
+- **Build-time defense:** `TestNormalizePresetDefaultIsQESDET` y
+  `TestTUIDefaultPresetIsQESDET` siguen verdes — upstream no regresó los
+  defaults `qe-sdet` del fork
+- **Merge commit:** `5686a1e`
+
+---
+
 ## [1.25.2] — 2026-05-04
 
 Sync de upstream `gentle-ai` consolidando 5 patches (`v1.25.2..v1.25.6`, 73
