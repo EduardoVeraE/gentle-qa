@@ -61,7 +61,7 @@ gga install
 | Skill Creator | `skill-creator` | Create new AI agent skills following the Agent Skills spec |
 | Branch & PR | `branch-pr` | PR creation workflow with conventional commits, branch naming, and issue-first enforcement |
 | Issue Creation | `issue-creation` | Issue filing workflow with bug report and feature request templates |
-| Upstream Sync | `upstream-sync` | Workflow for merging upstream `gentle-ai` into the Gentle-QA fork while preserving rebranding |
+| Upstream Sync | `upstream-sync` | Workflow for merging the upstream Gentle ecosystem repo into the Gentle-QA fork while preserving rebranding |
 
 These foundation skills are installed by default with both `full-gentleman` and `ecosystem-only` presets.
 

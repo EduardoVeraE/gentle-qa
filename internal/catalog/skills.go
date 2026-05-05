@@ -29,6 +29,11 @@ var mvpSkills = []Skill{
 	{ID: model.SkillBranchPR, Name: "branch-pr", Category: "workflow", Priority: "p0"},
 	{ID: model.SkillIssueCreation, Name: "issue-creation", Category: "workflow", Priority: "p0"},
 	{ID: model.SkillSkillRegistry, Name: "skill-registry", Category: "workflow", Priority: "p0"},
+	// Sustainable review skills (upstream)
+	{ID: model.SkillChainedPR, Name: "chained-pr", Category: "workflow", Priority: "p0"},
+	{ID: model.SkillCognitiveDoc, Name: "cognitive-doc-design", Category: "workflow", Priority: "p0"},
+	{ID: model.SkillCommentWriter, Name: "comment-writer", Category: "workflow", Priority: "p0"},
+	{ID: model.SkillWorkUnitCommits, Name: "work-unit-commits", Category: "workflow", Priority: "p0"},
 	// QE / SDET skills
 	{ID: model.SkillPlaywrightBDD, Name: "playwright-bdd", Category: "qe-e2e", Priority: "p0"},
 	{ID: model.SkillPlaywrightCLI, Name: "playwright-cli", Category: "qe-e2e", Priority: "p0"},

@@ -18,6 +18,10 @@
       "branch-pr",
       "issue-creation",
       "skill-registry",
+      "chained-pr",
+      "cognitive-doc-design",
+      "comment-writer",
+      "work-unit-commits",
       "playwright-bdd",
       "playwright-cli",
       "k6-load-test",
@@ -46,7 +50,11 @@
       "skill-creator",
       "branch-pr",
       "issue-creation",
-      "skill-registry"
+      "skill-registry",
+      "chained-pr",
+      "cognitive-doc-design",
+      "comment-writer",
+      "work-unit-commits"
     ]
   },
   {

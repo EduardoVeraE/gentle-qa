@@ -24,6 +24,10 @@ var foundationSkills = []model.SkillID{
 	model.SkillBranchPR,
 	model.SkillIssueCreation,
 	model.SkillSkillRegistry,
+	model.SkillChainedPR,
+	model.SkillCognitiveDoc,
+	model.SkillCommentWriter,
+	model.SkillWorkUnitCommits,
 }
 
 // qeFrontSkills covers E2E frontend testing: Playwright BDD + CLI.

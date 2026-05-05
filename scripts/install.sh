@@ -505,7 +505,7 @@ print_banner() {
     echo " | |_| |  __/ | | | |_| |  __/_____/ ___ \ | | "
     echo "  \____|\___|_| |_|\__|_|\___|    /_/   \_\___|"
     echo -e "${NC}"
-    echo -e "  ${DIM}One command to configure any AI coding agent on any OS${NC}"
+    echo -e "  ${DIM}Gentle-QA — One command. Any test. Any framework.${NC}"
     echo ""
 }
 

@@ -31,8 +31,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$GITHUB_OWNER = "Gentleman-Programming"
-$GITHUB_REPO = "gentle-qa"
+$GITHUB_OWNER = "EduardoVeraE"
+$GITHUB_REPO = "Gentle-QA"
 $BINARY_NAME = "gentle-qa"
 
 # ============================================================================
@@ -63,7 +63,7 @@ function Show-Banner {
     Write-Host " | |_| |  __/ | | | |_| |  __/_____/ ___ \ | | " -ForegroundColor Cyan
     Write-Host "  \____|\___|_| |_|\__|_|\___|    /_/   \_\___|" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "  One command to configure any AI coding agent on any OS" -ForegroundColor DarkGray
+    Write-Host "  Gentle-QA — One command. Any test. Any framework." -ForegroundColor DarkGray
     Write-Host ""
 }
 

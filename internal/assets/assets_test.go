@@ -283,10 +283,10 @@ func TestEmbeddedAssetCount(t *testing.T) {
 		}
 	}
 
-	// We expect 34 skill directories (10 SDD + judgment-day + 6 foundation + _shared
+	// We expect 38 skill directories (10 SDD + judgment-day + 6 foundation + 4 sustainable-review + _shared
 	// + 16 QA/SDET skills added by Gentle-QA fork).
-	if skillDirs != 34 {
-		t.Fatalf("expected 34 skill directories, got %d", skillDirs)
+	if skillDirs != 38 {
+		t.Fatalf("expected 38 skill directories, got %d", skillDirs)
 	}
 
 	// Verify each skill directory has a SKILL.md.
@@ -397,7 +397,11 @@ func TestSDDOrchestratorAssetsScopedToDedicatedAgent(t *testing.T) {
 	} {
 		t.Run(assetPath, func(t *testing.T) {
 			content := MustRead(assetPath)
-			if !strings.Contains(content, "dedicated `sdd-orchestrator`") {
+			dedicatedAgent := "sdd-orchestrator"
+			if assetPath == "opencode/sdd-orchestrator.md" {
+				dedicatedAgent = "gentle-orchestrator"
+			}
+			if !strings.Contains(content, "dedicated `"+dedicatedAgent+"`") {
 				t.Fatalf("%q missing dedicated-agent scoping note", assetPath)
 			}
 			if !strings.Contains(content, "Do NOT apply it to executor phase agents") {

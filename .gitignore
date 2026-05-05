@@ -35,7 +35,7 @@ dist/
 *.db
 .beads-credential-key
 
-# Engram persistent memory
+# Engram persistent memory (we do not track engram artifacts)
 .engram/
 .claude/
 .beads
@@ -54,3 +54,7 @@ mobile-out/
 # Node.js (no real JS deps in repo; package.json is metadata only)
 node_modules/
 package-lock.json
+
+# Engram local runtime state (defensive — superseded by .engram/ above)
+.engram/engram.db
+.engram/cloud.json

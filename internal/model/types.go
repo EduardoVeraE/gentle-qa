@@ -73,9 +73,14 @@ const (
 	SkillGoTesting     SkillID = "go-testing"
 	SkillCreator       SkillID = "skill-creator"
 	SkillJudgmentDay   SkillID = "judgment-day"
-	SkillBranchPR      SkillID = "branch-pr"
-	SkillIssueCreation SkillID = "issue-creation"
-	SkillSkillRegistry SkillID = "skill-registry"
+	SkillBranchPR        SkillID = "branch-pr"
+	SkillIssueCreation   SkillID = "issue-creation"
+	SkillSkillRegistry   SkillID = "skill-registry"
+	// Sustainable review skills (upstream)
+	SkillChainedPR       SkillID = "chained-pr"
+	SkillCognitiveDoc    SkillID = "cognitive-doc-design"
+	SkillCommentWriter   SkillID = "comment-writer"
+	SkillWorkUnitCommits SkillID = "work-unit-commits"
 	// QE / SDET skills
 	SkillPlaywrightBDD      SkillID = "playwright-bdd"
 	SkillPlaywrightCLI      SkillID = "playwright-cli"
